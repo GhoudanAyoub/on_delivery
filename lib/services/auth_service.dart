@@ -63,6 +63,17 @@ class AuthService extends Service {
     }
   }
 
+  updateActivitiesToFireStore(User user, String activities) async {
+    if (user != null) {
+      final snapShot = await usersRef.doc(user.uid).get();
+      if (snapShot.exists) {
+        usersRef.doc(user.uid).update({
+          'activities': activities,
+        });
+      }
+    }
+  }
+
   updateBusinessLocationToFireStore(
       User user, String wareHouseAddress, Position wareHousePosition) async {
     if (user != null) {

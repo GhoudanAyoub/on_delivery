@@ -5,7 +5,11 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_google_places/flutter_google_places.dart';
+import 'package:geolocator/geolocator.dart';
+import 'package:google_api_headers/google_api_headers.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:google_maps_webservice/places.dart';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:lite_rolling_switch/lite_rolling_switch.dart';
@@ -19,6 +23,8 @@ import 'package:on_delivery/utils/firebase.dart';
 import 'package:on_delivery/utils/validation.dart';
 import 'package:pinput/pin_put/pin_put.dart';
 import 'package:provider/provider.dart';
+
+String kGoogleApiKey = "AIzaSyAKBw42g9Se2zF-s8DhwuKguhTckxqTUp4";
 
 class UpdateProfiles extends StatefulWidget {
   static String routeName = "/UpdateProfiles";
@@ -582,6 +588,7 @@ class _UpdateProfilesState extends State<UpdateProfiles> {
   }
 
   ribBankInterface() {
+    final _formKey = GlobalKey<FormState>();
     return SafeArea(
         child: Scaffold(
             appBar: AppBar(
@@ -842,6 +849,7 @@ class _UpdateProfilesState extends State<UpdateProfiles> {
   }
 
   tripLocationInterface() {
+    final _formKey = GlobalKey<FormState>();
     return SafeArea(
         child: Scaffold(
             appBar: AppBar(
@@ -1259,6 +1267,7 @@ class _UpdateProfilesState extends State<UpdateProfiles> {
   }
 
   activityInterface() {
+    final _formKey = GlobalKey<FormState>();
     return SafeArea(
         child: Scaffold(
             appBar: AppBar(
@@ -1729,6 +1738,10 @@ class _UpdateProfilesState extends State<UpdateProfiles> {
                                   ),
                                   width: SizeConfig.screenWidth - 150,
                                   onPressed: () async {
+                                    String activity =
+                                        "${food ? "FOOD/" : ""}${move ? "MOVE/" : ""}${courier ? "COURIER/" : ""}${ecom ? "E-COMMERCE" : ""}";
+                                    authService.updateActivitiesToFireStore(
+                                        firebaseAuth.currentUser, activity);
                                     setState(() {
                                       valid = false;
                                       agentInt = false;
@@ -1764,6 +1777,7 @@ class _UpdateProfilesState extends State<UpdateProfiles> {
   }
 
   businessInterface() {
+    final _formKey = GlobalKey<FormState>();
     return SafeArea(
         child: Scaffold(
             appBar: AppBar(
@@ -2201,31 +2215,19 @@ class _UpdateProfilesState extends State<UpdateProfiles> {
                                           color: Colors.transparent,
                                           child: InkWell(
                                               onTap: () async {
-                                                authService
-                                                    .updateBusinessDataToFireStore(
-                                                        firebaseAuth
-                                                            .currentUser,
-                                                        _businessSelected,
-                                                        _businessController
-                                                            .text,
-                                                        moto ? "Moto" : "Car",
-                                                        warehouseYes
-                                                            ? "Yes"
-                                                            : "No");
                                                 await locationData
                                                     .getCurrentPosition();
                                                 if (locationData
                                                     .permissionGranted) {
                                                   Navigator.pushNamed(context,
                                                       MapScreen.routeName);
-                                                }
 
-                                                setState(() {
-                                                  valid = false;
-                                                  agentInt = false;
-                                                  businessInt = false;
-                                                  activityInt = true;
-                                                });
+                                                  setState(() {
+                                                    valid = false;
+                                                    agentInt = false;
+                                                    businessInt = true;
+                                                  });
+                                                }
                                               },
                                               child: Center(
                                                 child: Row(
@@ -3157,6 +3159,7 @@ class _UpdateProfilesState extends State<UpdateProfiles> {
   }
 
   clientInterface() {
+    final _formKey = GlobalKey<FormState>();
     return SafeArea(
         child: Scaffold(
             appBar: AppBar(
@@ -3326,6 +3329,9 @@ class _UpdateProfilesState extends State<UpdateProfiles> {
 
 class MapScreen extends StatefulWidget {
   static String routeName = '/MapScreen';
+  final User user;
+
+  const MapScreen({Key key, this.user}) : super(key: key);
   @override
   _MapScreenState createState() => _MapScreenState();
 }
@@ -3335,11 +3341,18 @@ class _MapScreenState extends State<MapScreen> {
   LatLng currentLocation;
   GoogleMapController _mapController;
   TextEditingController wareHouseLocationController = TextEditingController();
-  String kGoogleApiKey = "AIzaSyBhbAlczAjPkCr0p6DHdTf0pqUHX2eRrVg";
   AuthService authService = AuthService();
   Completer<GoogleMapController> _controller = Completer();
   static CameraPosition _myPosition;
   static CameraPosition initPosition;
+  String controllerLocationString;
+  GoogleMapsPlaces _places = GoogleMapsPlaces(apiKey: kGoogleApiKey);
+  PlacesDetailsResponse detail;
+  Prediction p;
+  final searchScaffoldKey = GlobalKey<ScaffoldState>();
+  final homeScaffoldKey = GlobalKey<ScaffoldState>();
+  double searchedLocationLnt, searchedLocationLng;
+  //controllerLocationString = await locationData.getMoveCamera();
   @override
   Widget build(BuildContext context) {
     locationData = Provider.of<LocationProvider>(context);
@@ -3347,12 +3360,11 @@ class _MapScreenState extends State<MapScreen> {
       currentLocation = LatLng(locationData.lnt, locationData.lng);
     });
     void onCreate(GoogleMapController controller) {
-      setState(() {
+      setState(() async {
         _controller.complete(controller);
         _mapController = controller;
         initPosition =
             CameraPosition(target: LatLng(locationData.lnt, locationData.lng));
-        // wareHouseLocationController.value.text = locationData.getMoveCamera();
       });
     }
 
@@ -3386,13 +3398,13 @@ class _MapScreenState extends State<MapScreen> {
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        FloatingActionButton(
-                          onPressed: () {
+                        GestureDetector(
+                          onTap: () {
                             Navigator.pop(context);
                           },
-                          mini: true,
-                          elevation: 8,
-                          child: Image.asset("assets/images/Back Arrow.png"),
+                          child: Image.asset(
+                            "assets/images/Back Arrow.png",
+                          ),
                         ),
                         FloatingActionButton(
                           onPressed: () => _goToMyPosition(_controller.future),
@@ -3415,9 +3427,10 @@ class _MapScreenState extends State<MapScreen> {
                     margin: EdgeInsets.fromLTRB(20, 0, 20, 10),
                     child: Padding(
                       padding: const EdgeInsets.all(8.0),
-                      child: TextField(
+                      child: TextFormField(
                         controller: wareHouseLocationController,
                         cursorColor: Colors.green,
+                        style: TextStyle(fontSize: 14),
                         decoration: InputDecoration(
                             suffixIcon: Image.asset(
                               "assets/images/arrival point.png",
@@ -3453,13 +3466,8 @@ class _MapScreenState extends State<MapScreen> {
                             labelStyle: TextStyle(
                                 color: Colors.grey[700], fontSize: 20),
                             labelText: 'Warehouse'),
-                        onTap: () async {
-                          /*
-                      Prediction p = await PlacesAutocomplete.show(
-                          context: context,
-                          apiKey: kGoogleApiKey,
-                          mode: Mode.overlay);*/
-                        },
+                        readOnly: true,
+                        onTap: _handlePressButton,
                       ),
                     ),
                   )
@@ -3493,10 +3501,19 @@ class _MapScreenState extends State<MapScreen> {
                     ),
                     width: SizeConfig.screenWidth - 150,
                     onPressed: () async {
-                      /*
                       authService.updateBusinessLocationToFireStore(
-                          firebaseAuth.currentUser,
-                          wareHouseLocationController.text);*/
+                          widget.user,
+                          p.description != null
+                              ? p.description
+                              : locationData.getMoveCamera(),
+                          Position(
+                              latitude: locationData.lnt != null
+                                  ? locationData.lnt
+                                  : searchedLocationLnt,
+                              longitude: locationData.lng != null
+                                  ? locationData.lng
+                                  : searchedLocationLnt));
+                      Navigator.pop(context);
                     }),
               ),
             )
@@ -3517,20 +3534,34 @@ class _MapScreenState extends State<MapScreen> {
     controller.animateCamera(CameraUpdate.newCameraPosition(_myPosition));
   }
 
-/*
-  Future<Null> displayPrediction(Prediction p) async {
+  void onError(PlacesAutocompleteResponse response) {
+    debugPrint('${response.errorMessage}');
+  }
+
+  Future<void> _handlePressButton() async {
+    p = await PlacesAutocomplete.show(
+      context: context,
+      apiKey: kGoogleApiKey,
+      mode: Mode.overlay,
+      hint: 'Search WareHouse',
+      onError: onError,
+      language: "fr",
+      components: [Component(Component.country, "fr")],
+    );
+
+    displayPrediction(p, homeScaffoldKey.currentState);
+  }
+
+  Future<Null> displayPrediction(Prediction p, ScaffoldState scaffold) async {
     if (p != null) {
+      GoogleMapsPlaces _places = GoogleMapsPlaces(
+        apiKey: kGoogleApiKey,
+        apiHeaders: await GoogleApiHeaders().getHeaders(),
+      );
       PlacesDetailsResponse detail =
           await _places.getDetailsByPlaceId(p.placeId);
-
-      var placeId = p.placeId;
-      double lat = detail.result.geometry.location.lat;
-      double lng = detail.result.geometry.location.lng;
-
-      var address = await Geocoder.local.findAddressesFromQuery(p.description);
-
-      print(lat);
-      print(lng);
+      searchedLocationLnt = detail.result.geometry.location.lat;
+      searchedLocationLng = detail.result.geometry.location.lng;
     }
-  }*/
+  }
 }

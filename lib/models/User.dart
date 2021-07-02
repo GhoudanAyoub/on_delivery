@@ -21,6 +21,7 @@ class UserModel {
   String wareHouse;
   String wareHouseAddress;
   Position wareHousePosition;
+  String activities;
   String RIB;
   String bankName;
   Timestamp signedUpAt;
@@ -44,6 +45,7 @@ class UserModel {
       this.wareHouse,
       this.wareHouseAddress,
       this.wareHousePosition,
+      this.activities,
       this.RIB,
       this.bankName,
       this.signedUpAt,
@@ -70,6 +72,7 @@ class UserModel {
     wareHouse = json['wareHouse'];
     wareHouseAddress = json['wareHouseAddress'];
     wareHousePosition = json['wareHousePosition'];
+    activities = json['activities'];
     RIB = json['RIB'];
     bankName = json['bankName'];
     signedUpAt = json['signedUpAt'];

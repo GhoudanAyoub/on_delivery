@@ -22,16 +22,25 @@ ThemeData theme() {
     scaffoldBackgroundColor: GBottomNav,
     fontFamily: "SFProDisplay-Regular",
     appBarTheme: appBarTheme(),
+    accentColor: Colors.blueGrey,
     primarySwatch: white,
     textTheme: textTheme(),
-    inputDecorationTheme: inputDecorationTheme(),
+    inputDecorationTheme: InputDecorationTheme(
+      border: OutlineInputBorder(
+        borderRadius: BorderRadius.all(Radius.circular(4.00)),
+      ),
+      contentPadding: EdgeInsets.symmetric(
+        vertical: 12.50,
+        horizontal: 10.00,
+      ),
+    ),
     visualDensity: VisualDensity.adaptivePlatformDensity,
   );
 }
 
 InputDecorationTheme inputDecorationTheme() {
   OutlineInputBorder outlineInputBorder = OutlineInputBorder(
-    borderRadius: BorderRadius.circular(28),
+    borderRadius: BorderRadius.circular(10),
     borderSide: BorderSide(color: kTextColor),
     gapPadding: 10,
   );
