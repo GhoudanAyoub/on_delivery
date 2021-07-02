@@ -33,6 +33,7 @@ dependencies:
   flutter_places_autocomplete:
   geocoder: ^0.2.1
   location: ^3.0.0
+  custom_switch:
   lite_rolling_switch: ^0.1.1
   permission_handler: ^3.0.0
   url_launcher: ^5.7.10

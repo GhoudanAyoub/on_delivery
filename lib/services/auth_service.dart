@@ -5,6 +5,8 @@ import 'package:geolocator/geolocator.dart';
 import 'package:on_delivery/services/services.dart';
 import 'package:on_delivery/utils/firebase.dart';
 
+import '../models/agent_trips_location.dart';
+
 class AuthService extends Service {
   User getCurrentUser() {
     User user = firebaseAuth.currentUser;
@@ -59,6 +61,30 @@ class AuthService extends Service {
       final snapShot = await usersRef.doc(user.uid).get();
       if (snapShot.exists) {
         usersRef.doc(user.uid).update({'type': type});
+      }
+    }
+  }
+
+  updateTripsLocationToFireStore(
+      User user, List<AgentTripsLocation> agentTripsLocationList) async {
+    if (user != null) {
+      final snapShot = await usersRef.doc(user.uid).get();
+      if (snapShot.exists) {
+        usersRef.doc(user.uid).update({
+          'agentTripsLocationList': agentTripsLocationList,
+        });
+      }
+    }
+  }
+
+  updateRIBToFireStore(User user, String RIB, String bankName) async {
+    if (user != null) {
+      final snapShot = await usersRef.doc(user.uid).get();
+      if (snapShot.exists) {
+        usersRef.doc(user.uid).update({
+          'RIB': RIB,
+          'bankName': bankName,
+        });
       }
     }
   }

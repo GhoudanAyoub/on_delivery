@@ -11,6 +11,7 @@ class LocationProvider with ChangeNotifier {
   Future<void> getCurrentPosition() async {
     Position position = await Geolocator.getCurrentPosition(
         desiredAccuracy: LocationAccuracy.high);
+
     if (position != null) {
       this.lnt = position.latitude;
       this.lng = position.longitude;
@@ -19,6 +20,10 @@ class LocationProvider with ChangeNotifier {
     } else {
       debugPrint("Permission not allowed");
     }
+  }
+
+  Future<void> requestPermission() async {
+    await Geolocator.requestPermission();
   }
 
   void onCameraMove(CameraPosition cameraPosition) async {

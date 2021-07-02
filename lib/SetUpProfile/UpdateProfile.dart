@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:io';
 
+import 'package:custom_switch/custom_switch.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
@@ -12,7 +13,6 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:google_maps_webservice/places.dart';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:lite_rolling_switch/lite_rolling_switch.dart';
 import 'package:on_delivery/components/RaisedGradientButton.dart';
 import 'package:on_delivery/components/text_form_builder.dart';
 import 'package:on_delivery/helpers/location_provider.dart';
@@ -79,7 +79,7 @@ class _UpdateProfilesState extends State<UpdateProfiles> {
   TextEditingController ribController = TextEditingController();
   TextEditingController bankNameController = TextEditingController();
   String _verificationCode;
-  String _verificationSelected, _businessSelected;
+  String _verificationSelected, _businessSelected, _unitiSelected;
   final TextEditingController _pinPutController = TextEditingController();
   final FocusNode _pinPutFocusNode = FocusNode();
   LocationProvider locationData;
@@ -815,6 +815,10 @@ class _UpdateProfilesState extends State<UpdateProfiles> {
                                   ),
                                   width: SizeConfig.screenWidth - 150,
                                   onPressed: () async {
+                                    authService.updateRIBToFireStore(
+                                        firebaseAuth.currentUser,
+                                        ribController.text,
+                                        bankNameController.text);
                                     setState(() {
                                       valid = false;
                                       agentInt = false;
@@ -922,36 +926,35 @@ class _UpdateProfilesState extends State<UpdateProfiles> {
                                 ),
                                 Container(
                                   height: 30,
-                                  width: 120,
-                                  child: LiteRollingSwitch(
+                                  width: 70,
+                                  child: CustomSwitch(
                                     value: locationState,
-                                    textOn: 'GPS',
-                                    textOff: 'Off',
-                                    colorOn: Colors.greenAccent[700],
-                                    colorOff: Colors.grey,
-                                    iconOn: CupertinoIcons.location,
-                                    iconOff: CupertinoIcons.nosign,
-                                    textSize: 12.0,
-                                    onChanged: (bool state) async {
-                                      if (state) {
-                                        /* _serviceEnabled =
-                                          await location.serviceEnabled();
-                                      if (!_serviceEnabled) {
-                                        _serviceEnabled =
-                                            await location.requestService();
-                                        if (!_serviceEnabled) {
-                                          debugPrint('Location Denied once');
-                                        }
-                                      }*/
+                                    activeColor: Colors.green,
+                                    onChanged: (state) {
+                                      if (state)
+                                        locationData.getCurrentPosition();
+                                      setState(() {
+                                        locationState = state;
+                                      });
+                                    },
+                                  ),
+
+                                  /* LiteRollingSwitch(
+                                      value: locationState,
+                                      textOn: 'GPS',
+                                      textOff: 'Off',
+                                      colorOn: Colors.greenAccent[700],
+                                      colorOff: Colors.grey,
+                                      iconOn: CupertinoIcons.location,
+                                      iconOff: CupertinoIcons.nosign,
+                                      textSize: 12.0,
+                                      onChanged: (bool state) async {
+                                        if (state)
+                                          locationData.getCurrentPosition();
                                         setState(() {
                                           locationState = state;
                                         });
-                                        locationData.getCurrentPosition();
-                                        print(
-                                            'Current State of SWITCH IS: $state ${locationData.lng}');
-                                      }
-                                    },
-                                  ),
+                                      }),*/
                                 )
                               ],
                             ),
@@ -963,6 +966,7 @@ class _UpdateProfilesState extends State<UpdateProfiles> {
                               children: [
                                 TextField(
                                   controller: startingPointController,
+                                  readOnly: locationState,
                                   decoration: InputDecoration(
                                       suffixIcon: Icon(
                                         CupertinoIcons.location_fill,
@@ -1001,7 +1005,7 @@ class _UpdateProfilesState extends State<UpdateProfiles> {
                                       ),
                                       labelStyle: TextStyle(
                                           color: Colors.grey[700],
-                                          fontSize: 20),
+                                          fontSize: 16),
                                       labelText: 'Starting point'),
                                 ),
                                 TextField(
@@ -1044,7 +1048,7 @@ class _UpdateProfilesState extends State<UpdateProfiles> {
                                       ),
                                       labelStyle: TextStyle(
                                           color: Colors.grey[700],
-                                          fontSize: 20),
+                                          fontSize: 16),
                                       labelText: 'Arrival point'),
                                 ),
                               ],
@@ -1071,13 +1075,44 @@ class _UpdateProfilesState extends State<UpdateProfiles> {
                             SizedBox(
                               height: 20,
                             ),
-                            TextFormBuilder(
-                              controller: maxWeightController,
-                              hintText: "Max Weight",
-                              suffix: false,
-                              prefix: CupertinoIcons.arrow_up_down,
-                              textInputAction: TextInputAction.next,
-                              validateFunction: Validations.validateNumber,
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Container(
+                                  child: TextFormBuilder(
+                                    controller: maxWeightController,
+                                    hintText: "Max Weight",
+                                    suffix: false,
+                                    prefix: CupertinoIcons.arrow_up_down,
+                                    textInputAction: TextInputAction.next,
+                                    validateFunction:
+                                        Validations.validateNumber,
+                                  ),
+                                  height: 100,
+                                  width: 150,
+                                ),
+                                Container(
+                                    height: 100,
+                                    child: DropdownButton<String>(
+                                      items: <String>[
+                                        "Km",
+                                        "Kg",
+                                        "Gram",
+                                        "Miter",
+                                        "unit"
+                                      ].map((String value) {
+                                        return DropdownMenuItem<String>(
+                                          value: value,
+                                          child: new Text(value),
+                                        );
+                                      }).toList(),
+                                      onChanged: (newValue) {
+                                        setState(() {
+                                          _unitiSelected = newValue;
+                                        });
+                                      },
+                                    )),
+                              ],
                             ),
                           ],
                         )),
@@ -1231,6 +1266,7 @@ class _UpdateProfilesState extends State<UpdateProfiles> {
                                   ),
                                   width: SizeConfig.screenWidth - 150,
                                   onPressed: () async {
+                                    //authService.updateTripsLocationToFireStore(firebaseAuth.currentUser, agentTripsLocationList)
                                     setState(() {
                                       valid = false;
                                       agentInt = false;

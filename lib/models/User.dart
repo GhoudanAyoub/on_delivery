@@ -1,6 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:geolocator/geolocator.dart';
 
+import 'agent_trips_location.dart';
+
 class UserModel {
   String id;
   String email;
@@ -22,6 +24,7 @@ class UserModel {
   String wareHouseAddress;
   Position wareHousePosition;
   String activities;
+  List<AgentTripsLocation> agentTripsLocationList;
   String RIB;
   String bankName;
   Timestamp signedUpAt;
@@ -46,6 +49,7 @@ class UserModel {
       this.wareHouseAddress,
       this.wareHousePosition,
       this.activities,
+      this.agentTripsLocationList,
       this.RIB,
       this.bankName,
       this.signedUpAt,
@@ -73,6 +77,7 @@ class UserModel {
     wareHouseAddress = json['wareHouseAddress'];
     wareHousePosition = json['wareHousePosition'];
     activities = json['activities'];
+    agentTripsLocationList = json['agentTripsLocationList'];
     RIB = json['RIB'];
     bankName = json['bankName'];
     signedUpAt = json['signedUpAt'];
