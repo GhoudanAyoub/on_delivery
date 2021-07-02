@@ -1,6 +1,40 @@
 class Validations {
+  static String validateRib(String value) {
+    if (value.isEmpty) return 'RIB is Required.';
+    final RegExp nameExp = new RegExp(r'^-?(([0-9]*)|(([0-9]*)\.([0-9]*)))$');
+    if (!nameExp.hasMatch(value))
+      return 'Please enter only Numbers characters.';
+    if (value.length < 20 || value.length > 30)
+      return 'Please enter valid RIB Numbers characters.';
+    return null;
+  }
+
+  static String validateNumber(String value) {
+    if (value.isEmpty) return 'Weight is Required.';
+    final RegExp nameExp = new RegExp(r'^-?(([0-9]*)|(([0-9]*)\.([0-9]*)))$');
+    if (!nameExp.hasMatch(value))
+      return 'Please enter only Numbers characters.';
+    return null;
+  }
+
+  static String validateBankName(String value) {
+    if (value.isEmpty) return 'Bank Name is Required.';
+    final RegExp nameExp = new RegExp(r'^[A-za-zğüşöçİĞÜŞÖÇ ]+$');
+    if (!nameExp.hasMatch(value))
+      return 'Please enter only alphabetical characters.';
+    return null;
+  }
+
   static String validateName(String value) {
     if (value.isEmpty) return 'Username is Required.';
+    final RegExp nameExp = new RegExp(r'^[A-za-zğüşöçİĞÜŞÖÇ ]+$');
+    if (!nameExp.hasMatch(value))
+      return 'Please enter only alphabetical characters.';
+    return null;
+  }
+
+  static String validateBusinessName(String value) {
+    if (value.isEmpty) return 'Business Name is Required.';
     final RegExp nameExp = new RegExp(r'^[A-za-zğüşöçİĞÜŞÖÇ ]+$');
     if (!nameExp.hasMatch(value))
       return 'Please enter only alphabetical characters.';

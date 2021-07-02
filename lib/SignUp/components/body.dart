@@ -6,32 +6,29 @@ import 'sign_up_form.dart';
 class Body extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      child: Container(
+    return Container(
+      decoration: BoxDecoration(
+        image: DecorationImage(
+          image: ExactAssetImage('assets/images/pg.png'),
+          fit: BoxFit.cover,
+        ),
+      ),
+      child: SafeArea(
+        child: Container(
+          width: SizeConfig.screenWidth,
           height: SizeConfig.screenHeight,
-          decoration: BoxDecoration(
-            image: DecorationImage(
-              image: ExactAssetImage('assets/images/pg.png'),
-              fit: BoxFit.cover,
+          child: Padding(
+            padding: EdgeInsets.symmetric(horizontal: 30),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                SignUpForm(),
+                SizedBox(height: 20),
+              ],
             ),
           ),
-          child: SingleChildScrollView(
-            child: SafeArea(
-              child: SizedBox(
-                width: double.infinity,
-                child: Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 30),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.spaceAround,
-                    crossAxisAlignment: CrossAxisAlignment.end,
-                    children: [
-                      SignUpForm(),
-                    ],
-                  ),
-                ),
-              ),
-            ),
-          )),
+        ),
+      ),
     );
   }
 }

@@ -1,8 +1,11 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:lite_rolling_switch/lite_rolling_switch.dart';
+import 'package:location/location.dart';
 import 'package:on_delivery/components/RaisedGradientButton.dart';
 import 'package:on_delivery/components/text_form_builder.dart';
+import 'package:on_delivery/helpers/location_provider.dart';
 import 'package:on_delivery/utils/SizeConfig.dart';
 import 'package:on_delivery/utils/validation.dart';
 import 'package:on_delivery/viewModel/EditProfileViewModel.dart';
@@ -30,20 +33,30 @@ class _UpdateProfilesState extends State<UpdateProfiles> {
   bool identityCard = false;
   bool businessInt = false;
   bool activityInt = false;
+  bool tripLocationInt = false;
+  bool ribBankInt = false;
   bool moto = false, car = false;
   bool warehouseNo = true, warehouseYes = false;
   bool food = false, move = false, ecom = false, courier = false;
-
+  bool locationState = false;
+  Location location = new Location();
+  bool _serviceEnabled;
   GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
   TextEditingController _fNameContoller = TextEditingController();
   TextEditingController _lNameContoller = TextEditingController();
   TextEditingController _cityContoller = TextEditingController();
   TextEditingController _phoneContoller = TextEditingController();
   TextEditingController _businessController = TextEditingController();
+  TextEditingController maxWeightController = TextEditingController();
+  TextEditingController startingPointController = TextEditingController();
+  TextEditingController arrivalPointController = TextEditingController();
+  TextEditingController ribController = TextEditingController();
+  TextEditingController bankNameController = TextEditingController();
   String _verificationCode;
   String _verificationSelected, _businessSelected;
   final TextEditingController _pinPutController = TextEditingController();
   final FocusNode _pinPutFocusNode = FocusNode();
+  LocationProvider locationData;
   final BoxDecoration pinPutDecoration = BoxDecoration(
     color: Color.fromRGBO(239, 240, 246, 1),
     borderRadius: BorderRadius.circular(10.0),
@@ -61,6 +74,7 @@ class _UpdateProfilesState extends State<UpdateProfiles> {
 
   @override
   Widget build(BuildContext context) {
+    locationData = Provider.of<LocationProvider>(context);
     EditProfileViewModel viewModel = Provider.of<EditProfileViewModel>(context);
 
     return Stack(
@@ -71,6 +85,8 @@ class _UpdateProfilesState extends State<UpdateProfiles> {
         if (verificationMth) verificationMethod(),
         if (businessInt) businessInterface(),
         if (activityInt) activityInterface(),
+        if (tripLocationInt) tripLocationInterface(),
+        if (ribBankInt) ribBankInterface(),
       ],
     );
   }
@@ -100,199 +116,957 @@ class _UpdateProfilesState extends State<UpdateProfiles> {
                 child: Padding(
                   padding: EdgeInsets.symmetric(horizontal: 15),
                   child: Container(
+                    decoration: BoxDecoration(
+                      image: DecorationImage(
+                        image: ExactAssetImage('assets/images/pg.png'),
+                        fit: BoxFit.cover,
+                      ),
+                    ),
                     width: SizeConfig.screenWidth,
-                    padding: EdgeInsets.all(50),
-                    child: ListView(
+                    height: SizeConfig.screenHeight,
+                    padding: EdgeInsets.fromLTRB(50, 50, 50, 10),
+                    child: Column(
                       children: [
-                        Center(
-                          child: GestureDetector(
-                            onTap: () => viewModel.pickImage(),
-                            child: Container(
-                              decoration: BoxDecoration(
-                                color: Colors.white,
-                                shape: BoxShape.circle,
-                                border: Border.all(
-                                  color: Colors.transparent,
+                        Expanded(
+                            child: ListView(
+                          children: [
+                            Center(
+                                child: Row(
+                              children: [
+                                GestureDetector(
+                                  onTap: () => viewModel.pickImage(),
+                                  child: Container(
+                                    decoration: BoxDecoration(
+                                      color: Colors.white,
+                                      shape: BoxShape.circle,
+                                      border: Border.all(
+                                        color: Colors.transparent,
+                                      ),
+                                      boxShadow: [
+                                        BoxShadow(
+                                          color: Colors.grey.withOpacity(0.3),
+                                          offset: new Offset(0.0, 0.0),
+                                          blurRadius: 2.0,
+                                          spreadRadius: 0.0,
+                                        ),
+                                      ],
+                                    ),
+                                    child: viewModel.imgLink != null
+                                        ? Padding(
+                                            padding: const EdgeInsets.all(1.0),
+                                            child: CircleAvatar(
+                                              radius: 30.0,
+                                              backgroundColor: Color.fromRGBO(
+                                                  239, 240, 246, 1),
+                                              backgroundImage: NetworkImage(
+                                                  viewModel.imgLink),
+                                            ),
+                                          )
+                                        : viewModel.image == null
+                                            ? Padding(
+                                                padding:
+                                                    const EdgeInsets.all(1.0),
+                                                child: CircleAvatar(
+                                                  backgroundColor:
+                                                      Color.fromRGBO(
+                                                          239, 240, 246, 1),
+                                                  radius: 30.0,
+                                                  backgroundImage: NetworkImage(
+                                                      "widget.user.photoUrl"),
+                                                ),
+                                              )
+                                            : Padding(
+                                                padding:
+                                                    const EdgeInsets.all(1.0),
+                                                child: CircleAvatar(
+                                                  radius: 30.0,
+                                                  backgroundColor:
+                                                      Color.fromRGBO(
+                                                          239, 240, 246, 1),
+                                                  backgroundImage: FileImage(
+                                                      viewModel.image),
+                                                ),
+                                              ),
+                                  ),
                                 ),
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: Colors.grey.withOpacity(0.3),
-                                    offset: new Offset(0.0, 0.0),
-                                    blurRadius: 2.0,
-                                    spreadRadius: 0.0,
+                                SizedBox(
+                                  width: 10,
+                                ),
+                                Container(
+                                  width: 200,
+                                  child: Text(
+                                      "Add your profile picture.\nMake sure it doesn't pass the\nsize of 1mo.",
+                                      textAlign: TextAlign.start,
+                                      overflow: TextOverflow.ellipsis,
+                                      style: TextStyle(
+                                        fontSize: 10,
+                                        letterSpacing: 1,
+                                        fontWeight: FontWeight.normal,
+                                        color: Colors.grey[800],
+                                      )),
+                                )
+                              ],
+                            )),
+                            SizedBox(height: 40),
+                            buildFNameFormField(),
+                            SizedBox(height: 30),
+                            buildLNameFormField(),
+                            SizedBox(height: 30),
+                            buildCityFormField(),
+                            SizedBox(height: 30),
+                            buildPhoneFormField(),
+                            SizedBox(height: 50),
+                          ],
+                        )),
+                        Align(
+                          alignment: Alignment.bottomCenter,
+                          child: Column(
+                            children: [
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Container(
+                                    width: 40,
+                                    height: 5,
+                                    decoration: BoxDecoration(
+                                        gradient: LinearGradient(
+                                          colors: <Color>[
+                                            Color.fromRGBO(82, 238, 79, 1),
+                                            Color.fromRGBO(5, 151, 0, 1)
+                                          ],
+                                        ),
+                                        borderRadius:
+                                            BorderRadius.circular(10.0),
+                                        boxShadow: [
+                                          BoxShadow(
+                                            color: Colors.grey[500],
+                                            offset: Offset(0.0, 1.5),
+                                            blurRadius: 1.5,
+                                          ),
+                                        ]),
+                                  ),
+                                  Container(
+                                    width: 40,
+                                    height: 5,
+                                    decoration: BoxDecoration(
+                                        gradient: LinearGradient(
+                                          colors: <Color>[
+                                            Colors.grey,
+                                            Colors.grey
+                                          ],
+                                        ),
+                                        borderRadius:
+                                            BorderRadius.circular(10.0),
+                                        boxShadow: [
+                                          BoxShadow(
+                                            color: Colors.grey[500],
+                                            offset: Offset(0.0, 1.5),
+                                            blurRadius: 1.5,
+                                          ),
+                                        ]),
+                                  ),
+                                  Container(
+                                    width: 40,
+                                    height: 5,
+                                    decoration: BoxDecoration(
+                                        gradient: LinearGradient(
+                                          colors: <Color>[
+                                            Colors.grey,
+                                            Colors.grey
+                                          ],
+                                        ),
+                                        borderRadius:
+                                            BorderRadius.circular(10.0),
+                                        boxShadow: [
+                                          BoxShadow(
+                                            color: Colors.grey[500],
+                                            offset: Offset(0.0, 1.5),
+                                            blurRadius: 1.5,
+                                          ),
+                                        ]),
+                                  ),
+                                  Container(
+                                    width: 40,
+                                    height: 5,
+                                    decoration: BoxDecoration(
+                                        gradient: LinearGradient(
+                                          colors: <Color>[
+                                            Colors.grey,
+                                            Colors.grey
+                                          ],
+                                        ),
+                                        borderRadius:
+                                            BorderRadius.circular(10.0),
+                                        boxShadow: [
+                                          BoxShadow(
+                                            color: Colors.grey[500],
+                                            offset: Offset(0.0, 1.5),
+                                            blurRadius: 1.5,
+                                          ),
+                                        ]),
+                                  ),
+                                  Container(
+                                    width: 40,
+                                    height: 5,
+                                    decoration: BoxDecoration(
+                                        gradient: LinearGradient(
+                                          colors: <Color>[
+                                            Colors.grey,
+                                            Colors.grey
+                                          ],
+                                        ),
+                                        borderRadius:
+                                            BorderRadius.circular(10.0),
+                                        boxShadow: [
+                                          BoxShadow(
+                                            color: Colors.grey[500],
+                                            offset: Offset(0.0, 1.5),
+                                            blurRadius: 1.5,
+                                          ),
+                                        ]),
+                                  ),
+                                  Container(
+                                    width: 40,
+                                    height: 5,
+                                    decoration: BoxDecoration(
+                                        gradient: LinearGradient(
+                                          colors: <Color>[
+                                            Colors.grey,
+                                            Colors.grey
+                                          ],
+                                        ),
+                                        borderRadius:
+                                            BorderRadius.circular(10.0),
+                                        boxShadow: [
+                                          BoxShadow(
+                                            color: Colors.grey[500],
+                                            offset: Offset(0.0, 1.5),
+                                            blurRadius: 1.5,
+                                          ),
+                                        ]),
                                   ),
                                 ],
                               ),
-                              child: viewModel.imgLink != null
-                                  ? Padding(
-                                      padding: const EdgeInsets.all(1.0),
-                                      child: CircleAvatar(
-                                        radius: 65.0,
-                                        backgroundColor:
-                                            Color.fromRGBO(239, 240, 246, 1),
-                                        backgroundImage:
-                                            NetworkImage(viewModel.imgLink),
-                                      ),
-                                    )
-                                  : viewModel.image == null
-                                      ? Padding(
-                                          padding: const EdgeInsets.all(1.0),
-                                          child: CircleAvatar(
-                                            backgroundColor: Color.fromRGBO(
-                                                239, 240, 246, 1),
-                                            radius: 65.0,
-                                            backgroundImage: NetworkImage(
-                                                "widget.user.photoUrl"),
-                                          ),
-                                        )
-                                      : Padding(
-                                          padding: const EdgeInsets.all(1.0),
-                                          child: CircleAvatar(
-                                            radius: 65.0,
-                                            backgroundColor: Color.fromRGBO(
-                                                239, 240, 246, 1),
-                                            backgroundImage:
-                                                FileImage(viewModel.image),
-                                          ),
-                                        ),
-                            ),
-                          ),
-                        ),
-                        SizedBox(height: 40),
-                        buildFNameFormField(),
-                        SizedBox(height: 30),
-                        buildLNameFormField(),
-                        SizedBox(height: 30),
-                        buildCityFormField(),
-                        SizedBox(height: 30),
-                        buildPhoneFormField(),
-                        SizedBox(height: 50),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Container(
-                              width: 40,
-                              height: 5,
-                              decoration: BoxDecoration(
+                              SizedBox(height: 20),
+                              RaisedGradientButton(
+                                  child: Text(
+                                    'Next',
+                                    style: TextStyle(
+                                      fontSize: 16,
+                                      color: Colors.white,
+                                    ),
+                                  ),
                                   gradient: LinearGradient(
                                     colors: <Color>[
                                       Color.fromRGBO(82, 238, 79, 1),
                                       Color.fromRGBO(5, 151, 0, 1)
                                     ],
                                   ),
-                                  borderRadius: BorderRadius.circular(10.0),
-                                  boxShadow: [
-                                    BoxShadow(
-                                      color: Colors.grey[500],
-                                      offset: Offset(0.0, 1.5),
-                                      blurRadius: 1.5,
+                                  width: SizeConfig.screenWidth - 150,
+                                  onPressed: () async {
+                                    setState(() {
+                                      valid = true;
+                                      agentInt = false;
+                                    });
+                                  }),
+                              SizedBox(height: 10),
+                              Container(
+                                width: 135,
+                                height: 5,
+                                decoration: BoxDecoration(
+                                    gradient: LinearGradient(
+                                      colors: <Color>[Colors.grey, Colors.grey],
                                     ),
-                                  ]),
+                                    borderRadius: BorderRadius.circular(10.0),
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: Colors.grey[500],
+                                        offset: Offset(0.0, 1.5),
+                                        blurRadius: 1.5,
+                                      ),
+                                    ]),
+                              ),
+                            ],
+                          ),
+                        )
+                      ],
+                    ),
+                  ),
+                ))));
+  }
+
+  ribBankInterface() {
+    return SafeArea(
+        child: Scaffold(
+            appBar: AppBar(
+              toolbarHeight: 70,
+              leading: Padding(
+                  padding: EdgeInsets.only(top: 40),
+                  child: IconButton(
+                    icon: Icon(Icons.arrow_back,
+                        color: Color.fromRGBO(5, 151, 0, 1)),
+                    onPressed: () => Navigator.of(context).pop(),
+                  )),
+              title: Padding(
+                padding: EdgeInsets.only(right: 30, top: 40),
+                child: Align(
+                  alignment: Alignment.topRight,
+                  child: Text("Setup profile",
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.w600,
+                        color: Colors.black,
+                      )),
+                ),
+              ),
+            ),
+            body: Form(
+                key: _formKey,
+                child: Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 15),
+                  child: Container(
+                    decoration: BoxDecoration(
+                      image: DecorationImage(
+                        image: ExactAssetImage('assets/images/pg.png'),
+                        fit: BoxFit.cover,
+                      ),
+                    ),
+                    width: SizeConfig.screenWidth,
+                    height: SizeConfig.screenHeight,
+                    padding: EdgeInsets.fromLTRB(50, 50, 50, 10),
+                    child: Column(
+                      children: [
+                        Align(
+                          alignment: Alignment.topCenter,
+                          child: Text(
+                              "Please provide your RIB to help your clients pay you easily",
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                fontSize: 14,
+                                fontWeight: FontWeight.normal,
+                                color: Colors.grey[700],
+                              )),
+                        ),
+                        SizedBox(
+                          height: 40,
+                        ),
+                        Expanded(
+                            child: ListView(
+                          children: [
+                            TextFormBuilder(
+                              controller: ribController,
+                              hintText: "RIB",
+                              suffix: false,
+                              textInputAction: TextInputAction.next,
+                              validateFunction: Validations.validateRib,
                             ),
-                            Container(
-                              width: 40,
-                              height: 5,
-                              decoration: BoxDecoration(
-                                  gradient: LinearGradient(
-                                    colors: <Color>[Colors.grey, Colors.grey],
-                                  ),
-                                  borderRadius: BorderRadius.circular(10.0),
-                                  boxShadow: [
-                                    BoxShadow(
-                                      color: Colors.grey[500],
-                                      offset: Offset(0.0, 1.5),
-                                      blurRadius: 1.5,
-                                    ),
-                                  ]),
+                            SizedBox(
+                              height: 20,
                             ),
-                            Container(
-                              width: 40,
-                              height: 5,
-                              decoration: BoxDecoration(
-                                  gradient: LinearGradient(
-                                    colors: <Color>[Colors.grey, Colors.grey],
-                                  ),
-                                  borderRadius: BorderRadius.circular(10.0),
-                                  boxShadow: [
-                                    BoxShadow(
-                                      color: Colors.grey[500],
-                                      offset: Offset(0.0, 1.5),
-                                      blurRadius: 1.5,
-                                    ),
-                                  ]),
-                            ),
-                            Container(
-                              width: 40,
-                              height: 5,
-                              decoration: BoxDecoration(
-                                  gradient: LinearGradient(
-                                    colors: <Color>[Colors.grey, Colors.grey],
-                                  ),
-                                  borderRadius: BorderRadius.circular(10.0),
-                                  boxShadow: [
-                                    BoxShadow(
-                                      color: Colors.grey[500],
-                                      offset: Offset(0.0, 1.5),
-                                      blurRadius: 1.5,
-                                    ),
-                                  ]),
-                            ),
-                            Container(
-                              width: 40,
-                              height: 5,
-                              decoration: BoxDecoration(
-                                  gradient: LinearGradient(
-                                    colors: <Color>[Colors.grey, Colors.grey],
-                                  ),
-                                  borderRadius: BorderRadius.circular(10.0),
-                                  boxShadow: [
-                                    BoxShadow(
-                                      color: Colors.grey[500],
-                                      offset: Offset(0.0, 1.5),
-                                      blurRadius: 1.5,
-                                    ),
-                                  ]),
-                            ),
-                            Container(
-                              width: 40,
-                              height: 5,
-                              decoration: BoxDecoration(
-                                  gradient: LinearGradient(
-                                    colors: <Color>[Colors.grey, Colors.grey],
-                                  ),
-                                  borderRadius: BorderRadius.circular(10.0),
-                                  boxShadow: [
-                                    BoxShadow(
-                                      color: Colors.grey[500],
-                                      offset: Offset(0.0, 1.5),
-                                      blurRadius: 1.5,
-                                    ),
-                                  ]),
+                            TextFormBuilder(
+                              controller: bankNameController,
+                              hintText: "Bank Name",
+                              suffix: false,
+                              textInputAction: TextInputAction.next,
+                              validateFunction: Validations.validateBankName,
                             ),
                           ],
+                        )),
+                        SizedBox(
+                          height: 20,
                         ),
-                        SizedBox(height: 20),
-                        RaisedGradientButton(
-                            child: Text(
-                              'Next',
-                              style: TextStyle(
-                                fontSize: 16,
-                                color: Colors.white,
+                        Align(
+                          alignment: Alignment.bottomCenter,
+                          child: Column(
+                            children: [
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Container(
+                                    width: 40,
+                                    height: 5,
+                                    decoration: BoxDecoration(
+                                        gradient: LinearGradient(
+                                          colors: <Color>[
+                                            Color.fromRGBO(82, 238, 79, 1),
+                                            Color.fromRGBO(5, 151, 0, 1)
+                                          ],
+                                        ),
+                                        borderRadius:
+                                            BorderRadius.circular(10.0),
+                                        boxShadow: [
+                                          BoxShadow(
+                                            color: Colors.grey[500],
+                                            offset: Offset(0.0, 1.5),
+                                            blurRadius: 1.5,
+                                          ),
+                                        ]),
+                                  ),
+                                  Container(
+                                    width: 40,
+                                    height: 5,
+                                    decoration: BoxDecoration(
+                                        gradient: LinearGradient(
+                                          colors: <Color>[
+                                            Color.fromRGBO(82, 238, 79, 1),
+                                            Color.fromRGBO(5, 151, 0, 1)
+                                          ],
+                                        ),
+                                        borderRadius:
+                                            BorderRadius.circular(10.0),
+                                        boxShadow: [
+                                          BoxShadow(
+                                            color: Colors.grey[500],
+                                            offset: Offset(0.0, 1.5),
+                                            blurRadius: 1.5,
+                                          ),
+                                        ]),
+                                  ),
+                                  Container(
+                                    width: 40,
+                                    height: 5,
+                                    decoration: BoxDecoration(
+                                        gradient: LinearGradient(
+                                          colors: <Color>[
+                                            Color.fromRGBO(82, 238, 79, 1),
+                                            Color.fromRGBO(5, 151, 0, 1)
+                                          ],
+                                        ),
+                                        borderRadius:
+                                            BorderRadius.circular(10.0),
+                                        boxShadow: [
+                                          BoxShadow(
+                                            color: Colors.grey[500],
+                                            offset: Offset(0.0, 1.5),
+                                            blurRadius: 1.5,
+                                          ),
+                                        ]),
+                                  ),
+                                  Container(
+                                    width: 40,
+                                    height: 5,
+                                    decoration: BoxDecoration(
+                                        gradient: LinearGradient(
+                                          colors: <Color>[
+                                            Color.fromRGBO(82, 238, 79, 1),
+                                            Color.fromRGBO(5, 151, 0, 1)
+                                          ],
+                                        ),
+                                        borderRadius:
+                                            BorderRadius.circular(10.0),
+                                        boxShadow: [
+                                          BoxShadow(
+                                            color: Colors.grey[500],
+                                            offset: Offset(0.0, 1.5),
+                                            blurRadius: 1.5,
+                                          ),
+                                        ]),
+                                  ),
+                                  Container(
+                                    width: 40,
+                                    height: 5,
+                                    decoration: BoxDecoration(
+                                        gradient: LinearGradient(
+                                          colors: <Color>[
+                                            Color.fromRGBO(82, 238, 79, 1),
+                                            Color.fromRGBO(5, 151, 0, 1)
+                                          ],
+                                        ),
+                                        borderRadius:
+                                            BorderRadius.circular(10.0),
+                                        boxShadow: [
+                                          BoxShadow(
+                                            color: Colors.grey[500],
+                                            offset: Offset(0.0, 1.5),
+                                            blurRadius: 1.5,
+                                          ),
+                                        ]),
+                                  ),
+                                  Container(
+                                    width: 40,
+                                    height: 5,
+                                    decoration: BoxDecoration(
+                                        gradient: LinearGradient(
+                                          colors: <Color>[
+                                            Color.fromRGBO(82, 238, 79, 1),
+                                            Color.fromRGBO(5, 151, 0, 1)
+                                          ],
+                                        ),
+                                        borderRadius:
+                                            BorderRadius.circular(10.0),
+                                        boxShadow: [
+                                          BoxShadow(
+                                            color: Colors.grey[500],
+                                            offset: Offset(0.0, 1.5),
+                                            blurRadius: 1.5,
+                                          ),
+                                        ]),
+                                  ),
+                                ],
                               ),
-                            ),
-                            gradient: LinearGradient(
-                              colors: <Color>[
-                                Color.fromRGBO(82, 238, 79, 1),
-                                Color.fromRGBO(5, 151, 0, 1)
+                              SizedBox(height: 20),
+                              RaisedGradientButton(
+                                  child: Text(
+                                    'Next',
+                                    style: TextStyle(
+                                      fontSize: 16,
+                                      color: Colors.white,
+                                    ),
+                                  ),
+                                  gradient: LinearGradient(
+                                    colors: <Color>[
+                                      Color.fromRGBO(82, 238, 79, 1),
+                                      Color.fromRGBO(5, 151, 0, 1)
+                                    ],
+                                  ),
+                                  width: SizeConfig.screenWidth - 150,
+                                  onPressed: () async {
+                                    setState(() {
+                                      valid = false;
+                                      agentInt = false;
+                                      businessInt = false;
+                                      activityInt = true;
+                                    });
+                                  }),
+                              SizedBox(height: 10),
+                              Container(
+                                width: 135,
+                                height: 5,
+                                decoration: BoxDecoration(
+                                    gradient: LinearGradient(
+                                      colors: <Color>[Colors.grey, Colors.grey],
+                                    ),
+                                    borderRadius: BorderRadius.circular(10.0),
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: Colors.grey[500],
+                                        offset: Offset(0.0, 1.5),
+                                        blurRadius: 1.5,
+                                      ),
+                                    ]),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ))));
+  }
+
+  tripLocationInterface() {
+    return SafeArea(
+        child: Scaffold(
+            appBar: AppBar(
+              toolbarHeight: 70,
+              leading: Padding(
+                  padding: EdgeInsets.only(top: 40),
+                  child: IconButton(
+                    icon: Icon(Icons.arrow_back,
+                        color: Color.fromRGBO(5, 151, 0, 1)),
+                    onPressed: () => Navigator.of(context).pop(),
+                  )),
+              title: Padding(
+                padding: EdgeInsets.only(right: 30, top: 40),
+                child: Align(
+                  alignment: Alignment.topRight,
+                  child: Text("Setup profile",
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.w600,
+                        color: Colors.black,
+                      )),
+                ),
+              ),
+            ),
+            body: Form(
+                key: _formKey,
+                child: Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 15),
+                  child: Container(
+                    decoration: BoxDecoration(
+                      image: DecorationImage(
+                        image: ExactAssetImage('assets/images/pg.png'),
+                        fit: BoxFit.cover,
+                      ),
+                    ),
+                    width: SizeConfig.screenWidth,
+                    height: SizeConfig.screenHeight,
+                    padding: EdgeInsets.fromLTRB(50, 50, 50, 10),
+                    child: Column(
+                      children: [
+                        Align(
+                          alignment: Alignment.topCenter,
+                          child: Text(
+                              "What are your trips, the max weight and your RIB ?",
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                fontSize: 14,
+                                fontWeight: FontWeight.normal,
+                                color: Colors.grey[700],
+                              )),
+                        ),
+                        SizedBox(
+                          height: 20,
+                        ),
+                        Expanded(
+                            child: ListView(
+                          children: [
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Align(
+                                  alignment: Alignment.topLeft,
+                                  child: Text("Turn on my gps",
+                                      textAlign: TextAlign.center,
+                                      style: TextStyle(
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.normal,
+                                        color: Colors.grey[800],
+                                      )),
+                                ),
+                                Container(
+                                  height: 30,
+                                  width: 120,
+                                  child: LiteRollingSwitch(
+                                    value: locationState,
+                                    textOn: 'GPS',
+                                    textOff: 'Off',
+                                    colorOn: Colors.greenAccent[700],
+                                    colorOff: Colors.grey,
+                                    iconOn: CupertinoIcons.location,
+                                    iconOff: CupertinoIcons.nosign,
+                                    textSize: 12.0,
+                                    onChanged: (bool state) async {
+                                      if (state) {
+                                        /* _serviceEnabled =
+                                          await location.serviceEnabled();
+                                      if (!_serviceEnabled) {
+                                        _serviceEnabled =
+                                            await location.requestService();
+                                        if (!_serviceEnabled) {
+                                          debugPrint('Location Denied once');
+                                        }
+                                      }*/
+                                        setState(() {
+                                          locationState = state;
+                                        });
+                                        locationData.getCurrentPosition();
+                                        print(
+                                            'Current State of SWITCH IS: $state ${locationData.lng}');
+                                      }
+                                    },
+                                  ),
+                                )
                               ],
                             ),
-                            width: SizeConfig.screenWidth - 150,
-                            onPressed: () async {
-                              setState(() {
-                                valid = true;
-                                agentInt = false;
-                              });
-                            }),
+                            SizedBox(
+                              height: 40,
+                            ),
+                            Container(
+                                child: Column(
+                              children: [
+                                TextField(
+                                  controller: startingPointController,
+                                  decoration: InputDecoration(
+                                      suffixIcon: Icon(
+                                        CupertinoIcons.location_fill,
+                                        size: 20.0,
+                                        color: Colors.green,
+                                      ),
+                                      border: OutlineInputBorder(
+                                        borderRadius: BorderRadius.all(
+                                          Radius.circular(10.0),
+                                        ),
+                                        borderSide: BorderSide(
+                                          color:
+                                              Color.fromRGBO(224, 224, 224, 1),
+                                          width: 1.0,
+                                        ),
+                                      ),
+                                      enabledBorder: OutlineInputBorder(
+                                        borderRadius: BorderRadius.all(
+                                          Radius.circular(10.0),
+                                        ),
+                                        borderSide: BorderSide(
+                                          color:
+                                              Color.fromRGBO(224, 224, 224, 1),
+                                          width: 1.0,
+                                        ),
+                                      ),
+                                      focusedBorder: OutlineInputBorder(
+                                        borderRadius: BorderRadius.all(
+                                          Radius.circular(10.0),
+                                        ),
+                                        borderSide: BorderSide(
+                                          color:
+                                              Color.fromRGBO(224, 224, 224, 1),
+                                          width: 1.0,
+                                        ),
+                                      ),
+                                      labelStyle: TextStyle(
+                                          color: Colors.grey[700],
+                                          fontSize: 20),
+                                      labelText: 'Starting point'),
+                                ),
+                                TextField(
+                                  controller: arrivalPointController,
+                                  decoration: InputDecoration(
+                                      suffixIcon: Icon(
+                                        CupertinoIcons.location,
+                                        size: 20.0,
+                                        color: Colors.green,
+                                      ),
+                                      border: OutlineInputBorder(
+                                        borderRadius: BorderRadius.all(
+                                          Radius.circular(10.0),
+                                        ),
+                                        borderSide: BorderSide(
+                                          color:
+                                              Color.fromRGBO(224, 224, 224, 1),
+                                          width: 1.0,
+                                        ),
+                                      ),
+                                      enabledBorder: OutlineInputBorder(
+                                        borderRadius: BorderRadius.all(
+                                          Radius.circular(10.0),
+                                        ),
+                                        borderSide: BorderSide(
+                                          color:
+                                              Color.fromRGBO(224, 224, 224, 1),
+                                          width: 1.0,
+                                        ),
+                                      ),
+                                      focusedBorder: OutlineInputBorder(
+                                        borderRadius: BorderRadius.all(
+                                          Radius.circular(10.0),
+                                        ),
+                                        borderSide: BorderSide(
+                                          color:
+                                              Color.fromRGBO(224, 224, 224, 1),
+                                          width: 1.0,
+                                        ),
+                                      ),
+                                      labelStyle: TextStyle(
+                                          color: Colors.grey[700],
+                                          fontSize: 20),
+                                      labelText: 'Arrival point'),
+                                ),
+                              ],
+                            )),
+                            SizedBox(
+                              height: 40,
+                            ),
+                            Row(
+                              children: [
+                                Icon(CupertinoIcons.plus_circle_fill,
+                                    size: 20, color: Colors.green),
+                                SizedBox(
+                                  width: 10,
+                                ),
+                                Text("Add another trip",
+                                    textAlign: TextAlign.center,
+                                    style: TextStyle(
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.normal,
+                                      color: Colors.green,
+                                    )),
+                              ],
+                            ),
+                            SizedBox(
+                              height: 20,
+                            ),
+                            TextFormBuilder(
+                              controller: maxWeightController,
+                              hintText: "Max Weight",
+                              suffix: false,
+                              prefix: CupertinoIcons.arrow_up_down,
+                              textInputAction: TextInputAction.next,
+                              validateFunction: Validations.validateNumber,
+                            ),
+                          ],
+                        )),
+                        SizedBox(
+                          height: 20,
+                        ),
+                        Align(
+                          alignment: Alignment.bottomCenter,
+                          child: Column(
+                            children: [
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Container(
+                                    width: 40,
+                                    height: 5,
+                                    decoration: BoxDecoration(
+                                        gradient: LinearGradient(
+                                          colors: <Color>[
+                                            Color.fromRGBO(82, 238, 79, 1),
+                                            Color.fromRGBO(5, 151, 0, 1)
+                                          ],
+                                        ),
+                                        borderRadius:
+                                            BorderRadius.circular(10.0),
+                                        boxShadow: [
+                                          BoxShadow(
+                                            color: Colors.grey[500],
+                                            offset: Offset(0.0, 1.5),
+                                            blurRadius: 1.5,
+                                          ),
+                                        ]),
+                                  ),
+                                  Container(
+                                    width: 40,
+                                    height: 5,
+                                    decoration: BoxDecoration(
+                                        gradient: LinearGradient(
+                                          colors: <Color>[
+                                            Color.fromRGBO(82, 238, 79, 1),
+                                            Color.fromRGBO(5, 151, 0, 1)
+                                          ],
+                                        ),
+                                        borderRadius:
+                                            BorderRadius.circular(10.0),
+                                        boxShadow: [
+                                          BoxShadow(
+                                            color: Colors.grey[500],
+                                            offset: Offset(0.0, 1.5),
+                                            blurRadius: 1.5,
+                                          ),
+                                        ]),
+                                  ),
+                                  Container(
+                                    width: 40,
+                                    height: 5,
+                                    decoration: BoxDecoration(
+                                        gradient: LinearGradient(
+                                          colors: <Color>[
+                                            Color.fromRGBO(82, 238, 79, 1),
+                                            Color.fromRGBO(5, 151, 0, 1)
+                                          ],
+                                        ),
+                                        borderRadius:
+                                            BorderRadius.circular(10.0),
+                                        boxShadow: [
+                                          BoxShadow(
+                                            color: Colors.grey[500],
+                                            offset: Offset(0.0, 1.5),
+                                            blurRadius: 1.5,
+                                          ),
+                                        ]),
+                                  ),
+                                  Container(
+                                    width: 40,
+                                    height: 5,
+                                    decoration: BoxDecoration(
+                                        gradient: LinearGradient(
+                                          colors: <Color>[
+                                            Color.fromRGBO(82, 238, 79, 1),
+                                            Color.fromRGBO(5, 151, 0, 1)
+                                          ],
+                                        ),
+                                        borderRadius:
+                                            BorderRadius.circular(10.0),
+                                        boxShadow: [
+                                          BoxShadow(
+                                            color: Colors.grey[500],
+                                            offset: Offset(0.0, 1.5),
+                                            blurRadius: 1.5,
+                                          ),
+                                        ]),
+                                  ),
+                                  Container(
+                                    width: 40,
+                                    height: 5,
+                                    decoration: BoxDecoration(
+                                        gradient: LinearGradient(
+                                          colors: <Color>[
+                                            Color.fromRGBO(82, 238, 79, 1),
+                                            Color.fromRGBO(5, 151, 0, 1)
+                                          ],
+                                        ),
+                                        borderRadius:
+                                            BorderRadius.circular(10.0),
+                                        boxShadow: [
+                                          BoxShadow(
+                                            color: Colors.grey[500],
+                                            offset: Offset(0.0, 1.5),
+                                            blurRadius: 1.5,
+                                          ),
+                                        ]),
+                                  ),
+                                  Container(
+                                    width: 40,
+                                    height: 5,
+                                    decoration: BoxDecoration(
+                                        gradient: LinearGradient(
+                                          colors: <Color>[
+                                            Colors.grey,
+                                            Colors.grey
+                                          ],
+                                        ),
+                                        borderRadius:
+                                            BorderRadius.circular(10.0),
+                                        boxShadow: [
+                                          BoxShadow(
+                                            color: Colors.grey[500],
+                                            offset: Offset(0.0, 1.5),
+                                            blurRadius: 1.5,
+                                          ),
+                                        ]),
+                                  ),
+                                ],
+                              ),
+                              SizedBox(height: 20),
+                              RaisedGradientButton(
+                                  child: Text(
+                                    'Next',
+                                    style: TextStyle(
+                                      fontSize: 16,
+                                      color: Colors.white,
+                                    ),
+                                  ),
+                                  gradient: LinearGradient(
+                                    colors: <Color>[
+                                      Color.fromRGBO(82, 238, 79, 1),
+                                      Color.fromRGBO(5, 151, 0, 1)
+                                    ],
+                                  ),
+                                  width: SizeConfig.screenWidth - 150,
+                                  onPressed: () async {
+                                    setState(() {
+                                      valid = false;
+                                      agentInt = false;
+                                      businessInt = false;
+                                      activityInt = false;
+                                      tripLocationInt = false;
+                                      ribBankInt = true;
+                                    });
+                                  }),
+                              SizedBox(height: 10),
+                              Container(
+                                width: 135,
+                                height: 5,
+                                decoration: BoxDecoration(
+                                    gradient: LinearGradient(
+                                      colors: <Color>[Colors.grey, Colors.grey],
+                                    ),
+                                    borderRadius: BorderRadius.circular(10.0),
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: Colors.grey[500],
+                                        offset: Offset(0.0, 1.5),
+                                        blurRadius: 1.5,
+                                      ),
+                                    ]),
+                              ),
+                            ],
+                          ),
+                        ),
                       ],
                     ),
                   ),
@@ -329,9 +1103,15 @@ class _UpdateProfilesState extends State<UpdateProfiles> {
                 child: Padding(
                   padding: EdgeInsets.symmetric(horizontal: 15),
                   child: Container(
+                    decoration: BoxDecoration(
+                      image: DecorationImage(
+                        image: ExactAssetImage('assets/images/pg.png'),
+                        fit: BoxFit.cover,
+                      ),
+                    ),
                     width: SizeConfig.screenWidth,
                     height: SizeConfig.screenHeight,
-                    padding: EdgeInsets.all(50),
+                    padding: EdgeInsets.fromLTRB(50, 50, 50, 10),
                     child: Column(
                       children: [
                         Align(
@@ -765,10 +1545,30 @@ class _UpdateProfilesState extends State<UpdateProfiles> {
                                   width: SizeConfig.screenWidth - 150,
                                   onPressed: () async {
                                     setState(() {
-                                      valid = true;
+                                      valid = false;
                                       agentInt = false;
+                                      businessInt = false;
+                                      activityInt = false;
+                                      tripLocationInt = true;
                                     });
                                   }),
+                              SizedBox(height: 20),
+                              Container(
+                                width: 134,
+                                height: 5,
+                                decoration: BoxDecoration(
+                                    gradient: LinearGradient(
+                                      colors: <Color>[Colors.grey, Colors.grey],
+                                    ),
+                                    borderRadius: BorderRadius.circular(10.0),
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: Colors.grey[500],
+                                        offset: Offset(0.0, 1.5),
+                                        blurRadius: 1.5,
+                                      ),
+                                    ]),
+                              ),
                             ],
                           ),
                         ),
@@ -808,9 +1608,15 @@ class _UpdateProfilesState extends State<UpdateProfiles> {
                 child: Padding(
                   padding: EdgeInsets.symmetric(horizontal: 15),
                   child: Container(
+                    decoration: BoxDecoration(
+                      image: DecorationImage(
+                        image: ExactAssetImage('assets/images/pg.png'),
+                        fit: BoxFit.cover,
+                      ),
+                    ),
                     width: SizeConfig.screenWidth,
                     height: SizeConfig.screenHeight,
-                    padding: EdgeInsets.all(50),
+                    padding: EdgeInsets.fromLTRB(50, 50, 50, 10),
                     child: Column(
                       children: [
                         Align(
@@ -905,7 +1711,8 @@ class _UpdateProfilesState extends State<UpdateProfiles> {
                               hintText: "Business name",
                               suffix: false,
                               textInputAction: TextInputAction.next,
-                              validateFunction: Validations.validateName,
+                              validateFunction:
+                                  Validations.validateBusinessName,
                             ),
                             SizedBox(
                               height: 20,
@@ -940,7 +1747,7 @@ class _UpdateProfilesState extends State<UpdateProfiles> {
                                                 borderRadius:
                                                     BorderRadius.circular(10)),
                                             child: Container(
-                                              height: 75,
+                                              height: 65,
                                               width: 75,
                                               padding: EdgeInsets.all(10),
                                               decoration: BoxDecoration(
@@ -1000,7 +1807,7 @@ class _UpdateProfilesState extends State<UpdateProfiles> {
                                                 borderRadius:
                                                     BorderRadius.circular(10)),
                                             child: Container(
-                                              height: 75,
+                                              height: 65,
                                               width: 75,
                                               padding: EdgeInsets.all(10),
                                               decoration: BoxDecoration(
@@ -1057,7 +1864,7 @@ class _UpdateProfilesState extends State<UpdateProfiles> {
                                                 borderRadius:
                                                     BorderRadius.circular(10)),
                                             child: Container(
-                                              height: 75,
+                                              height: 65,
                                               width: 75,
                                               padding: EdgeInsets.all(10),
                                               decoration: BoxDecoration(
@@ -1403,6 +2210,23 @@ class _UpdateProfilesState extends State<UpdateProfiles> {
                                       activityInt = true;
                                     });
                                   }),
+                              SizedBox(height: 10),
+                              Container(
+                                width: 135,
+                                height: 5,
+                                decoration: BoxDecoration(
+                                    gradient: LinearGradient(
+                                      colors: <Color>[Colors.grey, Colors.grey],
+                                    ),
+                                    borderRadius: BorderRadius.circular(10.0),
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: Colors.grey[500],
+                                        offset: Offset(0.0, 1.5),
+                                        blurRadius: 1.5,
+                                      ),
+                                    ]),
+                              ),
                             ],
                           ),
                         ),
@@ -1442,270 +2266,281 @@ class _UpdateProfilesState extends State<UpdateProfiles> {
                 child: Padding(
                   padding: EdgeInsets.symmetric(horizontal: 15),
                   child: Container(
+                    decoration: BoxDecoration(
+                      image: DecorationImage(
+                        image: ExactAssetImage('assets/images/pg.png'),
+                        fit: BoxFit.cover,
+                      ),
+                    ),
                     width: SizeConfig.screenWidth,
                     height: SizeConfig.screenHeight,
-                    padding: EdgeInsets.all(50),
-                    child: Stack(
+                    padding: EdgeInsets.fromLTRB(50, 50, 50, 10),
+                    child: Column(
                       children: [
-                        Align(
-                          alignment: Alignment.topCenter,
-                          child: Text(
-                              "To protect everyone from fraud and scam and to have a better chance working with client please provide your id",
-                              textAlign: TextAlign.center,
-                              style: TextStyle(
-                                fontSize: 14,
-                                fontWeight: FontWeight.normal,
-                                color: Colors.grey[700],
-                              )),
-                        ),
-                        Positioned(
-                          top: 300,
-                          left: 2,
-                          right: 2,
-                          child: Column(
-                            children: [
-                              if (passport)
-                                Container(
-                                  width: SizeConfig.screenWidth,
-                                  height: 50.0,
-                                  padding: EdgeInsets.all(10),
-                                  decoration: BoxDecoration(
-                                      gradient: LinearGradient(
-                                        colors: <Color>[
-                                          Color.fromRGBO(239, 240, 246, 1),
-                                          Color.fromRGBO(239, 240, 246, 1)
-                                        ],
-                                      ),
-                                      borderRadius: BorderRadius.circular(10.0),
-                                      boxShadow: [
-                                        BoxShadow(
-                                          color: Colors.grey[500],
-                                          offset: Offset(0.0, 1.5),
-                                          blurRadius: 1.5,
-                                        ),
-                                      ]),
-                                  child: Material(
-                                    color: Colors.transparent,
-                                    child: InkWell(
-                                        onTap: () {},
-                                        child: Center(
-                                          child: Row(
-                                            children: <Widget>[
-                                              Icon(CupertinoIcons.cloud_upload,
-                                                  size: 20,
-                                                  color: Colors.black87),
-                                              Container(
-                                                  margin:
-                                                      EdgeInsets.only(left: 10),
-                                                  child: Text(
-                                                    "Upload Passport",
-                                                    style: TextStyle(
-                                                      fontSize: 14,
-                                                      color: Colors.black,
-                                                      letterSpacing: 1,
-                                                      fontWeight:
-                                                          FontWeight.normal,
+                        Expanded(
+                            child: ListView(
+                          children: [
+                            Align(
+                              alignment: Alignment.topCenter,
+                              child: Text(
+                                  "To protect everyone from fraud and scam and to have a better chance working with client please provide your id",
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.normal,
+                                    color: Colors.grey[700],
+                                  )),
+                            ),
+                            SizedBox(height: 40),
+                            Container(
+                              padding: EdgeInsets.all(15),
+                              decoration: BoxDecoration(
+                                  color: Color.fromRGBO(239, 240, 246, 1),
+                                  border:
+                                      Border.all(width: 1, color: Colors.grey),
+                                  borderRadius: BorderRadius.circular(10)),
+                              child: Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: <Widget>[
+                                  Expanded(
+                                    child: DropdownButtonHideUnderline(
+                                      child: ButtonTheme(
+                                        alignedDropdown: true,
+                                        child: DropdownButton<String>(
+                                          isDense: true,
+                                          hint: new Text(
+                                              "Choose your verification methode"),
+                                          value: _verificationSelected,
+                                          onChanged: (String newValue) {
+                                            if (newValue
+                                                .contains("Identity card"))
+                                              setState(() {
+                                                _verificationSelected =
+                                                    newValue;
+                                                identityCard = true;
+                                                passport = false;
+                                              });
+                                            else {
+                                              setState(() {
+                                                _verificationSelected =
+                                                    newValue;
+                                                identityCard = false;
+                                                passport = true;
+                                              });
+                                            }
+                                          },
+                                          items: ["Identity card ", "Passport"]
+                                              .map((e) => new DropdownMenuItem(
+                                                    value: e.toString(),
+                                                    // value: _mySelection,
+                                                    child: Row(
+                                                      children: <Widget>[
+                                                        Icon(
+                                                            CupertinoIcons
+                                                                .cloud_upload,
+                                                            size: 20,
+                                                            color:
+                                                                Colors.black87),
+                                                        Container(
+                                                            margin:
+                                                                EdgeInsets.only(
+                                                                    left: 10),
+                                                            child: Text(
+                                                              e,
+                                                              style: TextStyle(
+                                                                fontSize: 14,
+                                                                color: Colors
+                                                                    .black,
+                                                                letterSpacing:
+                                                                    1,
+                                                                fontWeight:
+                                                                    FontWeight
+                                                                        .normal,
+                                                              ),
+                                                            )),
+                                                      ],
                                                     ),
-                                                  )),
-                                            ],
-                                          ),
-                                        )),
-                                  ),
-                                ),
-                              if (identityCard)
-                                Column(
-                                  children: [
-                                    Container(
-                                      width: SizeConfig.screenWidth,
-                                      height: 50.0,
-                                      padding: EdgeInsets.all(10),
-                                      decoration: BoxDecoration(
-                                          gradient: LinearGradient(
-                                            colors: <Color>[
-                                              Color.fromRGBO(239, 240, 246, 1),
-                                              Color.fromRGBO(239, 240, 246, 1)
-                                            ],
-                                          ),
-                                          borderRadius:
-                                              BorderRadius.circular(10.0),
-                                          boxShadow: [
-                                            BoxShadow(
-                                              color: Colors.grey[500],
-                                              offset: Offset(0.0, 1.5),
-                                              blurRadius: 1.5,
-                                            ),
-                                          ]),
-                                      child: Material(
-                                        color: Colors.transparent,
-                                        child: InkWell(
-                                            onTap: () {},
-                                            child: Center(
-                                              child: Row(
-                                                children: <Widget>[
-                                                  Icon(
-                                                      CupertinoIcons
-                                                          .cloud_upload,
-                                                      size: 20,
-                                                      color: Colors.black87),
-                                                  Container(
-                                                      margin: EdgeInsets.only(
-                                                          left: 10),
-                                                      child: Text(
-                                                        "Upload identity card Side1",
-                                                        style: TextStyle(
-                                                          fontSize: 14,
-                                                          color: Colors.black,
-                                                          letterSpacing: 1,
-                                                          fontWeight:
-                                                              FontWeight.normal,
-                                                        ),
-                                                      )),
-                                                ],
-                                              ),
-                                            )),
-                                      ),
-                                    ),
-                                    SizedBox(
-                                      height: 10,
-                                    ),
-                                    Container(
-                                      width: SizeConfig.screenWidth,
-                                      height: 50.0,
-                                      padding: EdgeInsets.all(10),
-                                      decoration: BoxDecoration(
-                                          gradient: LinearGradient(
-                                            colors: <Color>[
-                                              Color.fromRGBO(239, 240, 246, 1),
-                                              Color.fromRGBO(239, 240, 246, 1)
-                                            ],
-                                          ),
-                                          borderRadius:
-                                              BorderRadius.circular(10.0),
-                                          boxShadow: [
-                                            BoxShadow(
-                                              color: Colors.grey[500],
-                                              offset: Offset(0.0, 1.5),
-                                              blurRadius: 1.5,
-                                            ),
-                                          ]),
-                                      child: Material(
-                                        color: Colors.transparent,
-                                        child: InkWell(
-                                            onTap: () {},
-                                            child: Center(
-                                              child: Row(
-                                                children: <Widget>[
-                                                  Icon(
-                                                      CupertinoIcons
-                                                          .cloud_upload,
-                                                      size: 20,
-                                                      color: Colors.black87),
-                                                  Container(
-                                                      margin: EdgeInsets.only(
-                                                          left: 10),
-                                                      child: Text(
-                                                        "Upload identity card Side2",
-                                                        style: TextStyle(
-                                                          fontSize: 14,
-                                                          color: Colors.black,
-                                                          letterSpacing: 1,
-                                                          fontWeight:
-                                                              FontWeight.normal,
-                                                        ),
-                                                      )),
-                                                ],
-                                              ),
-                                            )),
-                                      ),
-                                    )
-                                  ],
-                                ),
-                            ],
-                          ),
-                        ),
-                        Positioned(
-                          top: 180,
-                          left: 2,
-                          right: 2,
-                          child: Container(
-                            padding: EdgeInsets.all(15),
-                            decoration: BoxDecoration(
-                                color: Color.fromRGBO(239, 240, 246, 1),
-                                border:
-                                    Border.all(width: 1, color: Colors.grey),
-                                borderRadius: BorderRadius.circular(10)),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: <Widget>[
-                                Expanded(
-                                  child: DropdownButtonHideUnderline(
-                                    child: ButtonTheme(
-                                      alignedDropdown: true,
-                                      child: DropdownButton<String>(
-                                        isDense: true,
-                                        hint: new Text(
-                                            "Choose your verification methode"),
-                                        value: _verificationSelected,
-                                        onChanged: (String newValue) {
-                                          if (newValue
-                                              .contains("Identity card"))
-                                            setState(() {
-                                              _verificationSelected = newValue;
-                                              identityCard = true;
-                                              passport = false;
-                                            });
-                                          else {
-                                            setState(() {
-                                              _verificationSelected = newValue;
-                                              identityCard = false;
-                                              passport = true;
-                                            });
-                                          }
-                                        },
-                                        items: ["Identity card ", "Passport"]
-                                            .map((e) => new DropdownMenuItem(
-                                                  value: e.toString(),
-                                                  // value: _mySelection,
-                                                  child: Row(
-                                                    children: <Widget>[
-                                                      Icon(
-                                                          CupertinoIcons
-                                                              .cloud_upload,
-                                                          size: 20,
-                                                          color:
-                                                              Colors.black87),
-                                                      Container(
-                                                          margin:
-                                                              EdgeInsets.only(
-                                                                  left: 10),
-                                                          child: Text(
-                                                            e,
-                                                            style: TextStyle(
-                                                              fontSize: 14,
-                                                              color:
-                                                                  Colors.black,
-                                                              letterSpacing: 1,
-                                                              fontWeight:
-                                                                  FontWeight
-                                                                      .normal,
-                                                            ),
-                                                          )),
-                                                    ],
-                                                  ),
-                                                ))
-                                            .toList(),
+                                                  ))
+                                              .toList(),
+                                        ),
                                       ),
                                     ),
                                   ),
-                                ),
+                                ],
+                              ),
+                            ),
+                            SizedBox(height: 40),
+                            Column(
+                              children: [
+                                if (passport)
+                                  Container(
+                                    width: SizeConfig.screenWidth,
+                                    height: 50.0,
+                                    padding: EdgeInsets.all(10),
+                                    decoration: BoxDecoration(
+                                        gradient: LinearGradient(
+                                          colors: <Color>[
+                                            Color.fromRGBO(239, 240, 246, 1),
+                                            Color.fromRGBO(239, 240, 246, 1)
+                                          ],
+                                        ),
+                                        borderRadius:
+                                            BorderRadius.circular(10.0),
+                                        boxShadow: [
+                                          BoxShadow(
+                                            color: Colors.grey[500],
+                                            offset: Offset(0.0, 1.5),
+                                            blurRadius: 1.5,
+                                          ),
+                                        ]),
+                                    child: Material(
+                                      color: Colors.transparent,
+                                      child: InkWell(
+                                          onTap: () {},
+                                          child: Center(
+                                            child: Row(
+                                              children: <Widget>[
+                                                Icon(
+                                                    CupertinoIcons.cloud_upload,
+                                                    size: 20,
+                                                    color: Colors.black87),
+                                                Container(
+                                                    margin: EdgeInsets.only(
+                                                        left: 10),
+                                                    child: Text(
+                                                      "Upload Passport",
+                                                      style: TextStyle(
+                                                        fontSize: 14,
+                                                        color: Colors.black,
+                                                        letterSpacing: 1,
+                                                        fontWeight:
+                                                            FontWeight.normal,
+                                                      ),
+                                                    )),
+                                              ],
+                                            ),
+                                          )),
+                                    ),
+                                  ),
+                                if (identityCard)
+                                  Column(
+                                    children: [
+                                      Container(
+                                        width: SizeConfig.screenWidth,
+                                        height: 50.0,
+                                        padding: EdgeInsets.all(10),
+                                        decoration: BoxDecoration(
+                                            gradient: LinearGradient(
+                                              colors: <Color>[
+                                                Color.fromRGBO(
+                                                    239, 240, 246, 1),
+                                                Color.fromRGBO(239, 240, 246, 1)
+                                              ],
+                                            ),
+                                            borderRadius:
+                                                BorderRadius.circular(10.0),
+                                            boxShadow: [
+                                              BoxShadow(
+                                                color: Colors.grey[500],
+                                                offset: Offset(0.0, 1.5),
+                                                blurRadius: 1.5,
+                                              ),
+                                            ]),
+                                        child: Material(
+                                          color: Colors.transparent,
+                                          child: InkWell(
+                                              onTap: () {},
+                                              child: Center(
+                                                child: Row(
+                                                  children: <Widget>[
+                                                    Icon(
+                                                        CupertinoIcons
+                                                            .cloud_upload,
+                                                        size: 20,
+                                                        color: Colors.black87),
+                                                    Container(
+                                                        margin: EdgeInsets.only(
+                                                            left: 10),
+                                                        child: Text(
+                                                          "Upload identity card Side1",
+                                                          style: TextStyle(
+                                                            fontSize: 14,
+                                                            color: Colors.black,
+                                                            letterSpacing: 1,
+                                                            fontWeight:
+                                                                FontWeight
+                                                                    .normal,
+                                                          ),
+                                                        )),
+                                                  ],
+                                                ),
+                                              )),
+                                        ),
+                                      ),
+                                      SizedBox(
+                                        height: 20,
+                                      ),
+                                      Container(
+                                        width: SizeConfig.screenWidth,
+                                        height: 50.0,
+                                        padding: EdgeInsets.all(10),
+                                        decoration: BoxDecoration(
+                                            gradient: LinearGradient(
+                                              colors: <Color>[
+                                                Color.fromRGBO(
+                                                    239, 240, 246, 1),
+                                                Color.fromRGBO(239, 240, 246, 1)
+                                              ],
+                                            ),
+                                            borderRadius:
+                                                BorderRadius.circular(10.0),
+                                            boxShadow: [
+                                              BoxShadow(
+                                                color: Colors.grey[500],
+                                                offset: Offset(0.0, 1.5),
+                                                blurRadius: 1.5,
+                                              ),
+                                            ]),
+                                        child: Material(
+                                          color: Colors.transparent,
+                                          child: InkWell(
+                                              onTap: () {},
+                                              child: Center(
+                                                child: Row(
+                                                  children: <Widget>[
+                                                    Icon(
+                                                        CupertinoIcons
+                                                            .cloud_upload,
+                                                        size: 20,
+                                                        color: Colors.black87),
+                                                    Container(
+                                                        margin: EdgeInsets.only(
+                                                            left: 10),
+                                                        child: Text(
+                                                          "Upload identity card Side2",
+                                                          style: TextStyle(
+                                                            fontSize: 14,
+                                                            color: Colors.black,
+                                                            letterSpacing: 1,
+                                                            fontWeight:
+                                                                FontWeight
+                                                                    .normal,
+                                                          ),
+                                                        )),
+                                                  ],
+                                                ),
+                                              )),
+                                        ),
+                                      )
+                                    ],
+                                  ),
                               ],
                             ),
-                          ),
-                        ),
-                        Positioned(
-                          bottom: 50,
-                          left: 10,
-                          right: 10,
+                          ],
+                        )),
+                        Align(
+                          alignment: Alignment.bottomCenter,
                           child: Column(
                             children: [
                               Row(
@@ -1857,6 +2692,23 @@ class _UpdateProfilesState extends State<UpdateProfiles> {
                                       businessInt = true;
                                     });
                                   }),
+                              SizedBox(height: 10),
+                              Container(
+                                width: 135,
+                                height: 5,
+                                decoration: BoxDecoration(
+                                    gradient: LinearGradient(
+                                      colors: <Color>[Colors.grey, Colors.grey],
+                                    ),
+                                    borderRadius: BorderRadius.circular(10.0),
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: Colors.grey[500],
+                                        offset: Offset(0.0, 1.5),
+                                        blurRadius: 1.5,
+                                      ),
+                                    ]),
+                              ),
                             ],
                           ),
                         )
@@ -1896,6 +2748,12 @@ class _UpdateProfilesState extends State<UpdateProfiles> {
                 child: Padding(
                   padding: EdgeInsets.symmetric(horizontal: 15),
                   child: Container(
+                    decoration: BoxDecoration(
+                      image: DecorationImage(
+                        image: ExactAssetImage('assets/images/pg.png'),
+                        fit: BoxFit.cover,
+                      ),
+                    ),
                     width: SizeConfig.screenWidth,
                     height: double.infinity,
                     padding: EdgeInsets.fromLTRB(0, 100, 0, 20),

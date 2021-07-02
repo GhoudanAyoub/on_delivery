@@ -46,6 +46,10 @@
   </array>
   </dict>
 </array>
+<key>NSLocationWhenInUseUsageDescription</key>
+<string>This app needs access to location when open.</string>
+<key>NSLocationAlwaysUsageDescription</key>
+<string>This app needs access to location when in the background.</string>
 <key>FacebookAppID</key>
 <string>4148526925260646</string>
 <key>FacebookClientToken</key>

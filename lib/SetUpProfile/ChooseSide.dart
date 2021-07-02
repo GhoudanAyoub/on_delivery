@@ -4,13 +4,13 @@ import 'package:on_delivery/SetUpProfile/UpdateProfile.dart';
 import 'package:on_delivery/components/RaisedGradientButton.dart';
 import 'package:on_delivery/utils/SizeConfig.dart';
 
-class SetUpProfile extends StatefulWidget {
-  static String routeName = "/SetUpProfile";
+class ChooseSide extends StatefulWidget {
+  static String routeName = "/ChooseSide";
   @override
-  _SetUpProfileState createState() => _SetUpProfileState();
+  _ChooseSideState createState() => _ChooseSideState();
 }
 
-class _SetUpProfileState extends State<SetUpProfile> {
+class _ChooseSideState extends State<ChooseSide> {
   bool agent = false;
   bool client = false;
   @override

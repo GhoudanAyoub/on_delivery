@@ -6,7 +6,7 @@ import 'package:flutter_facebook_login/flutter_facebook_login.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:http/http.dart' as http;
-import 'package:on_delivery/SetUpProfile/SetUpProfile.dart';
+import 'package:on_delivery/SetUpProfile/ChooseSide.dart';
 import 'package:on_delivery/components/RaisedGradientButton.dart';
 import 'package:on_delivery/components/text_form_builder.dart';
 import 'package:on_delivery/services/auth_service.dart';
@@ -96,7 +96,7 @@ class _SignUpFormState extends State<SignUpForm> {
                   ],
                 ),
                 onPressed: () async {
-                  Navigator.pushNamed(context, SetUpProfile.routeName);
+                  Navigator.pushNamed(context, ChooseSide.routeName);
                   /*
 
                   try {
@@ -258,7 +258,6 @@ class _SignUpFormState extends State<SignUpForm> {
                       ),
                     ))
                 : SizedBox(height: 1),
-            SizedBox(height: 30),
           ],
         ),
       ),

@@ -101,6 +101,7 @@ class _TextFormBuilderState extends State<TextFormBuilder> {
                       prefixIcon: Icon(
                         widget.prefix,
                         size: 15.0,
+                        color: Colors.blueGrey,
                       ),
                       suffixIcon: widget.suffix == true
                           ? IconButton(
