@@ -7,7 +7,8 @@ import 'package:flutter_svg/svg.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:http/http.dart' as http;
 import 'package:on_delivery/SignUp/sign_up_screen.dart';
-import 'package:on_delivery/utils/FirebaseService.dart';
+import 'package:on_delivery/components/indicators.dart';
+import 'package:on_delivery/services/auth_service.dart';
 import 'package:on_delivery/utils/SizeConfig.dart';
 import 'package:on_delivery/utils/firebase.dart';
 
@@ -47,15 +48,12 @@ class _BodyState extends State<Body> {
             ),
           ),
           child: Padding(
-              padding: EdgeInsets.symmetric(
-                  horizontal: 40, vertical: getProportionateScreenHeight(20)),
-              child: Container(
-                height: SizeConfig.screenHeight,
-                width: 375,
-                child: ListView(
-                  children: [
-                    SizedBox(height: 40),
-                    Text(
+              padding: EdgeInsets.symmetric(horizontal: 40, vertical: 80),
+              child: Column(
+                children: [
+                  Align(
+                    alignment: Alignment.topLeft,
+                    child: Text(
                       "Welcome \nBack 👋",
                       style: TextStyle(
                           fontWeight: FontWeight.bold,
@@ -63,187 +61,200 @@ class _BodyState extends State<Body> {
                           fontSize: 32,
                           color: Colors.black),
                     ),
-                    SizedBox(height: 50),
-                    SignForm(),
-                    SizedBox(height: 40),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
+                  ),
+                  Expanded(
+                    child: ListView(
                       children: [
-                        SizedBox(
-                          width: 150,
-                          height: 1,
-                          child: Container(
-                            color: Color.fromRGBO(0, 0, 0, 0.23),
-                          ),
-                        ),
-                        Divider(
-                          indent: 5,
-                          endIndent: 5,
-                        ),
-                        Text(
-                          "OR",
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 14,
-                            color: Color.fromRGBO(0, 0, 0, 0.23),
-                          ),
-                        ),
-                        Divider(
-                          indent: 5,
-                          endIndent: 5,
-                        ),
-                        SizedBox(
-                          width: 150,
-                          height: 1,
-                          child: Container(
-                            color: Color.fromRGBO(0, 0, 0, 0.23),
-                          ),
-                        ),
+                        SizedBox(height: 100),
+                        SignForm(),
+                        SizedBox(height: 40),
                       ],
                     ),
-                    SizedBox(height: 5),
-                    isSignIn != false
-                        ? Center(child: CircularProgressIndicator())
-                        : SizedBox(height: 1),
-                    SizedBox(height: 10),
-                    isSignIn == false
-                        ? Card(
-                            elevation: 10.0,
-                            shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(10)),
-                            color: Colors.white,
-                            child: GestureDetector(
-                              onTap: () {
-                                loginWithFacebook(context)
-                                    .whenComplete(() async {
-                                  var u = await FirebaseService.addUsers(
-                                      firebaseAuth.currentUser);
-                                  setState(() {
-                                    isSignIn = false;
-                                  });
-                                  /* Navigator.push(
+                  ),
+                  Align(
+                    alignment: Alignment.bottomCenter,
+                    child: Column(
+                      children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            SizedBox(
+                              width: 150,
+                              height: 1,
+                              child: Container(
+                                color: Color.fromRGBO(0, 0, 0, 0.23),
+                              ),
+                            ),
+                            Divider(
+                              indent: 5,
+                              endIndent: 5,
+                            ),
+                            Text(
+                              "OR",
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 14,
+                                color: Color.fromRGBO(0, 0, 0, 0.23),
+                              ),
+                            ),
+                            Divider(
+                              indent: 5,
+                              endIndent: 5,
+                            ),
+                            SizedBox(
+                              width: 150,
+                              height: 1,
+                              child: Container(
+                                color: Color.fromRGBO(0, 0, 0, 0.23),
+                              ),
+                            ),
+                          ],
+                        ),
+                        SizedBox(height: 5),
+                        isSignIn != false
+                            ? Center(child: circularProgress(context))
+                            : SizedBox(height: 1),
+                        SizedBox(height: 10),
+                        isSignIn == false
+                            ? Card(
+                                elevation: 10.0,
+                                shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(10)),
+                                color: Colors.white,
+                                child: GestureDetector(
+                                  onTap: () {
+                                    loginWithFacebook(context)
+                                        .whenComplete(() async {
+                                      var u = await AuthService.addUsers(
+                                          firebaseAuth.currentUser);
+                                      setState(() {
+                                        isSignIn = false;
+                                      });
+                                      /* Navigator.push(
                                       context,
                                       MaterialPageRoute(
                                           builder: (context) =>
                                               HomeScreen()));*/
-                                });
-                              },
-                              child: Container(
-                                margin: EdgeInsets.symmetric(horizontal: 5),
-                                height: 50,
-                                width: 300,
-                                child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    SvgPicture.asset(
-                                      "assets/icons/fb.svg",
-                                      width: 20,
+                                    });
+                                  },
+                                  child: Container(
+                                    margin: EdgeInsets.symmetric(horizontal: 5),
+                                    height: 50,
+                                    child: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      children: [
+                                        SvgPicture.asset(
+                                          "assets/icons/fb.svg",
+                                          width: 20,
+                                        ),
+                                        SizedBox(
+                                          width: 5,
+                                        ),
+                                        Text(
+                                          "Continue with facebook",
+                                          style: TextStyle(
+                                              fontSize: 14,
+                                              letterSpacing: 1,
+                                              fontWeight: FontWeight.normal,
+                                              color: Color.fromRGBO(
+                                                  15, 94, 249, 1)),
+                                        )
+                                      ],
                                     ),
-                                    SizedBox(
-                                      width: 5,
-                                    ),
-                                    Text(
-                                      "Continue with facebook",
-                                      style: TextStyle(
-                                          fontSize: 14,
-                                          letterSpacing: 1,
-                                          fontWeight: FontWeight.normal,
-                                          color:
-                                              Color.fromRGBO(15, 94, 249, 1)),
-                                    )
-                                  ],
-                                ),
-                              ),
-                            ))
-                        : SizedBox(height: 1),
-                    isSignIn == false
-                        ? Card(
-                            elevation: 10.0,
-                            shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(10)),
-                            color: Colors.white,
-                            child: GestureDetector(
-                              onTap: () async {
-                                await signInWithGoogle(context)
-                                    .whenComplete(() async {
-                                  var u = await FirebaseService.addUsers(
-                                      firebaseAuth.currentUser);
-                                  setState(() {
-                                    isSignIn = false;
-                                  });
-                                  /* Navigator.pushNamed(
+                                  ),
+                                ))
+                            : SizedBox(height: 1),
+                        isSignIn == false
+                            ? Card(
+                                elevation: 10.0,
+                                shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(10)),
+                                color: Colors.white,
+                                child: GestureDetector(
+                                  onTap: () async {
+                                    await signInWithGoogle(context)
+                                        .whenComplete(() async {
+                                      var u = await AuthService.addUsers(
+                                          firebaseAuth.currentUser);
+                                      setState(() {
+                                        isSignIn = false;
+                                      });
+                                      /* Navigator.pushNamed(
                                   context, HomeScreen.routeName);*/
-                                });
-                              },
-                              child: Container(
-                                margin: EdgeInsets.symmetric(horizontal: 5),
-                                height: 50,
-                                width: 300,
-                                child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    SvgPicture.asset(
-                                      "assets/icons/google-icon.svg",
-                                      width: 20,
+                                    });
+                                  },
+                                  child: Container(
+                                    margin: EdgeInsets.symmetric(horizontal: 5),
+                                    height: 50,
+                                    child: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      children: [
+                                        SvgPicture.asset(
+                                          "assets/icons/google-icon.svg",
+                                          width: 20,
+                                        ),
+                                        SizedBox(
+                                          width: 5,
+                                        ),
+                                        Text(
+                                          "Continue with Google",
+                                          style: TextStyle(
+                                              fontSize: 14,
+                                              letterSpacing: 1,
+                                              fontWeight: FontWeight.normal,
+                                              color: Color.fromRGBO(
+                                                  15, 94, 249, 1)),
+                                        )
+                                      ],
                                     ),
-                                    SizedBox(
-                                      width: 5,
-                                    ),
-                                    Text(
-                                      "Continue with Google",
-                                      style: TextStyle(
-                                          fontSize: 14,
-                                          letterSpacing: 1,
-                                          fontWeight: FontWeight.normal,
-                                          color:
-                                              Color.fromRGBO(15, 94, 249, 1)),
-                                    )
-                                  ],
+                                  ),
+                                ))
+                            : SizedBox(height: 1),
+                        SizedBox(height: 30),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Container(
+                              margin: EdgeInsets.fromLTRB(5, 0, 0, 0),
+                              child: GestureDetector(
+                                onTap: () => {},
+                                /*Navigator.pushNamed(
+                    context, ForgotPasswordScreen.routeName),*/
+                                child: Text(
+                                  "Forgot your Password?",
+                                  style: TextStyle(
+                                      fontSize: 12,
+                                      decoration: TextDecoration.underline,
+                                      fontWeight: FontWeight.bold,
+                                      letterSpacing: 1,
+                                      color: Color.fromRGBO(0, 0, 0, 0.25)),
                                 ),
                               ),
-                            ))
-                        : SizedBox(height: 1),
-                    SizedBox(height: 30),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Container(
-                          margin: EdgeInsets.fromLTRB(0, 0, 13, 0),
-                          child: GestureDetector(
-                            onTap: () => {},
-                            /*Navigator.pushNamed(
-                    context, ForgotPasswordScreen.routeName),*/
-                            child: Text(
-                              "Forgot your Password?",
-                              style: TextStyle(
-                                  fontSize: 12,
-                                  decoration: TextDecoration.underline,
-                                  fontWeight: FontWeight.bold,
-                                  letterSpacing: 1,
-                                  color: Color.fromRGBO(0, 0, 0, 0.25)),
                             ),
-                          ),
-                        ),
-                        Container(
-                          margin: EdgeInsets.fromLTRB(0, 0, 13, 0),
-                          child: GestureDetector(
-                            onTap: () => Navigator.pushNamed(
-                                context, SignUpScreen.routeName),
-                            child: Text(
-                              "Sign up?",
-                              style: TextStyle(
-                                  fontSize: 12,
-                                  fontWeight: FontWeight.bold,
-                                  decoration: TextDecoration.underline,
-                                  letterSpacing: 1,
-                                  color: Color.fromRGBO(0, 0, 0, 0.25)),
+                            Container(
+                              margin: EdgeInsets.fromLTRB(0, 0, 5, 0),
+                              child: GestureDetector(
+                                onTap: () => Navigator.pushNamed(
+                                    context, SignUpScreen.routeName),
+                                child: Text(
+                                  "Sign up?",
+                                  style: TextStyle(
+                                      fontSize: 12,
+                                      fontWeight: FontWeight.bold,
+                                      decoration: TextDecoration.underline,
+                                      letterSpacing: 1,
+                                      color: Color.fromRGBO(0, 0, 0, 0.25)),
+                                ),
+                              ),
                             ),
-                          ),
-                        ),
+                          ],
+                        )
                       ],
-                    )
-                  ],
-                ),
+                    ),
+                  )
+                ],
               ))),
     );
   }

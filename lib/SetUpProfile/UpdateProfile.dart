@@ -1,14 +1,22 @@
+import 'dart:async';
+import 'dart:io';
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:image_cropper/image_cropper.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:lite_rolling_switch/lite_rolling_switch.dart';
-import 'package:location/location.dart';
 import 'package:on_delivery/components/RaisedGradientButton.dart';
 import 'package:on_delivery/components/text_form_builder.dart';
 import 'package:on_delivery/helpers/location_provider.dart';
+import 'package:on_delivery/services/auth_service.dart';
+import 'package:on_delivery/utils/FirebaseService.dart';
 import 'package:on_delivery/utils/SizeConfig.dart';
+import 'package:on_delivery/utils/firebase.dart';
 import 'package:on_delivery/utils/validation.dart';
-import 'package:on_delivery/viewModel/EditProfileViewModel.dart';
 import 'package:pinput/pin_put/pin_put.dart';
 import 'package:provider/provider.dart';
 
@@ -24,6 +32,7 @@ class UpdateProfiles extends StatefulWidget {
 class _UpdateProfilesState extends State<UpdateProfiles> {
   final GlobalKey<ScaffoldState> _scaffoldkey = GlobalKey<ScaffoldState>();
   final _formKey = GlobalKey<FormState>();
+  AuthService authService = AuthService();
   var submitted = false;
   int types = 0;
   bool verificationMth = false;
@@ -39,13 +48,24 @@ class _UpdateProfilesState extends State<UpdateProfiles> {
   bool warehouseNo = true, warehouseYes = false;
   bool food = false, move = false, ecom = false, courier = false;
   bool locationState = false;
-  Location location = new Location();
+  bool validate = false;
+  bool loading = false,
+      loadingSide1 = false,
+      loadingSide2 = false,
+      loadingPassprot = false;
   bool _serviceEnabled;
+
+  File userImage;
+  File side1Image;
+  File side2Image;
+  File passportImage;
+  String userImgLink;
+
   GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
-  TextEditingController _fNameContoller = TextEditingController();
-  TextEditingController _lNameContoller = TextEditingController();
-  TextEditingController _cityContoller = TextEditingController();
-  TextEditingController _phoneContoller = TextEditingController();
+  TextEditingController _fNameController = TextEditingController();
+  TextEditingController _lNameController = TextEditingController();
+  TextEditingController _cityController = TextEditingController();
+  TextEditingController _phoneController = TextEditingController();
   TextEditingController _businessController = TextEditingController();
   TextEditingController maxWeightController = TextEditingController();
   TextEditingController startingPointController = TextEditingController();
@@ -57,6 +77,7 @@ class _UpdateProfilesState extends State<UpdateProfiles> {
   final TextEditingController _pinPutController = TextEditingController();
   final FocusNode _pinPutFocusNode = FocusNode();
   LocationProvider locationData;
+  final picker = ImagePicker();
   final BoxDecoration pinPutDecoration = BoxDecoration(
     color: Color.fromRGBO(239, 240, 246, 1),
     borderRadius: BorderRadius.circular(10.0),
@@ -69,19 +90,17 @@ class _UpdateProfilesState extends State<UpdateProfiles> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    _verifyPhone();
   }
 
   @override
   Widget build(BuildContext context) {
-    locationData = Provider.of<LocationProvider>(context);
-    EditProfileViewModel viewModel = Provider.of<EditProfileViewModel>(context);
+    locationData = Provider.of<LocationProvider>(context, listen: false);
 
     return Stack(
       children: [
         if (valid) validPhone(),
-        if (widget.Type && agentInt) agentInterface(viewModel),
-        if (!widget.Type) clientInterface(viewModel),
+        if (widget.Type && agentInt) agentInterface(),
+        if (!widget.Type) clientInterface(),
         if (verificationMth) verificationMethod(),
         if (businessInt) businessInterface(),
         if (activityInt) activityInterface(),
@@ -91,7 +110,161 @@ class _UpdateProfilesState extends State<UpdateProfiles> {
     );
   }
 
-  agentInterface(viewModel) {
+  pickImage({bool camera = false}) async {
+    loading = true;
+    try {
+      PickedFile pickedFile = await picker.getImage(
+        source: camera ? ImageSource.camera : ImageSource.gallery,
+      );
+      File croppedFile = await ImageCropper.cropImage(
+        sourcePath: pickedFile.path,
+        aspectRatioPresets: [
+          CropAspectRatioPreset.square,
+          CropAspectRatioPreset.ratio3x2,
+          CropAspectRatioPreset.original,
+          CropAspectRatioPreset.ratio4x3,
+          CropAspectRatioPreset.ratio16x9
+        ],
+        androidUiSettings: AndroidUiSettings(
+          toolbarTitle: 'Crop Image',
+          toolbarColor: Color.fromRGBO(239, 240, 246, 1),
+          toolbarWidgetColor: Colors.black,
+          initAspectRatio: CropAspectRatioPreset.original,
+          lockAspectRatio: false,
+        ),
+        iosUiSettings: IOSUiSettings(
+          minimumAspectRatio: 1.0,
+        ),
+      );
+      setState(() {
+        userImage = File(croppedFile.path);
+        loading = false;
+      });
+    } catch (e) {
+      setState(() {
+        loading = false;
+      });
+      showInSnackBar('Cancelled');
+    }
+  }
+
+  pickImageSide1({bool camera = false}) async {
+    try {
+      PickedFile pickedFile = await picker.getImage(
+        source: camera ? ImageSource.camera : ImageSource.gallery,
+      );
+      File croppedFile = await ImageCropper.cropImage(
+        sourcePath: pickedFile.path,
+        aspectRatioPresets: [
+          CropAspectRatioPreset.square,
+          CropAspectRatioPreset.ratio3x2,
+          CropAspectRatioPreset.original,
+          CropAspectRatioPreset.ratio4x3,
+          CropAspectRatioPreset.ratio16x9
+        ],
+        androidUiSettings: AndroidUiSettings(
+          toolbarTitle: 'Crop Image',
+          toolbarColor: Color.fromRGBO(239, 240, 246, 1),
+          toolbarWidgetColor: Colors.black,
+          initAspectRatio: CropAspectRatioPreset.original,
+          lockAspectRatio: false,
+        ),
+        iosUiSettings: IOSUiSettings(
+          minimumAspectRatio: 1.0,
+        ),
+      );
+      setState(() {
+        side1Image = File(croppedFile.path);
+        loadingSide1 = true;
+      });
+    } catch (e) {
+      setState(() {
+        loadingSide1 = false;
+      });
+      showInSnackBar('Cancelled');
+    }
+  }
+
+  pickImageSide2({bool camera = false}) async {
+    try {
+      PickedFile pickedFile = await picker.getImage(
+        source: camera ? ImageSource.camera : ImageSource.gallery,
+      );
+      File croppedFile = await ImageCropper.cropImage(
+        sourcePath: pickedFile.path,
+        aspectRatioPresets: [
+          CropAspectRatioPreset.square,
+          CropAspectRatioPreset.ratio3x2,
+          CropAspectRatioPreset.original,
+          CropAspectRatioPreset.ratio4x3,
+          CropAspectRatioPreset.ratio16x9
+        ],
+        androidUiSettings: AndroidUiSettings(
+          toolbarTitle: 'Crop Image',
+          toolbarColor: Color.fromRGBO(239, 240, 246, 1),
+          toolbarWidgetColor: Colors.black,
+          initAspectRatio: CropAspectRatioPreset.original,
+          lockAspectRatio: false,
+        ),
+        iosUiSettings: IOSUiSettings(
+          minimumAspectRatio: 1.0,
+        ),
+      );
+      setState(() {
+        side2Image = File(croppedFile.path);
+        loadingSide2 = true;
+      });
+    } catch (e) {
+      setState(() {
+        loadingSide2 = false;
+      });
+      showInSnackBar('Cancelled');
+    }
+  }
+
+  pickImagePassport({bool camera = false}) async {
+    try {
+      PickedFile pickedFile = await picker.getImage(
+        source: camera ? ImageSource.camera : ImageSource.gallery,
+      );
+      File croppedFile = await ImageCropper.cropImage(
+        sourcePath: pickedFile.path,
+        aspectRatioPresets: [
+          CropAspectRatioPreset.square,
+          CropAspectRatioPreset.ratio3x2,
+          CropAspectRatioPreset.original,
+          CropAspectRatioPreset.ratio4x3,
+          CropAspectRatioPreset.ratio16x9
+        ],
+        androidUiSettings: AndroidUiSettings(
+          toolbarTitle: 'Crop Image',
+          toolbarColor: Color.fromRGBO(239, 240, 246, 1),
+          toolbarWidgetColor: Colors.black,
+          initAspectRatio: CropAspectRatioPreset.original,
+          lockAspectRatio: false,
+        ),
+        iosUiSettings: IOSUiSettings(
+          minimumAspectRatio: 1.0,
+        ),
+      );
+      setState(() {
+        passportImage = File(croppedFile.path);
+        loadingPassprot = true;
+      });
+    } catch (e) {
+      setState(() {
+        loadingPassprot = false;
+      });
+      showInSnackBar('Cancelled');
+    }
+  }
+
+  void showInSnackBar(String value) {
+    scaffoldKey.currentState.removeCurrentSnackBar();
+    scaffoldKey.currentState.showSnackBar(SnackBar(content: Text(value)));
+  }
+
+  agentInterface() {
     return SafeArea(
         child: Scaffold(
             appBar: AppBar(
@@ -134,7 +307,7 @@ class _UpdateProfilesState extends State<UpdateProfiles> {
                                 child: Row(
                               children: [
                                 GestureDetector(
-                                  onTap: () => viewModel.pickImage(),
+                                  onTap: () => pickImage(),
                                   child: Container(
                                     decoration: BoxDecoration(
                                       color: Colors.white,
@@ -151,18 +324,18 @@ class _UpdateProfilesState extends State<UpdateProfiles> {
                                         ),
                                       ],
                                     ),
-                                    child: viewModel.imgLink != null
+                                    child: userImgLink != null
                                         ? Padding(
                                             padding: const EdgeInsets.all(1.0),
                                             child: CircleAvatar(
                                               radius: 30.0,
                                               backgroundColor: Color.fromRGBO(
                                                   239, 240, 246, 1),
-                                              backgroundImage: NetworkImage(
-                                                  viewModel.imgLink),
+                                              backgroundImage:
+                                                  NetworkImage(userImgLink),
                                             ),
                                           )
-                                        : viewModel.image == null
+                                        : userImage == null
                                             ? Padding(
                                                 padding:
                                                     const EdgeInsets.all(1.0),
@@ -172,7 +345,8 @@ class _UpdateProfilesState extends State<UpdateProfiles> {
                                                           239, 240, 246, 1),
                                                   radius: 30.0,
                                                   backgroundImage: NetworkImage(
-                                                      "widget.user.photoUrl"),
+                                                      FirebaseService
+                                                          .getProfileImage()),
                                                 ),
                                               )
                                             : Padding(
@@ -183,8 +357,8 @@ class _UpdateProfilesState extends State<UpdateProfiles> {
                                                   backgroundColor:
                                                       Color.fromRGBO(
                                                           239, 240, 246, 1),
-                                                  backgroundImage: FileImage(
-                                                      viewModel.image),
+                                                  backgroundImage:
+                                                      FileImage(userImage),
                                                 ),
                                               ),
                                   ),
@@ -365,10 +539,21 @@ class _UpdateProfilesState extends State<UpdateProfiles> {
                                   ),
                                   width: SizeConfig.screenWidth - 150,
                                   onPressed: () async {
-                                    setState(() {
-                                      valid = true;
-                                      agentInt = false;
-                                    });
+                                    if (_formKey.currentState.validate()) {
+                                      authService.updateUserDataToFireStore(
+                                          firebaseAuth.currentUser,
+                                          _fNameController.text,
+                                          _lNameController.text,
+                                          _cityController.text,
+                                          _phoneController.text,
+                                          userImage);
+
+                                      _verifyPhone();
+                                      setState(() {
+                                        valid = true;
+                                        agentInt = false;
+                                      });
+                                    }
                                   }),
                               SizedBox(height: 10),
                               Container(
@@ -2015,7 +2200,33 @@ class _UpdateProfilesState extends State<UpdateProfiles> {
                                         child: Material(
                                           color: Colors.transparent,
                                           child: InkWell(
-                                              onTap: () {},
+                                              onTap: () async {
+                                                authService
+                                                    .updateBusinessDataToFireStore(
+                                                        firebaseAuth
+                                                            .currentUser,
+                                                        _businessSelected,
+                                                        _businessController
+                                                            .text,
+                                                        moto ? "Moto" : "Car",
+                                                        warehouseYes
+                                                            ? "Yes"
+                                                            : "No");
+                                                await locationData
+                                                    .getCurrentPosition();
+                                                if (locationData
+                                                    .permissionGranted) {
+                                                  Navigator.pushNamed(context,
+                                                      MapScreen.routeName);
+                                                }
+
+                                                setState(() {
+                                                  valid = false;
+                                                  agentInt = false;
+                                                  businessInt = false;
+                                                  activityInt = true;
+                                                });
+                                              },
                                               child: Center(
                                                 child: Row(
                                                   mainAxisAlignment:
@@ -2203,6 +2414,13 @@ class _UpdateProfilesState extends State<UpdateProfiles> {
                                   ),
                                   width: SizeConfig.screenWidth - 150,
                                   onPressed: () async {
+                                    authService.updateBusinessDataToFireStore(
+                                        firebaseAuth.currentUser,
+                                        _businessSelected,
+                                        _businessController.text,
+                                        moto ? "Moto" : "Car",
+                                        warehouseYes ? "Yes" : "No");
+
                                     setState(() {
                                       valid = false;
                                       agentInt = false;
@@ -2397,7 +2615,7 @@ class _UpdateProfilesState extends State<UpdateProfiles> {
                                     child: Material(
                                       color: Colors.transparent,
                                       child: InkWell(
-                                          onTap: () {},
+                                          onTap: () => pickImagePassport(),
                                           child: Center(
                                             child: Row(
                                               children: <Widget>[
@@ -2418,6 +2636,19 @@ class _UpdateProfilesState extends State<UpdateProfiles> {
                                                             FontWeight.normal,
                                                       ),
                                                     )),
+                                                SizedBox(
+                                                  width: 10,
+                                                ),
+                                                loadingPassprot
+                                                    ? Icon(
+                                                        CupertinoIcons
+                                                            .check_mark,
+                                                        size: 20,
+                                                        color: Colors.green)
+                                                    : Container(
+                                                        height: 0,
+                                                        width: 0,
+                                                      ),
                                               ],
                                             ),
                                           )),
@@ -2450,7 +2681,7 @@ class _UpdateProfilesState extends State<UpdateProfiles> {
                                         child: Material(
                                           color: Colors.transparent,
                                           child: InkWell(
-                                              onTap: () {},
+                                              onTap: () => pickImageSide1(),
                                               child: Center(
                                                 child: Row(
                                                   children: <Widget>[
@@ -2473,6 +2704,19 @@ class _UpdateProfilesState extends State<UpdateProfiles> {
                                                                     .normal,
                                                           ),
                                                         )),
+                                                    SizedBox(
+                                                      width: 10,
+                                                    ),
+                                                    loadingSide1
+                                                        ? Icon(
+                                                            CupertinoIcons
+                                                                .check_mark,
+                                                            size: 20,
+                                                            color: Colors.green)
+                                                        : Container(
+                                                            height: 0,
+                                                            width: 0,
+                                                          ),
                                                   ],
                                                 ),
                                               )),
@@ -2505,7 +2749,7 @@ class _UpdateProfilesState extends State<UpdateProfiles> {
                                         child: Material(
                                           color: Colors.transparent,
                                           child: InkWell(
-                                              onTap: () {},
+                                              onTap: () => pickImageSide2(),
                                               child: Center(
                                                 child: Row(
                                                   children: <Widget>[
@@ -2528,6 +2772,19 @@ class _UpdateProfilesState extends State<UpdateProfiles> {
                                                                     .normal,
                                                           ),
                                                         )),
+                                                    SizedBox(
+                                                      width: 10,
+                                                    ),
+                                                    loadingSide2
+                                                        ? Icon(
+                                                            CupertinoIcons
+                                                                .check_mark,
+                                                            size: 20,
+                                                            color: Colors.green)
+                                                        : Container(
+                                                            height: 0,
+                                                            width: 0,
+                                                          ),
                                                   ],
                                                 ),
                                               )),
@@ -2686,6 +2943,13 @@ class _UpdateProfilesState extends State<UpdateProfiles> {
                                   ),
                                   width: SizeConfig.screenWidth - 150,
                                   onPressed: () async {
+                                    authService
+                                        .updateVerificationDataToFireStore(
+                                            firebaseAuth.currentUser,
+                                            _verificationSelected,
+                                            side1Image,
+                                            side2Image,
+                                            passportImage);
                                     setState(() {
                                       valid = false;
                                       agentInt = false;
@@ -2765,7 +3029,7 @@ class _UpdateProfilesState extends State<UpdateProfiles> {
                             left: 10,
                             child: Container(
                               child: Text(
-                                "We sent SMS verification code\non number : ${_phoneContoller.text.toLowerCase()}",
+                                "We sent SMS verification code\non number : ${_phoneController.text.toLowerCase()}",
                                 textAlign: TextAlign.center,
                               ),
                             )),
@@ -2839,7 +3103,7 @@ class _UpdateProfilesState extends State<UpdateProfiles> {
                               Container(
                                 margin: EdgeInsets.fromLTRB(0, 0, 13, 0),
                                 child: GestureDetector(
-                                  onTap: () => {},
+                                  onTap: () => _verifyPhone(),
                                   child: Text(
                                     "Resend the code",
                                     style: TextStyle(
@@ -2862,7 +3126,7 @@ class _UpdateProfilesState extends State<UpdateProfiles> {
 
   _verifyPhone() async {
     await FirebaseAuth.instance.verifyPhoneNumber(
-        phoneNumber: '${_phoneContoller.text}',
+        phoneNumber: '${_phoneController.text}',
         verificationCompleted: (PhoneAuthCredential credential) async {
           await FirebaseAuth.instance
               .signInWithCredential(credential)
@@ -2892,7 +3156,7 @@ class _UpdateProfilesState extends State<UpdateProfiles> {
         timeout: Duration(seconds: 120));
   }
 
-  clientInterface(viewModel) {
+  clientInterface() {
     return SafeArea(
         child: Scaffold(
             appBar: AppBar(
@@ -2923,7 +3187,7 @@ class _UpdateProfilesState extends State<UpdateProfiles> {
                       children: [
                         Center(
                           child: GestureDetector(
-                            onTap: () => viewModel.pickImage(),
+                            onTap: () => pickImage(),
                             child: Container(
                               decoration: BoxDecoration(
                                 color: Colors.white,
@@ -2940,7 +3204,7 @@ class _UpdateProfilesState extends State<UpdateProfiles> {
                                   ),
                                 ],
                               ),
-                              child: viewModel.imgLink != null
+                              child: userImgLink != null
                                   ? Padding(
                                       padding: const EdgeInsets.all(1.0),
                                       child: CircleAvatar(
@@ -2948,10 +3212,10 @@ class _UpdateProfilesState extends State<UpdateProfiles> {
                                         backgroundColor:
                                             Color.fromRGBO(239, 240, 246, 1),
                                         backgroundImage:
-                                            NetworkImage(viewModel.imgLink),
+                                            NetworkImage(userImgLink),
                                       ),
                                     )
-                                  : viewModel.image == null
+                                  : userImage == null
                                       ? Padding(
                                           padding: const EdgeInsets.all(1.0),
                                           child: CircleAvatar(
@@ -2959,7 +3223,8 @@ class _UpdateProfilesState extends State<UpdateProfiles> {
                                                 239, 240, 246, 1),
                                             radius: 65.0,
                                             backgroundImage: NetworkImage(
-                                                "widget.user.photoUrl"),
+                                                firebaseAuth
+                                                    .currentUser.photoURL),
                                           ),
                                         )
                                       : Padding(
@@ -2969,7 +3234,7 @@ class _UpdateProfilesState extends State<UpdateProfiles> {
                                             backgroundColor: Color.fromRGBO(
                                                 239, 240, 246, 1),
                                             backgroundImage:
-                                                FileImage(viewModel.image),
+                                                FileImage(userImage),
                                           ),
                                         ),
                             ),
@@ -3000,6 +3265,15 @@ class _UpdateProfilesState extends State<UpdateProfiles> {
                             ),
                             width: SizeConfig.screenWidth - 150,
                             onPressed: () async {
+                              if (_formKey.currentState.validate()) {
+                                authService.updateUserDataToFireStore(
+                                    firebaseAuth.currentUser,
+                                    _fNameController.text,
+                                    _lNameController.text,
+                                    _cityController.text,
+                                    _phoneController.text,
+                                    userImage);
+                              }
                               /* Navigator.pushNamed(
                                   context, UpdateProfiles.routeName);*/
                             }),
@@ -3011,7 +3285,7 @@ class _UpdateProfilesState extends State<UpdateProfiles> {
 
   buildFNameFormField() {
     return TextFormBuilder(
-      controller: _fNameContoller,
+      controller: _fNameController,
       hintText: "First name",
       suffix: false,
       textInputAction: TextInputAction.next,
@@ -3021,7 +3295,7 @@ class _UpdateProfilesState extends State<UpdateProfiles> {
 
   buildLNameFormField() {
     return TextFormBuilder(
-      controller: _lNameContoller,
+      controller: _lNameController,
       hintText: "Last name",
       suffix: false,
       textInputAction: TextInputAction.next,
@@ -3031,7 +3305,7 @@ class _UpdateProfilesState extends State<UpdateProfiles> {
 
   buildCityFormField() {
     return TextFormBuilder(
-      controller: _cityContoller,
+      controller: _cityController,
       hintText: "City",
       suffix: false,
       textInputAction: TextInputAction.next,
@@ -3041,11 +3315,222 @@ class _UpdateProfilesState extends State<UpdateProfiles> {
 
   buildPhoneFormField() {
     return TextFormBuilder(
-      controller: _phoneContoller,
+      controller: _phoneController,
       suffix: false,
       hintText: "Phone Number",
       textInputAction: TextInputAction.next,
       validateFunction: Validations.validatephone,
     );
   }
+}
+
+class MapScreen extends StatefulWidget {
+  static String routeName = '/MapScreen';
+  @override
+  _MapScreenState createState() => _MapScreenState();
+}
+
+class _MapScreenState extends State<MapScreen> {
+  LocationProvider locationData;
+  LatLng currentLocation;
+  GoogleMapController _mapController;
+  TextEditingController wareHouseLocationController = TextEditingController();
+  String kGoogleApiKey = "AIzaSyBhbAlczAjPkCr0p6DHdTf0pqUHX2eRrVg";
+  AuthService authService = AuthService();
+  Completer<GoogleMapController> _controller = Completer();
+  static CameraPosition _myPosition;
+  static CameraPosition initPosition;
+  @override
+  Widget build(BuildContext context) {
+    locationData = Provider.of<LocationProvider>(context);
+    setState(() {
+      currentLocation = LatLng(locationData.lnt, locationData.lng);
+    });
+    void onCreate(GoogleMapController controller) {
+      setState(() {
+        _controller.complete(controller);
+        _mapController = controller;
+        initPosition =
+            CameraPosition(target: LatLng(locationData.lnt, locationData.lng));
+        // wareHouseLocationController.value.text = locationData.getMoveCamera();
+      });
+    }
+
+    return Scaffold(
+      backgroundColor: Colors.white,
+      body: SafeArea(
+        child: Stack(
+          children: [
+            GoogleMap(
+              initialCameraPosition: CameraPosition(target: currentLocation),
+              zoomControlsEnabled: false,
+              minMaxZoomPreference: MinMaxZoomPreference(1.5, 20.8),
+              myLocationEnabled: true,
+              myLocationButtonEnabled: false,
+              mapType: MapType.normal,
+              mapToolbarEnabled: true,
+              onCameraMove: (CameraPosition positon) {
+                locationData.onCameraMove(positon);
+              },
+              onMapCreated: onCreate,
+              onCameraIdle: () {
+                locationData.getMoveCamera();
+              },
+            ),
+            Align(
+              alignment: Alignment.topCenter,
+              child: Column(
+                children: [
+                  Container(
+                    margin: EdgeInsets.fromLTRB(20, 50, 20, 5),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        FloatingActionButton(
+                          onPressed: () {
+                            Navigator.pop(context);
+                          },
+                          mini: true,
+                          elevation: 8,
+                          child: Image.asset("assets/images/Back Arrow.png"),
+                        ),
+                        FloatingActionButton(
+                          onPressed: () => _goToMyPosition(_controller.future),
+                          mini: true,
+                          elevation: 8,
+                          backgroundColor: Colors.white,
+                          child: Image.asset("assets/images/geolocate me.png"),
+                        ),
+                      ],
+                    ),
+                  ),
+                  SizedBox(
+                    height: 20,
+                  ),
+                  Card(
+                    color: Colors.white,
+                    elevation: 8,
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10)),
+                    margin: EdgeInsets.fromLTRB(20, 0, 20, 10),
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: TextField(
+                        controller: wareHouseLocationController,
+                        cursorColor: Colors.green,
+                        decoration: InputDecoration(
+                            suffixIcon: Image.asset(
+                              "assets/images/arrival point.png",
+                              height: 50,
+                            ),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.all(
+                                Radius.circular(10.0),
+                              ),
+                              borderSide: BorderSide(
+                                color: Colors.white,
+                                width: 1.0,
+                              ),
+                            ),
+                            enabledBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.all(
+                                Radius.circular(10.0),
+                              ),
+                              borderSide: BorderSide(
+                                color: Colors.white,
+                                width: 1.0,
+                              ),
+                            ),
+                            focusedBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.all(
+                                Radius.circular(10.0),
+                              ),
+                              borderSide: BorderSide(
+                                color: Colors.white,
+                                width: 1.0,
+                              ),
+                            ),
+                            labelStyle: TextStyle(
+                                color: Colors.grey[700], fontSize: 20),
+                            labelText: 'Warehouse'),
+                        onTap: () async {
+                          /*
+                      Prediction p = await PlacesAutocomplete.show(
+                          context: context,
+                          apiKey: kGoogleApiKey,
+                          mode: Mode.overlay);*/
+                        },
+                      ),
+                    ),
+                  )
+                ],
+              ),
+            ),
+            Align(
+                alignment: Alignment.center,
+                child: Container(
+                    height: 100,
+                    margin: EdgeInsets.only(bottom: 40),
+                    child: Image.asset(
+                        'assets/images/fixed location in map.png'))),
+            Align(
+              alignment: Alignment.bottomCenter,
+              child: Container(
+                margin: EdgeInsets.only(bottom: 40),
+                child: RaisedGradientButton(
+                    child: Text(
+                      'Confirm',
+                      style: TextStyle(
+                        fontSize: 16,
+                        color: Colors.white,
+                      ),
+                    ),
+                    gradient: LinearGradient(
+                      colors: <Color>[
+                        Color.fromRGBO(82, 238, 79, 1),
+                        Color.fromRGBO(5, 151, 0, 1)
+                      ],
+                    ),
+                    width: SizeConfig.screenWidth - 150,
+                    onPressed: () async {
+                      /*
+                      authService.updateBusinessLocationToFireStore(
+                          firebaseAuth.currentUser,
+                          wareHouseLocationController.text);*/
+                    }),
+              ),
+            )
+          ],
+        ),
+      ),
+    );
+  }
+
+  Future<void> _goToMyPosition(c) async {
+    _myPosition = CameraPosition(
+      target:
+          LatLng(initPosition.target.latitude, initPosition.target.longitude),
+      zoom: 14.5,
+    );
+    await locationData.getCurrentPosition();
+    final GoogleMapController controller = await c;
+    controller.animateCamera(CameraUpdate.newCameraPosition(_myPosition));
+  }
+
+/*
+  Future<Null> displayPrediction(Prediction p) async {
+    if (p != null) {
+      PlacesDetailsResponse detail =
+          await _places.getDetailsByPlaceId(p.placeId);
+
+      var placeId = p.placeId;
+      double lat = detail.result.geometry.location.lat;
+      double lng = detail.result.geometry.location.lng;
+
+      var address = await Geocoder.local.findAddressesFromQuery(p.description);
+
+      print(lat);
+      print(lng);
+    }
+  }*/
 }

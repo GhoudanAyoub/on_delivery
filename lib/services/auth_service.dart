@@ -1,48 +1,147 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'dart:io';
+
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:geolocator/geolocator.dart';
+import 'package:on_delivery/services/services.dart';
 import 'package:on_delivery/utils/firebase.dart';
 
-class AuthService {
+class AuthService extends Service {
   User getCurrentUser() {
     User user = firebaseAuth.currentUser;
     return user;
   }
 
-  Future<bool> createUser(
-      {String name,
-      User user,
-      String email,
-      String country,
-      String password,
-      String phone}) async {
+  Future<bool> createUser({
+    String email,
+    String password,
+  }) async {
     var res = await firebaseAuth.createUserWithEmailAndPassword(
       email: '$email',
       password: '$password',
     );
     if (res.user != null) {
-      await saveUserToFirestore(name, res.user, email, country, phone);
+      await saveUserToFireStore(res.user, email, password);
       return true;
     } else {
       return false;
     }
   }
 
-  saveUserToFirestore(String name, User user, String email, String country,
-      String phone) async {
-    await usersRef.doc(user.uid).set({
-      'username': name,
-      'email': email,
-      'time': Timestamp.now(),
-      'id': user.uid,
-      'bio': "",
-      'phone': phone,
-      'country': country,
-      'photoUrl': user.photoURL ?? '',
-      'msgToAll': false,
-      'sub': false,
-      'admin': false,
-      'orders': 0
-    });
+  static Future addUsers(User user) async {
+    if (user != null) {
+      final snapShot = await usersRef.doc(user.uid).get();
+      if (!snapShot.exists) {
+        usersRef.doc(user.uid).set({
+          'id': user.uid,
+          'email': user.email,
+          'firstName': user.displayName,
+          'photoUrl': user.photoURL ?? '',
+        });
+      }
+    }
+    return user.uid;
+  }
+
+  saveUserToFireStore(User user, String email, String password) async {
+    final snapShot = await usersRef.doc(user.uid).get();
+    if (!snapShot.exists) {
+      await usersRef.doc(user.uid).set({
+        'id': user.uid,
+        'email': email,
+        'pass': password,
+        'photoUrl': user.photoURL ?? '',
+      });
+    }
+  }
+
+  updateUserTypeToFireStore(User user, String type) async {
+    if (user != null) {
+      final snapShot = await usersRef.doc(user.uid).get();
+      if (snapShot.exists) {
+        usersRef.doc(user.uid).update({'type': type});
+      }
+    }
+  }
+
+  updateBusinessLocationToFireStore(
+      User user, String wareHouseAddress, Position wareHousePosition) async {
+    if (user != null) {
+      final snapShot = await usersRef.doc(user.uid).get();
+      if (snapShot.exists) {
+        usersRef.doc(user.uid).update({
+          'wareHouseAddress': wareHouseAddress,
+          'wareHousePosition': wareHousePosition,
+        });
+      }
+    }
+  }
+
+  updateUserDataToFireStore(User user, String fName, String lName, String city,
+      String phone, File image) async {
+    String imageURL;
+    if (user != null) {
+      if (image != null) {
+        imageURL = await uploadImage(profilePic, image);
+      }
+      final snapShot = await usersRef.doc(user.uid).get();
+      if (snapShot.exists) {
+        usersRef.doc(user.uid).update({
+          'firstName': fName,
+          'lastName': lName,
+          'city': city,
+          'phone': phone,
+          'photoUrl': imageURL
+        });
+      }
+    }
+  }
+
+  updateVerificationDataToFireStore(User user, String verificationType,
+      File side1Image, File side2Image, File passport) async {
+    String side1ImageURL;
+    String side2ImageURL;
+    String passportURL;
+    if (user != null) {
+      if (side1Image != null) {
+        side1ImageURL = await uploadImage(profilePic, side1Image);
+      }
+      if (side2Image != null) {
+        side2ImageURL = await uploadImage(profilePic, side2Image);
+      }
+      if (passport != null) {
+        passportURL = await uploadImage(profilePic, passport);
+      }
+      final snapShot = await usersRef.doc(user.uid).get();
+      if (snapShot.exists) {
+        usersRef.doc(user.uid).update({
+          'verificationType': verificationType,
+          'side1PhotoUrl': side1ImageURL,
+          'side2PhotoUrl': side2ImageURL,
+          'passportPhotoUrl': passportURL,
+        });
+      }
+    }
+  }
+
+  updateBusinessDataToFireStore(
+    User user,
+    String businessType,
+    String businessName,
+    String transportType,
+    String wareHouse,
+  ) async {
+    String addresses;
+    if (user != null) {
+      final snapShot = await usersRef.doc(user.uid).get();
+      if (snapShot.exists) {
+        usersRef.doc(user.uid).update({
+          'businessType': businessType,
+          'businessName': businessName,
+          'transportType': transportType,
+          'wareHouse': wareHouse,
+        });
+      }
+    }
   }
 
   Future<String> loginUser({String email, String password}) async {

@@ -10,7 +10,6 @@ import 'package:on_delivery/SetUpProfile/ChooseSide.dart';
 import 'package:on_delivery/components/RaisedGradientButton.dart';
 import 'package:on_delivery/components/text_form_builder.dart';
 import 'package:on_delivery/services/auth_service.dart';
-import 'package:on_delivery/utils/FirebaseService.dart';
 import 'package:on_delivery/utils/firebase.dart';
 import 'package:on_delivery/utils/validation.dart';
 
@@ -59,207 +58,208 @@ class _SignUpFormState extends State<SignUpForm> {
   Widget build(BuildContext context) {
     return Form(
       key: _formKey,
-      child: Padding(
-        padding: EdgeInsets.symmetric(horizontal: 15),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.end,
-          children: [
-            SizedBox(height: 80),
-            buildEmailFormField(),
-            SizedBox(height: 20),
-            buildPasswordFormField(),
-            SizedBox(height: 20),
-            buildConformPassFormField(),
-            SizedBox(height: 30),
-            RaisedGradientButton(
-                child: submitted
-                    ? SizedBox(
-                        height: 15,
-                        width: 15,
-                        child: CircularProgressIndicator(
-                          strokeWidth: 2,
-                          valueColor:
-                              AlwaysStoppedAnimation<Color>(Colors.white),
+      child: Column(
+        children: [
+          Expanded(
+              child: ListView(
+            children: [
+              SizedBox(height: 80),
+              buildEmailFormField(),
+              SizedBox(height: 20),
+              buildPasswordFormField(),
+              SizedBox(height: 20),
+              buildConformPassFormField(),
+              SizedBox(height: 30),
+              RaisedGradientButton(
+                  child: submitted
+                      ? SizedBox(
+                          height: 15,
+                          width: 15,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            valueColor:
+                                AlwaysStoppedAnimation<Color>(Colors.white),
+                          ),
+                        )
+                      : Text(
+                          'Sign up',
+                          style: TextStyle(
+                            fontSize: 16,
+                            color: Colors.white,
+                          ),
                         ),
-                      )
-                    : Text(
-                        'Sign up',
-                        style: TextStyle(
-                          fontSize: 16,
-                          color: Colors.white,
-                        ),
-                      ),
-                gradient: LinearGradient(
-                  colors: <Color>[
-                    Color.fromRGBO(82, 238, 79, 1),
-                    Color.fromRGBO(5, 151, 0, 1)
-                  ],
-                ),
-                onPressed: () async {
-                  Navigator.pushNamed(context, ChooseSide.routeName);
-                  /*
-
-                  try {
-                    if (_formKey.currentState.validate()) {
-                      submitted = true;
-                      bool success = await authService.createUser(
-                          name: _namentoller.text,
+                  gradient: LinearGradient(
+                    colors: <Color>[
+                      Color.fromRGBO(82, 238, 79, 1),
+                      Color.fromRGBO(5, 151, 0, 1)
+                    ],
+                  ),
+                  onPressed: () async {
+                    Navigator.pushNamed(context, ChooseSide.routeName);
+                    /*
+                    try {
+                      if (_formKey.currentState.validate()) {
+                        submitted = true;
+                        bool success = await authService.createUser(
                           email: _emailContoller.text,
                           password: _passwordController.text,
-                          country: _countryContoller.text,
-                          phone: _phone.text);
-                      print(success);
-                      if (success) {
-                        /*
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => Home()));*/
-                        Scaffold.of(context).showSnackBar(SnackBar(
-                            content:
-                                Text('Congratulation Your Account Created')));
+                        );
+                        if (success) {
+                          Navigator.pushNamed(context, ChooseSide.routeName);
+                          Scaffold.of(context).showSnackBar(SnackBar(
+                              content:
+                                  Text('Congratulation Your Account Created')));
+                        }
                       }
-                    }
-                  } catch (e) {
-                    print(e);
-                    showInSnackBar(
-                        '${authService.handleFirebaseAuthError(e.toString())}');
-                  }*/
-                }),
-            SizedBox(height: 30),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
+                    } catch (e) {
+                      print(e);
+                      showInSnackBar(
+                          '${authService.handleFirebaseAuthError(e.toString())}');
+                    }*/
+                  }),
+              SizedBox(height: 30),
+            ],
+          )),
+          Align(
+            alignment: Alignment.bottomCenter,
+            child: Column(
               children: [
-                SizedBox(
-                  width: 150,
-                  height: 1,
-                  child: Container(
-                    color: Color.fromRGBO(0, 0, 0, 0.23),
-                  ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    SizedBox(
+                      width: 150,
+                      height: 1,
+                      child: Container(
+                        color: Color.fromRGBO(0, 0, 0, 0.23),
+                      ),
+                    ),
+                    Divider(
+                      indent: 5,
+                      endIndent: 5,
+                    ),
+                    Text(
+                      "OR",
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 14,
+                        color: Color.fromRGBO(0, 0, 0, 0.23),
+                      ),
+                    ),
+                    Divider(
+                      indent: 5,
+                      endIndent: 5,
+                    ),
+                    SizedBox(
+                      width: 150,
+                      height: 1,
+                      child: Container(
+                        color: Color.fromRGBO(0, 0, 0, 0.23),
+                      ),
+                    ),
+                  ],
                 ),
-                Divider(
-                  indent: 5,
-                  endIndent: 5,
-                ),
-                Text(
-                  "OR",
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 14,
-                    color: Color.fromRGBO(0, 0, 0, 0.23),
-                  ),
-                ),
-                Divider(
-                  indent: 5,
-                  endIndent: 5,
-                ),
-                SizedBox(
-                  width: 150,
-                  height: 1,
-                  child: Container(
-                    color: Color.fromRGBO(0, 0, 0, 0.23),
-                  ),
-                ),
-              ],
-            ),
-            SizedBox(height: 5),
-            isSignIn != false
-                ? Center(child: CircularProgressIndicator())
-                : SizedBox(height: 1),
-            SizedBox(height: 10),
-            isSignIn == false
-                ? Card(
-                    elevation: 10.0,
-                    shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10)),
-                    color: Colors.white,
-                    child: GestureDetector(
-                      onTap: () {
-                        loginWithFacebook(context).whenComplete(() async {
-                          var u = await FirebaseService.addUsers(
-                              firebaseAuth.currentUser);
-                          setState(() {
-                            isSignIn = false;
-                          });
-                          /* Navigator.push(
+                SizedBox(height: 5),
+                isSignIn != false
+                    ? Center(child: CircularProgressIndicator())
+                    : SizedBox(height: 1),
+                SizedBox(height: 10),
+                isSignIn == false
+                    ? Card(
+                        elevation: 10.0,
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10)),
+                        color: Colors.white,
+                        child: GestureDetector(
+                          onTap: () {
+                            loginWithFacebook(context).whenComplete(() async {
+                              var u = await AuthService.addUsers(
+                                  firebaseAuth.currentUser);
+                              setState(() {
+                                isSignIn = false;
+                              });
+                              /* Navigator.push(
                                       context,
                                       MaterialPageRoute(
                                           builder: (context) =>
                                               HomeScreen()));*/
-                        });
-                      },
-                      child: Container(
-                        margin: EdgeInsets.symmetric(horizontal: 5),
-                        height: 50,
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            SvgPicture.asset(
-                              "assets/icons/fb.svg",
-                              width: 20,
+                            });
+                          },
+                          child: Container(
+                            margin: EdgeInsets.symmetric(horizontal: 5),
+                            height: 50,
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                SvgPicture.asset(
+                                  "assets/icons/fb.svg",
+                                  width: 20,
+                                ),
+                                SizedBox(
+                                  width: 5,
+                                ),
+                                Text(
+                                  "Continue with facebook",
+                                  style: TextStyle(
+                                      fontSize: 14,
+                                      letterSpacing: 1,
+                                      fontWeight: FontWeight.normal,
+                                      color: Color.fromRGBO(15, 94, 249, 1)),
+                                )
+                              ],
                             ),
-                            SizedBox(
-                              width: 5,
-                            ),
-                            Text(
-                              "Continue with facebook",
-                              style: TextStyle(
-                                  fontSize: 14,
-                                  letterSpacing: 1,
-                                  fontWeight: FontWeight.normal,
-                                  color: Color.fromRGBO(15, 94, 249, 1)),
-                            )
-                          ],
-                        ),
-                      ),
-                    ))
-                : SizedBox(height: 1),
-            isSignIn == false
-                ? Card(
-                    elevation: 10.0,
-                    shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10)),
-                    color: Colors.white,
-                    child: GestureDetector(
-                      onTap: () async {
-                        await signInWithGoogle(context).whenComplete(() async {
-                          var u = await FirebaseService.addUsers(
-                              firebaseAuth.currentUser);
-                          setState(() {
-                            isSignIn = false;
-                          });
-                          /* Navigator.pushNamed(
+                          ),
+                        ))
+                    : SizedBox(height: 1),
+                isSignIn == false
+                    ? Card(
+                        elevation: 10.0,
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10)),
+                        color: Colors.white,
+                        child: GestureDetector(
+                          onTap: () async {
+                            await signInWithGoogle(context)
+                                .whenComplete(() async {
+                              var u = await AuthService.addUsers(
+                                  firebaseAuth.currentUser);
+                              setState(() {
+                                isSignIn = false;
+                              });
+                              /* Navigator.pushNamed(
                                   context, HomeScreen.routeName);*/
-                        });
-                      },
-                      child: Container(
-                        margin: EdgeInsets.symmetric(horizontal: 5),
-                        height: 50,
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            SvgPicture.asset(
-                              "assets/icons/google-icon.svg",
-                              width: 20,
+                            });
+                          },
+                          child: Container(
+                            margin: EdgeInsets.symmetric(horizontal: 5),
+                            height: 50,
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                SvgPicture.asset(
+                                  "assets/icons/google-icon.svg",
+                                  width: 20,
+                                ),
+                                SizedBox(
+                                  width: 5,
+                                ),
+                                Text(
+                                  "Continue with Google",
+                                  style: TextStyle(
+                                      fontSize: 14,
+                                      letterSpacing: 1,
+                                      fontWeight: FontWeight.normal,
+                                      color: Color.fromRGBO(15, 94, 249, 1)),
+                                )
+                              ],
                             ),
-                            SizedBox(
-                              width: 5,
-                            ),
-                            Text(
-                              "Continue with Google",
-                              style: TextStyle(
-                                  fontSize: 14,
-                                  letterSpacing: 1,
-                                  fontWeight: FontWeight.normal,
-                                  color: Color.fromRGBO(15, 94, 249, 1)),
-                            )
-                          ],
-                        ),
-                      ),
-                    ))
-                : SizedBox(height: 1),
-          ],
-        ),
+                          ),
+                        ))
+                    : SizedBox(height: 1),
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }

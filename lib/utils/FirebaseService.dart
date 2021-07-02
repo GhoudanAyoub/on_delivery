@@ -6,12 +6,10 @@ import 'package:on_delivery/models/message.dart';
 import 'package:on_delivery/models/message_list.dart';
 import 'package:on_delivery/utils/utils.dart';
 
-import 'firebase.dart';
-
 class FirebaseService {
   static String Client_displayName = FirebaseAuth.instance.currentUser.email;
 
-  final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
+  static FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
   static final _fireStore = FirebaseFirestore.instance;
   final GoogleSignIn _googleSignIn = GoogleSignIn();
 
@@ -31,25 +29,6 @@ class FirebaseService {
   }
 
   // USER DATA
-  static Future addUsers(User user) async {
-    if (user != null) {
-      final snapShot = await usersRef.doc(user.uid).get();
-      if (!snapShot.exists) {
-        usersRef.doc(user.uid).set({
-          'username': user.displayName,
-          'email': user.email,
-          'time': Timestamp.now(),
-          'id': user.uid,
-          'bio': "",
-          'country': "",
-          'photoUrl': user.photoURL ?? '',
-          'msgToAll': true
-        });
-      }
-    }
-    return user.uid;
-  }
-
   static Stream<List<MessageList>> getUsers() => FirebaseFirestore.instance
       .collection("Message")
       .doc(FirebaseAuth.instance.currentUser.displayName)
@@ -94,14 +73,15 @@ class FirebaseService {
     return _firebaseAuth.currentUser.displayName;
   }
 
-  getProfileImage() {
-    if (_firebaseAuth.currentUser.photoURL != null) {
+  static getProfileImage() {
+    if (_firebaseAuth.currentUser != null) {
       return _firebaseAuth.currentUser.photoURL;
     } else {
       return "https://images.unsplash.com/photo-1571741140674-8949ca7df2a7?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=60";
     }
   }
 
+  /*
   // Email & Password Sign Up
   Future createUserWithEmailAndPassword(
       String email, String password, String name) async {
@@ -196,7 +176,6 @@ class FirebaseService {
   }
 
   // APPLE
-  /*
   Future signInWithApple() async {
     final AuthorizationResult result = await AppleSignIn.performRequests([
       AppleIdRequest(requestedScopes: [Scope.email, Scope.fullName])

@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:geolocator/geolocator.dart';
 
 class UserModel {
+  String id;
   String email;
   String pass;
   String type;
@@ -11,6 +12,9 @@ class UserModel {
   String phone;
   String photoUrl;
   String verificationType;
+  String side1PhotoUrl;
+  String side2PhotoUrl;
+  String passportPhotoUrl;
   String businessType;
   String businessName;
   String transportType;
@@ -24,7 +28,8 @@ class UserModel {
   bool isOnline;
 
   UserModel(
-      {this.email,
+      {this.id,
+      this.email,
       this.pass,
       this.type,
       this.firstName,
@@ -46,15 +51,19 @@ class UserModel {
       this.isOnline});
 
   UserModel.fromJson(Map<String, dynamic> json) {
+    id = json['id'];
     email = json['email'];
     pass = json['pass'];
     type = json['type'];
     firstName = json['firstName'];
-    lastname = json['lastname'];
+    lastname = json['lastName'];
     city = json['city'];
     phone = json['phone'];
     photoUrl = json['photoUrl'];
     verificationType = json['verificationType'];
+    side1PhotoUrl = json['side1PhotoUrl'];
+    side2PhotoUrl = json['side2PhotoUrl'];
+    passportPhotoUrl = json['passportPhotoUrl'];
     businessType = json['businessType'];
     businessName = json['businessName'];
     transportType = json['transportType'];

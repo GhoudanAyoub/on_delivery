@@ -110,14 +110,10 @@ class _SignFormState extends State<SignForm> {
                         email: _emailContoller.text,
                         password: _passwordController.text,
                       );
-                      print(success);
                       if (success == firebaseAuth.currentUser.uid) {
+                        /* Navigator.push(context,
+                        MaterialPageRoute(builder: (context) => HomeScreen()));*/
                         Navigator.pop(context);
-                        /*
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => HomePage()));*/
                         Scaffold.of(context).showSnackBar(
                             SnackBar(content: Text('Welcome Back')));
                       } else {

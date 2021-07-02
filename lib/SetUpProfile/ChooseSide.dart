@@ -2,7 +2,9 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:on_delivery/SetUpProfile/UpdateProfile.dart';
 import 'package:on_delivery/components/RaisedGradientButton.dart';
+import 'package:on_delivery/services/auth_service.dart';
 import 'package:on_delivery/utils/SizeConfig.dart';
+import 'package:on_delivery/utils/firebase.dart';
 
 class ChooseSide extends StatefulWidget {
   static String routeName = "/ChooseSide";
@@ -189,6 +191,9 @@ class _ChooseSideState extends State<ChooseSide> {
                                         Type: agent,
                                       )),
                             );
+                            AuthService().updateUserTypeToFireStore(
+                                firebaseAuth.currentUser,
+                                agent ? "Agent" : "Client");
                           }),
                     )
                   : Container(

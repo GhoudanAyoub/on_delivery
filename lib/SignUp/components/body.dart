@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:on_delivery/utils/SizeConfig.dart';
 
 import 'sign_up_form.dart';
 
@@ -13,21 +12,9 @@ class Body extends StatelessWidget {
           fit: BoxFit.cover,
         ),
       ),
-      child: SafeArea(
-        child: Container(
-          width: SizeConfig.screenWidth,
-          height: SizeConfig.screenHeight,
-          child: Padding(
-            padding: EdgeInsets.symmetric(horizontal: 30),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                SignUpForm(),
-                SizedBox(height: 20),
-              ],
-            ),
-          ),
-        ),
+      child: Padding(
+        padding: EdgeInsets.symmetric(horizontal: 40, vertical: 50),
+        child: SignUpForm(),
       ),
     );
   }
