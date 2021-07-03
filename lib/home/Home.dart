@@ -12,7 +12,14 @@ class _HomeState extends State<Home> {
   Widget build(BuildContext context) {
     return SafeArea(
         child: Scaffold(
-      body: Center(child: Text("home")),
+      body: Container(
+          decoration: BoxDecoration(
+            image: DecorationImage(
+              image: ExactAssetImage('assets/images/pg.png'),
+              fit: BoxFit.cover,
+            ),
+          ),
+          child: Center(child: Text("home"))),
     ));
   }
 }

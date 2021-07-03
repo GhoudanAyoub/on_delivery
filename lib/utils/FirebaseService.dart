@@ -2,8 +2,10 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:on_delivery/models/User.dart';
 import 'package:on_delivery/models/message.dart';
 import 'package:on_delivery/models/message_list.dart';
+import 'package:on_delivery/utils/firebase.dart';
 import 'package:on_delivery/utils/utils.dart';
 
 class FirebaseService {
@@ -86,6 +88,24 @@ class FirebaseService {
     return await _firebaseAuth.signOut();
   }
 
+  Future<UserModel> getCurrentUserData() async {
+    User user = firebaseAuth.currentUser;
+    UserModel userModel;
+    if (user != null) {
+      final snapShot = await usersRef.doc(user.uid).get();
+      userModel = UserModel.fromJson(snapShot.data());
+    }
+    return userModel;
+  }
+
+  switchCurrentUserType(User user, String type) async {
+    if (user != null) {
+      final snapShot = await usersRef.doc(user.uid).get();
+      if (snapShot.exists) {
+        usersRef.doc(user.uid).update({'type': type});
+      }
+    }
+  }
   /*
   // Email & Password Sign Up
   Future createUserWithEmailAndPassword(

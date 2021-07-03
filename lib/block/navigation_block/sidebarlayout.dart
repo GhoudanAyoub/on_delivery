@@ -13,7 +13,8 @@ class SideBarLayout extends StatefulWidget {
 class _SideBarLayoutState extends State<SideBarLayout> {
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return SafeArea(
+        child: Scaffold(
       body: BlocProvider<NavigationBloc>(
         create: (context) => NavigationBloc(Home()),
         child: Stack(
@@ -27,6 +28,6 @@ class _SideBarLayoutState extends State<SideBarLayout> {
           ],
         ),
       ),
-    );
+    ));
   }
 }
