@@ -85,7 +85,7 @@ class _SideBarState extends State<SideBar>
                   child: ClipPath(
                     clipper: CustomMenuClipper(),
                     child: Container(
-                      width: 35,
+                      width: 20,
                       height: 80,
                       color: Colors.white,
                       alignment: Alignment.centerRight,
@@ -98,9 +98,6 @@ class _SideBarState extends State<SideBar>
                     ),
                   ),
                 ),
-              ),
-              SizedBox(
-                width: 20,
               ),
               Expanded(
                 child: Container(
@@ -235,6 +232,8 @@ class _SideBarState extends State<SideBar>
                             title: "Settings",
                             onTap: () {
                               onIconPressed();
+                              BlocProvider.of<NavigationBloc>(context).add(
+                                  NavigationEvents.ProfilePageClickedEvent);
                             },
                           ),
                         ],

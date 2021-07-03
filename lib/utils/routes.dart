@@ -6,6 +6,7 @@ import 'package:on_delivery/SignUp/sign_up_screen.dart';
 import 'package:on_delivery/SplashScreen/splash_screen.dart';
 import 'package:on_delivery/home/Home.dart';
 import 'package:on_delivery/home/base.dart';
+import 'package:on_delivery/profiles/profile.dart';
 
 import 'firebase.dart';
 
@@ -20,6 +21,7 @@ final Map<String, WidgetBuilder> routes = {
       ),
   Home.routeName: (context) => Home(),
   Base.routeName: (context) => Base(),
+  Profile.routeName: (context) => Profile(),
 /*  ForgotPasswordScreen.routeName: (context) => ForgotPasswordScreen(),
   StoreHome.routeName: (context) => StoreHome(),
   CategoriesList.routeName: (context) => CategoriesList(),
