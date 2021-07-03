@@ -16,6 +16,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:on_delivery/components/RaisedGradientButton.dart';
 import 'package:on_delivery/components/text_form_builder.dart';
 import 'package:on_delivery/helpers/location_provider.dart';
+import 'package:on_delivery/home/base.dart';
 import 'package:on_delivery/services/auth_service.dart';
 import 'package:on_delivery/utils/FirebaseService.dart';
 import 'package:on_delivery/utils/SizeConfig.dart';
@@ -24,7 +25,9 @@ import 'package:on_delivery/utils/validation.dart';
 import 'package:pinput/pin_put/pin_put.dart';
 import 'package:provider/provider.dart';
 
-String kGoogleApiKey = "AIzaSyAKBw42g9Se2zF-s8DhwuKguhTckxqTUp4";
+String kGoogleApiKey = Platform.isAndroid
+    ? "AIzaSyD3exTbi5W-6kYICekpUEslE3gIcSF5weI"
+    : "AIzaSyDvpynTkP9xyNU8KO4UlJYWlQfn-trjeGw";
 
 class UpdateProfiles extends StatefulWidget {
   static String routeName = "/UpdateProfiles";
@@ -38,6 +41,12 @@ class UpdateProfiles extends StatefulWidget {
 class _UpdateProfilesState extends State<UpdateProfiles> {
   final GlobalKey<ScaffoldState> _scaffoldkey = GlobalKey<ScaffoldState>();
   final _formKey = GlobalKey<FormState>();
+  final _ribFormKey = GlobalKey<FormState>();
+  final _tripFormKey = GlobalKey<FormState>();
+  final _activitiesFormKey = GlobalKey<FormState>();
+  final _businessFormKey = GlobalKey<FormState>();
+  final _clientFormKey = GlobalKey<FormState>();
+  final _verificationFormKey = GlobalKey<FormState>();
   AuthService authService = AuthService();
   var submitted = false;
   int types = 0;
@@ -588,7 +597,6 @@ class _UpdateProfilesState extends State<UpdateProfiles> {
   }
 
   ribBankInterface() {
-    final _formKey = GlobalKey<FormState>();
     return SafeArea(
         child: Scaffold(
             appBar: AppBar(
@@ -614,7 +622,7 @@ class _UpdateProfilesState extends State<UpdateProfiles> {
               ),
             ),
             body: Form(
-                key: _formKey,
+                key: _ribFormKey,
                 child: Padding(
                   padding: EdgeInsets.symmetric(horizontal: 15),
                   child: Container(
@@ -819,12 +827,8 @@ class _UpdateProfilesState extends State<UpdateProfiles> {
                                         firebaseAuth.currentUser,
                                         ribController.text,
                                         bankNameController.text);
-                                    setState(() {
-                                      valid = false;
-                                      agentInt = false;
-                                      businessInt = false;
-                                      activityInt = true;
-                                    });
+                                    Navigator.pushNamed(
+                                        context, Base.routeName);
                                   }),
                               SizedBox(height: 10),
                               Container(
@@ -853,7 +857,6 @@ class _UpdateProfilesState extends State<UpdateProfiles> {
   }
 
   tripLocationInterface() {
-    final _formKey = GlobalKey<FormState>();
     return SafeArea(
         child: Scaffold(
             appBar: AppBar(
@@ -879,7 +882,7 @@ class _UpdateProfilesState extends State<UpdateProfiles> {
               ),
             ),
             body: Form(
-                key: _formKey,
+                key: _tripFormKey,
                 child: Padding(
                   padding: EdgeInsets.symmetric(horizontal: 15),
                   child: Container(
@@ -935,6 +938,9 @@ class _UpdateProfilesState extends State<UpdateProfiles> {
                                         locationData.getCurrentPosition();
                                       setState(() {
                                         locationState = state;
+                                        locationData.getMoveCamera().then(
+                                            (value) => startingPointController
+                                                .text = value);
                                       });
                                     },
                                   ),
@@ -966,7 +972,7 @@ class _UpdateProfilesState extends State<UpdateProfiles> {
                               children: [
                                 TextField(
                                   controller: startingPointController,
-                                  readOnly: locationState,
+                                  readOnly: !locationState,
                                   decoration: InputDecoration(
                                       suffixIcon: Icon(
                                         CupertinoIcons.location_fill,
@@ -1075,44 +1081,17 @@ class _UpdateProfilesState extends State<UpdateProfiles> {
                             SizedBox(
                               height: 20,
                             ),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Container(
-                                  child: TextFormBuilder(
-                                    controller: maxWeightController,
-                                    hintText: "Max Weight",
-                                    suffix: false,
-                                    prefix: CupertinoIcons.arrow_up_down,
-                                    textInputAction: TextInputAction.next,
-                                    validateFunction:
-                                        Validations.validateNumber,
-                                  ),
-                                  height: 100,
-                                  width: 150,
-                                ),
-                                Container(
-                                    height: 100,
-                                    child: DropdownButton<String>(
-                                      items: <String>[
-                                        "Km",
-                                        "Kg",
-                                        "Gram",
-                                        "Miter",
-                                        "unit"
-                                      ].map((String value) {
-                                        return DropdownMenuItem<String>(
-                                          value: value,
-                                          child: new Text(value),
-                                        );
-                                      }).toList(),
-                                      onChanged: (newValue) {
-                                        setState(() {
-                                          _unitiSelected = newValue;
-                                        });
-                                      },
-                                    )),
-                              ],
+                            Container(
+                              child: TextFormBuilder(
+                                controller: maxWeightController,
+                                hintText: "Max Weight",
+                                suffix: false,
+                                prefix: CupertinoIcons.arrow_up_down,
+                                textInputAction: TextInputAction.next,
+                                validateFunction: Validations.validateNumber,
+                              ),
+                              height: 100,
+                              width: 150,
                             ),
                           ],
                         )),
@@ -1266,7 +1245,9 @@ class _UpdateProfilesState extends State<UpdateProfiles> {
                                   ),
                                   width: SizeConfig.screenWidth - 150,
                                   onPressed: () async {
-                                    //authService.updateTripsLocationToFireStore(firebaseAuth.currentUser, agentTripsLocationList)
+                                    authService.updateTripsmaxWeightToFireStore(
+                                        firebaseAuth.currentUser,
+                                        maxWeightController.text);
                                     setState(() {
                                       valid = false;
                                       agentInt = false;
@@ -1303,7 +1284,6 @@ class _UpdateProfilesState extends State<UpdateProfiles> {
   }
 
   activityInterface() {
-    final _formKey = GlobalKey<FormState>();
     return SafeArea(
         child: Scaffold(
             appBar: AppBar(
@@ -1329,7 +1309,7 @@ class _UpdateProfilesState extends State<UpdateProfiles> {
               ),
             ),
             body: Form(
-                key: _formKey,
+                key: _activitiesFormKey,
                 child: Padding(
                   padding: EdgeInsets.symmetric(horizontal: 15),
                   child: Container(
@@ -1774,10 +1754,9 @@ class _UpdateProfilesState extends State<UpdateProfiles> {
                                   ),
                                   width: SizeConfig.screenWidth - 150,
                                   onPressed: () async {
-                                    String activity =
-                                        "${food ? "FOOD/" : ""}${move ? "MOVE/" : ""}${courier ? "COURIER/" : ""}${ecom ? "E-COMMERCE" : ""}";
                                     authService.updateActivitiesToFireStore(
-                                        firebaseAuth.currentUser, activity);
+                                        firebaseAuth.currentUser,
+                                        "${food ? "FOOD/" : ""}${move ? "MOVE/" : ""}${courier ? "COURIER/" : ""}${ecom ? "E-COMMERCE" : ""}");
                                     setState(() {
                                       valid = false;
                                       agentInt = false;
@@ -1813,7 +1792,6 @@ class _UpdateProfilesState extends State<UpdateProfiles> {
   }
 
   businessInterface() {
-    final _formKey = GlobalKey<FormState>();
     return SafeArea(
         child: Scaffold(
             appBar: AppBar(
@@ -1839,7 +1817,7 @@ class _UpdateProfilesState extends State<UpdateProfiles> {
               ),
             ),
             body: Form(
-                key: _formKey,
+                key: _businessFormKey,
                 child: Padding(
                   padding: EdgeInsets.symmetric(horizontal: 15),
                   child: Container(
@@ -2518,7 +2496,7 @@ class _UpdateProfilesState extends State<UpdateProfiles> {
               ),
             ),
             body: Form(
-                key: _formKey,
+                key: _verificationFormKey,
                 child: Padding(
                   padding: EdgeInsets.symmetric(horizontal: 15),
                   child: Container(
@@ -2981,18 +2959,22 @@ class _UpdateProfilesState extends State<UpdateProfiles> {
                                   ),
                                   width: SizeConfig.screenWidth - 150,
                                   onPressed: () async {
-                                    authService
-                                        .updateVerificationDataToFireStore(
-                                            firebaseAuth.currentUser,
-                                            _verificationSelected,
-                                            side1Image,
-                                            side2Image,
-                                            passportImage);
-                                    setState(() {
-                                      valid = false;
-                                      agentInt = false;
-                                      businessInt = true;
-                                    });
+                                    if (loadingPassprot == true ||
+                                        (loadingSide1 == true &&
+                                            loadingSide2 == true)) {
+                                      authService
+                                          .updateVerificationDataToFireStore(
+                                              firebaseAuth.currentUser,
+                                              _verificationSelected,
+                                              side1Image,
+                                              side2Image,
+                                              passportImage);
+                                      setState(() {
+                                        valid = false;
+                                        agentInt = false;
+                                        businessInt = true;
+                                      });
+                                    }
                                   }),
                               SizedBox(height: 10),
                               Container(
@@ -3087,18 +3069,29 @@ class _UpdateProfilesState extends State<UpdateProfiles> {
                             pinAnimationType: PinAnimationType.rotation,
                             onSubmit: (pin) async {
                               try {
+                                /*
                                 await FirebaseAuth.instance
                                     .signInWithCredential(
                                         PhoneAuthProvider.credential(
                                             verificationId: _verificationCode,
                                             smsCode: pin))
                                     .then((value) async {
-                                  if (value.user != null) {
+                                  if (_verificationCode == pin) {
                                     setState(() {
                                       verificationMth = true;
                                     });
                                   }
-                                });
+                                });*/
+                                AuthCredential _credential =
+                                    PhoneAuthProvider.credential(
+                                        verificationId: _verificationCode,
+                                        smsCode: pin);
+
+                                if (_credential != null) {
+                                  setState(() {
+                                    verificationMth = true;
+                                  });
+                                }
                               } catch (e) {
                                 setState(() {
                                   verificationMth = true;
@@ -3165,19 +3158,7 @@ class _UpdateProfilesState extends State<UpdateProfiles> {
   _verifyPhone() async {
     await FirebaseAuth.instance.verifyPhoneNumber(
         phoneNumber: '${_phoneController.text}',
-        verificationCompleted: (PhoneAuthCredential credential) async {
-          await FirebaseAuth.instance
-              .signInWithCredential(credential)
-              .then((value) async {
-            if (value.user != null) {
-              /*
-              Navigator.pushAndRemoveUntil(
-                  context,
-                  MaterialPageRoute(builder: (context) => Home()),
-                  (route) => false);*/
-            }
-          });
-        },
+        verificationCompleted: (PhoneAuthCredential credential) async {},
         verificationFailed: (FirebaseAuthException e) {
           print(e.message);
         },
@@ -3195,7 +3176,6 @@ class _UpdateProfilesState extends State<UpdateProfiles> {
   }
 
   clientInterface() {
-    final _formKey = GlobalKey<FormState>();
     return SafeArea(
         child: Scaffold(
             appBar: AppBar(
@@ -3216,7 +3196,7 @@ class _UpdateProfilesState extends State<UpdateProfiles> {
               ),
             ),
             body: Form(
-                key: _formKey,
+                key: _clientFormKey,
                 child: Padding(
                   padding: EdgeInsets.symmetric(horizontal: 15),
                   child: Container(
@@ -3304,7 +3284,7 @@ class _UpdateProfilesState extends State<UpdateProfiles> {
                             ),
                             width: SizeConfig.screenWidth - 150,
                             onPressed: () async {
-                              if (_formKey.currentState.validate()) {
+                              if (_clientFormKey.currentState.validate()) {
                                 authService.updateUserDataToFireStore(
                                     firebaseAuth.currentUser,
                                     _fNameController.text,
@@ -3381,14 +3361,12 @@ class _MapScreenState extends State<MapScreen> {
   Completer<GoogleMapController> _controller = Completer();
   static CameraPosition _myPosition;
   static CameraPosition initPosition;
-  String controllerLocationString;
-  GoogleMapsPlaces _places = GoogleMapsPlaces(apiKey: kGoogleApiKey);
+  String controllerLocationString = "Warehouse";
   PlacesDetailsResponse detail;
   Prediction p;
   final searchScaffoldKey = GlobalKey<ScaffoldState>();
   final homeScaffoldKey = GlobalKey<ScaffoldState>();
   double searchedLocationLnt, searchedLocationLng;
-  //controllerLocationString = await locationData.getMoveCamera();
   @override
   Widget build(BuildContext context) {
     locationData = Provider.of<LocationProvider>(context);
@@ -3422,7 +3400,9 @@ class _MapScreenState extends State<MapScreen> {
               },
               onMapCreated: onCreate,
               onCameraIdle: () {
-                locationData.getMoveCamera();
+                locationData.getMoveCamera().then((value) => setState(() {
+                      controllerLocationString = value;
+                    }));
               },
             ),
             Align(
@@ -3455,56 +3435,33 @@ class _MapScreenState extends State<MapScreen> {
                   SizedBox(
                     height: 20,
                   ),
-                  Card(
-                    color: Colors.white,
-                    elevation: 8,
-                    shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10)),
-                    margin: EdgeInsets.fromLTRB(20, 0, 20, 10),
-                    child: Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: TextFormField(
-                        controller: wareHouseLocationController,
-                        cursorColor: Colors.green,
-                        style: TextStyle(fontSize: 14),
-                        decoration: InputDecoration(
-                            suffixIcon: Image.asset(
-                              "assets/images/arrival point.png",
-                              height: 50,
-                            ),
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.all(
-                                Radius.circular(10.0),
-                              ),
-                              borderSide: BorderSide(
-                                color: Colors.white,
-                                width: 1.0,
-                              ),
-                            ),
-                            enabledBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.all(
-                                Radius.circular(10.0),
-                              ),
-                              borderSide: BorderSide(
-                                color: Colors.white,
-                                width: 1.0,
-                              ),
-                            ),
-                            focusedBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.all(
-                                Radius.circular(10.0),
-                              ),
-                              borderSide: BorderSide(
-                                color: Colors.white,
-                                width: 1.0,
-                              ),
-                            ),
-                            labelStyle: TextStyle(
-                                color: Colors.grey[700], fontSize: 20),
-                            labelText: 'Warehouse'),
-                        readOnly: true,
-                        onTap: _handlePressButton,
+                  Container(
+                    width: 300,
+                    height: 50,
+                    child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        primary: Colors.white,
+                        onPrimary: Colors.white,
+                        shadowColor: Colors.greenAccent,
+                        elevation: 4,
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10.0)),
+                        minimumSize: Size(100, 40), //////// HERE
                       ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            controllerLocationString,
+                            style: TextStyle(
+                                color: Colors.black,
+                                fontSize: 14,
+                                fontWeight: FontWeight.normal),
+                          ),
+                          Image.asset('assets/images/arrival point.png')
+                        ],
+                      ),
+                      onPressed: _handlePressButton,
                     ),
                   )
                 ],
@@ -3539,9 +3496,7 @@ class _MapScreenState extends State<MapScreen> {
                     onPressed: () async {
                       authService.updateBusinessLocationToFireStore(
                           widget.user,
-                          p.description != null
-                              ? p.description
-                              : locationData.getMoveCamera(),
+                          p != null ? p.description : controllerLocationString,
                           Position(
                               latitude: locationData.lnt != null
                                   ? locationData.lnt
@@ -3570,6 +3525,16 @@ class _MapScreenState extends State<MapScreen> {
     controller.animateCamera(CameraUpdate.newCameraPosition(_myPosition));
   }
 
+  Future<void> _goToPosition(c, latitude, longitude) async {
+    _myPosition = CameraPosition(
+      target: LatLng(latitude, longitude),
+      zoom: 18.5,
+    );
+    await locationData.getCurrentPosition();
+    final GoogleMapController controller = await c;
+    controller.animateCamera(CameraUpdate.newCameraPosition(_myPosition));
+  }
+
   void onError(PlacesAutocompleteResponse response) {
     debugPrint('${response.errorMessage}');
   }
@@ -3582,7 +3547,8 @@ class _MapScreenState extends State<MapScreen> {
       hint: 'Search WareHouse',
       onError: onError,
       language: "fr",
-      components: [Component(Component.country, "fr")],
+      overlayBorderRadius: BorderRadius.all(Radius.circular(10)),
+      components: [Component(Component.country, "mar")],
     );
 
     displayPrediction(p, homeScaffoldKey.currentState);
@@ -3596,8 +3562,13 @@ class _MapScreenState extends State<MapScreen> {
       );
       PlacesDetailsResponse detail =
           await _places.getDetailsByPlaceId(p.placeId);
-      searchedLocationLnt = detail.result.geometry.location.lat;
-      searchedLocationLng = detail.result.geometry.location.lng;
+      setState(() {
+        searchedLocationLnt = detail.result.geometry.location.lat;
+        searchedLocationLng = detail.result.geometry.location.lng;
+        controllerLocationString = p.description;
+      });
+      _goToPosition(
+          _controller.future, searchedLocationLnt, searchedLocationLng);
     }
   }
 }

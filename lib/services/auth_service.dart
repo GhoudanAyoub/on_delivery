@@ -36,8 +36,29 @@ class AuthService extends Service {
         usersRef.doc(user.uid).set({
           'id': user.uid,
           'email': user.email,
-          'firstName': user.displayName,
+          'pass': "",
           'photoUrl': user.photoURL ?? '',
+          'firstName': user.displayName,
+          'lastName': "",
+          'city': "",
+          'phone': "",
+          'type': '',
+          'verificationType': "",
+          'side1PhotoUrl': "",
+          'side2PhotoUrl': "",
+          'passportPhotoUrl': "",
+          'activities': "",
+          'businessType': "",
+          'businessName': "",
+          'transportType': "",
+          'wareHouse': "",
+          'wareHouseAddress': "",
+          'wareHousePosition': null,
+          'agentTripsLocationList': null,
+          'unity': '',
+          'maxWeight': '',
+          'RIB': "",
+          'bankName': "",
         });
       }
     }
@@ -51,7 +72,28 @@ class AuthService extends Service {
         'id': user.uid,
         'email': email,
         'pass': password,
-        'photoUrl': user.photoURL ?? '',
+        'photoUrl': "",
+        'firstName': "",
+        'lastName': "",
+        'city': "",
+        'phone': "",
+        'type': '',
+        'verificationType': "",
+        'side1PhotoUrl': "",
+        'side2PhotoUrl': "",
+        'passportPhotoUrl': "",
+        'activities': "",
+        'businessType': "",
+        'businessName': "",
+        'transportType': "",
+        'wareHouse': "",
+        'wareHouseAddress': "",
+        'wareHousePosition': null,
+        'agentTripsLocationList': null,
+        'unity': '',
+        'maxWeight': '',
+        'RIB': "",
+        'bankName': "",
       });
     }
   }
@@ -61,6 +103,17 @@ class AuthService extends Service {
       final snapShot = await usersRef.doc(user.uid).get();
       if (snapShot.exists) {
         usersRef.doc(user.uid).update({'type': type});
+      }
+    }
+  }
+
+  updateTripsmaxWeightToFireStore(User user, String maxWeight) async {
+    if (user != null) {
+      final snapShot = await usersRef.doc(user.uid).get();
+      if (snapShot.exists) {
+        usersRef.doc(user.uid).update({
+          'maxWeight': maxWeight,
+        });
       }
     }
   }
@@ -115,47 +168,56 @@ class AuthService extends Service {
 
   updateUserDataToFireStore(User user, String fName, String lName, String city,
       String phone, File image) async {
-    String imageURL;
     if (user != null) {
-      if (image != null) {
-        imageURL = await uploadImage(profilePic, image);
-      }
       final snapShot = await usersRef.doc(user.uid).get();
       if (snapShot.exists) {
-        usersRef.doc(user.uid).update({
-          'firstName': fName,
-          'lastName': lName,
-          'city': city,
-          'phone': phone,
-          'photoUrl': imageURL
-        });
+        if (image != null) {
+          await uploadImage(profilePic, image)
+              .then((value) => usersRef.doc(user.uid).update({
+                    'firstName': fName,
+                    'lastName': lName,
+                    'city': city,
+                    'phone': phone,
+                    'photoUrl': value
+                  }));
+        } else
+          await usersRef.doc(user.uid).update({
+            'firstName': fName,
+            'lastName': lName,
+            'city': city,
+            'phone': phone,
+            'photoUrl': firebaseAuth.currentUser.photoURL
+          });
       }
     }
   }
 
   updateVerificationDataToFireStore(User user, String verificationType,
       File side1Image, File side2Image, File passport) async {
-    String side1ImageURL;
-    String side2ImageURL;
-    String passportURL;
-    if (user != null) {
-      if (side1Image != null) {
-        side1ImageURL = await uploadImage(profilePic, side1Image);
-      }
-      if (side2Image != null) {
-        side2ImageURL = await uploadImage(profilePic, side2Image);
-      }
-      if (passport != null) {
-        passportURL = await uploadImage(profilePic, passport);
-      }
-      final snapShot = await usersRef.doc(user.uid).get();
-      if (snapShot.exists) {
+    final snapShot = await usersRef.doc(user.uid).get();
+    if (snapShot.exists) {
+      if (user != null) {
         usersRef.doc(user.uid).update({
           'verificationType': verificationType,
-          'side1PhotoUrl': side1ImageURL,
-          'side2PhotoUrl': side2ImageURL,
-          'passportPhotoUrl': passportURL,
         });
+        if (side1Image != null) {
+          await uploadImage(identityPic, side1Image)
+              .then((value) => usersRef.doc(user.uid).update({
+                    'side1PhotoUrl': value,
+                  }));
+        }
+        if (side2Image != null) {
+          await uploadImage(identityPic, side2Image)
+              .then((value) => usersRef.doc(user.uid).update({
+                    'side2PhotoUrl': value,
+                  }));
+        }
+        if (passport != null) {
+          await uploadImage(passportPic, passport)
+              .then((value) => usersRef.doc(user.uid).update({
+                    'passportPhotoUrl': value,
+                  }));
+        }
       }
     }
   }
@@ -167,7 +229,6 @@ class AuthService extends Service {
     String transportType,
     String wareHouse,
   ) async {
-    String addresses;
     if (user != null) {
       final snapShot = await usersRef.doc(user.uid).get();
       if (snapShot.exists) {

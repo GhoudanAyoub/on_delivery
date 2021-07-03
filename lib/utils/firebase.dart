@@ -9,24 +9,19 @@ FirebaseStorage storage = FirebaseStorage.instance;
 final Uuid uuid = Uuid();
 
 // Collection refs
-CollectionReference paymentRef = firestore.collection('Payment');
-CollectionReference reportRef = firestore.collection('report');
-CollectionReference usersRef = firestore.collection('users');
-CollectionReference chatRef = firestore.collection("chats");
-CollectionReference postRef = firestore.collection('posts');
-CollectionReference videoRef = firestore.collection('videos');
-CollectionReference liveRef = firestore.collection('live');
-CollectionReference liveStreamRef = firestore.collection('liveStream');
-CollectionReference commentRef = firestore.collection('comments');
-CollectionReference notificationRef = firestore.collection('notifications');
-CollectionReference followersRef = firestore.collection('followers');
-CollectionReference followingRef = firestore.collection('following');
-CollectionReference likesRef = firestore.collection('likes');
-CollectionReference bookRef = firestore.collection('book');
-CollectionReference favUsersRef = firestore.collection('favoriteUsers');
+CollectionReference paymentRef = firestore.collection('onDeliveryPayment');
+CollectionReference reportRef = firestore.collection('onDeliveryReport');
+CollectionReference usersRef = firestore.collection('onDeliveryUsers');
+CollectionReference chatRef = firestore.collection("onDeliveryChats");
+CollectionReference notificationRef =
+    firestore.collection('onDeliveryNotifications');
+CollectionReference favUsersRef =
+    firestore.collection('onDeliveryFavoriteAgent');
 CollectionReference killAppRef = firestore.collection('kilApp');
 
 // Storage refs
-Reference profilePic = storage.ref().child('profilePic');
+Reference profilePic = storage.ref().child('onDeliveryProfilePic');
+Reference passportPic = storage.ref().child('onDeliveryPassportPic');
+Reference identityPic = storage.ref().child('onDeliveryIdentityPic');
 Reference posts = storage.ref().child('posts');
 Reference videos = storage.ref().child('videos');

@@ -81,6 +81,11 @@ class FirebaseService {
     }
   }
 
+  // Sign Out
+  signOut() async {
+    return await _firebaseAuth.signOut();
+  }
+
   /*
   // Email & Password Sign Up
   Future createUserWithEmailAndPassword(
@@ -123,10 +128,6 @@ class FirebaseService {
         .uid;
   }
 
-  // Sign Out
-  signOut() async {
-    return await _firebaseAuth.signOut();
-  }
 
   // Reset Password
   Future sendPasswordResetEmail(String email) async {

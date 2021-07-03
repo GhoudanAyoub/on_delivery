@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:on_delivery/SignIn/sign_in_screen.dart';
+import 'package:on_delivery/home/base.dart';
+import 'package:on_delivery/utils/firebase.dart';
 
 class Body extends StatefulWidget {
   @override
@@ -10,12 +12,10 @@ class _BodyState extends State<Body> {
   @override
   void initState() {
     new Future.delayed(Duration(seconds: 3), () {
-      /*if (firebaseAuth.currentUser != null) {
-      }
-      Navigator.push(
-            context, MaterialPageRoute(builder: (context) => Home()));
-      else*/
-      Navigator.pushNamed(context, SignInScreen.routeName);
+      if (firebaseAuth.currentUser != null)
+        Navigator.pushNamed(context, Base.routeName);
+      else
+        Navigator.pushNamed(context, SignInScreen.routeName);
     });
   }
 

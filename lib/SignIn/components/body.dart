@@ -130,11 +130,11 @@ class _BodyState extends State<Body> {
                                       setState(() {
                                         isSignIn = false;
                                       });
-                                      /* Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                          builder: (context) =>
-                                              HomeScreen()));*/
+                                      /*
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => Base()));*/
                                     });
                                   },
                                   child: Container(
@@ -180,8 +180,11 @@ class _BodyState extends State<Body> {
                                       setState(() {
                                         isSignIn = false;
                                       });
-                                      /* Navigator.pushNamed(
-                                  context, HomeScreen.routeName);*/
+                                      /*
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => Base()));*/
                                     });
                                   },
                                   child: Container(

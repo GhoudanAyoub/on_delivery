@@ -3,6 +3,7 @@ import 'package:on_delivery/components/RaisedGradientButton.dart';
 import 'package:on_delivery/components/form_error.dart';
 import 'package:on_delivery/components/text_form_builder.dart';
 import 'package:on_delivery/helpers/keyboard.dart';
+import 'package:on_delivery/home/base.dart';
 import 'package:on_delivery/services/auth_service.dart';
 import 'package:on_delivery/utils/firebase.dart';
 import 'package:on_delivery/utils/validation.dart';
@@ -111,8 +112,7 @@ class _SignFormState extends State<SignForm> {
                         password: _passwordController.text,
                       );
                       if (success == firebaseAuth.currentUser.uid) {
-                        /* Navigator.push(context,
-                        MaterialPageRoute(builder: (context) => HomeScreen()));*/
+                        Navigator.pushNamed(context, Base.routeName);
                         Navigator.pop(context);
                         Scaffold.of(context).showSnackBar(
                             SnackBar(content: Text('Welcome Back')));

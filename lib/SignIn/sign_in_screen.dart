@@ -6,6 +6,11 @@ class SignInScreen extends StatelessWidget {
   static String routeName = "/sign_in";
   @override
   Widget build(BuildContext context) {
-    return SafeArea(child: Scaffold(body: Body()));
+    return SafeArea(
+        child: Scaffold(
+            body: new WillPopScope(
+      onWillPop: () async => false,
+      child: Body(),
+    )));
   }
 }

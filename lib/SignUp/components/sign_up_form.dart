@@ -8,6 +8,7 @@ import 'package:google_sign_in/google_sign_in.dart';
 import 'package:http/http.dart' as http;
 import 'package:on_delivery/SetUpProfile/ChooseSide.dart';
 import 'package:on_delivery/components/RaisedGradientButton.dart';
+import 'package:on_delivery/components/indicators.dart';
 import 'package:on_delivery/components/text_form_builder.dart';
 import 'package:on_delivery/services/auth_service.dart';
 import 'package:on_delivery/utils/firebase.dart';
@@ -75,11 +76,7 @@ class _SignUpFormState extends State<SignUpForm> {
                       ? SizedBox(
                           height: 15,
                           width: 15,
-                          child: CircularProgressIndicator(
-                            strokeWidth: 2,
-                            valueColor:
-                                AlwaysStoppedAnimation<Color>(Colors.white),
-                          ),
+                          child: circularProgress(context),
                         )
                       : Text(
                           'Sign up',
@@ -95,8 +92,6 @@ class _SignUpFormState extends State<SignUpForm> {
                     ],
                   ),
                   onPressed: () async {
-                    Navigator.pushNamed(context, ChooseSide.routeName);
-                    /*
                     try {
                       if (_formKey.currentState.validate()) {
                         submitted = true;
@@ -115,7 +110,7 @@ class _SignUpFormState extends State<SignUpForm> {
                       print(e);
                       showInSnackBar(
                           '${authService.handleFirebaseAuthError(e.toString())}');
-                    }*/
+                    }
                   }),
               SizedBox(height: 30),
             ],
@@ -161,7 +156,7 @@ class _SignUpFormState extends State<SignUpForm> {
                 ),
                 SizedBox(height: 5),
                 isSignIn != false
-                    ? Center(child: CircularProgressIndicator())
+                    ? Center(child: circularProgress(context))
                     : SizedBox(height: 1),
                 SizedBox(height: 10),
                 isSignIn == false
@@ -178,11 +173,8 @@ class _SignUpFormState extends State<SignUpForm> {
                               setState(() {
                                 isSignIn = false;
                               });
-                              /* Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                          builder: (context) =>
-                                              HomeScreen()));*/
+                              Navigator.pushNamed(
+                                  context, ChooseSide.routeName);
                             });
                           },
                           child: Container(
@@ -226,8 +218,8 @@ class _SignUpFormState extends State<SignUpForm> {
                               setState(() {
                                 isSignIn = false;
                               });
-                              /* Navigator.pushNamed(
-                                  context, HomeScreen.routeName);*/
+                              Navigator.pushNamed(
+                                  context, ChooseSide.routeName);
                             });
                           },
                           child: Container(
