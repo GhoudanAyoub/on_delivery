@@ -53,20 +53,7 @@ class _ProfileState extends State<Profile> {
   LocationProvider locationData;
   bool food = false, move = false, ecom = false, courier = false;
 
-  static final List<Category> categories = [
-    Category(
-      id: 1,
-      name: "Personal",
-    ),
-    Category(
-      id: 2,
-      name: "Company",
-    ),
-    Category(
-      id: 3,
-      name: "Bank account",
-    ),
-  ];
+  List<Category> categories = [];
 
   List unityList = [
     'KG',
@@ -193,85 +180,132 @@ class _ProfileState extends State<Profile> {
                           ),
                         ),
                         SizedBox(height: 20),
-                        Align(
-                          alignment: Alignment.topCenter,
-                          child: Container(
-                            height: 50,
-                            child: ListView.separated(
-                              shrinkWrap: true,
-                              scrollDirection: Axis.horizontal,
-                              itemBuilder: (BuildContext context, int index) {
-                                return InkWell(
-                                  onTap: () {
-                                    setState(() {
-                                      _activeTab = index;
-                                      CatName =
-                                          categories[index].name.toLowerCase();
-                                      //search(CatName);
-                                    });
-                                  },
-                                  child: AnimatedContainer(
-                                    duration: Duration(milliseconds: 450),
-                                    padding: EdgeInsets.symmetric(
-                                      horizontal: 10.0,
-                                    ),
-                                    height: 10,
-                                    child: Column(
-                                      children: [
-                                        Text(
-                                          categories[index].name,
-                                          style: TextStyle(
-                                            letterSpacing: 1,
-                                            fontSize: 16,
-                                            fontWeight: FontWeight.w600,
-                                            color: _activeTab == index
-                                                ? Colors.black
-                                                : Colors.grey[400],
+                        StreamBuilder(
+                          stream: usersRef
+                              .doc(firebaseAuth.currentUser.uid)
+                              .snapshots(),
+                          builder: (context,
+                              AsyncSnapshot<DocumentSnapshot> snapshot) {
+                            if (snapshot.hasData) {
+                              UserModel userModel =
+                                  UserModel.fromJson(snapshot.data.data());
+
+                              if (userModel.type
+                                  .toLowerCase()
+                                  .contains('agent')) {
+                                categories = [
+                                  Category(
+                                    id: 1,
+                                    name: "Personal",
+                                  ),
+                                  Category(
+                                    id: 2,
+                                    name: "Company",
+                                  ),
+                                  Category(
+                                    id: 3,
+                                    name: "Bank account",
+                                  ),
+                                ];
+                              } else
+                                categories = [
+                                  Category(
+                                    id: 1,
+                                    name: "Personal",
+                                  ),
+                                ];
+                              return Align(
+                                alignment: Alignment.topCenter,
+                                child: Container(
+                                  height: 50,
+                                  child: ListView.separated(
+                                    shrinkWrap: true,
+                                    scrollDirection: Axis.horizontal,
+                                    itemBuilder:
+                                        (BuildContext context, int index) {
+                                      return InkWell(
+                                        onTap: () {
+                                          setState(() {
+                                            _activeTab = index;
+                                            CatName = categories[index]
+                                                .name
+                                                .toLowerCase();
+                                            //search(CatName);
+                                          });
+                                        },
+                                        child: AnimatedContainer(
+                                          duration: Duration(milliseconds: 450),
+                                          padding: EdgeInsets.symmetric(
+                                            horizontal: 10.0,
+                                          ),
+                                          height: 10,
+                                          child: Column(
+                                            children: [
+                                              Text(
+                                                categories[index].name,
+                                                style: TextStyle(
+                                                  letterSpacing: 1,
+                                                  fontSize: 16,
+                                                  fontWeight: FontWeight.w600,
+                                                  color: _activeTab == index
+                                                      ? Colors.black
+                                                      : Colors.grey[400],
+                                                ),
+                                              ),
+                                              _activeTab == index
+                                                  ? Card(
+                                                      elevation: 3,
+                                                      shape:
+                                                          RoundedRectangleBorder(
+                                                              borderRadius:
+                                                                  BorderRadius
+                                                                      .circular(
+                                                                          10)),
+                                                      child: Container(
+                                                        width: 8,
+                                                        height: 8,
+                                                        decoration:
+                                                            BoxDecoration(
+                                                          gradient:
+                                                              LinearGradient(
+                                                            colors: <Color>[
+                                                              Color.fromRGBO(82,
+                                                                  238, 79, 1),
+                                                              Color.fromRGBO(
+                                                                  5, 151, 0, 1)
+                                                            ],
+                                                          ),
+                                                          borderRadius:
+                                                              BorderRadius
+                                                                  .circular(
+                                                                      10.0),
+                                                        ),
+                                                      ),
+                                                    )
+                                                  : Container(
+                                                      height: 0,
+                                                      width: 0,
+                                                    )
+                                            ],
                                           ),
                                         ),
-                                        _activeTab == index
-                                            ? Card(
-                                                elevation: 3,
-                                                shape: RoundedRectangleBorder(
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                            10)),
-                                                child: Container(
-                                                  width: 8,
-                                                  height: 8,
-                                                  decoration: BoxDecoration(
-                                                    gradient: LinearGradient(
-                                                      colors: <Color>[
-                                                        Color.fromRGBO(
-                                                            82, 238, 79, 1),
-                                                        Color.fromRGBO(
-                                                            5, 151, 0, 1)
-                                                      ],
-                                                    ),
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                            10.0),
-                                                  ),
-                                                ),
-                                              )
-                                            : Container(
-                                                height: 0,
-                                                width: 0,
-                                              )
-                                      ],
-                                    ),
+                                      );
+                                    },
+                                    separatorBuilder:
+                                        (BuildContext context, int index) {
+                                      return SizedBox(
+                                        width: 5.0,
+                                      );
+                                    },
+                                    itemCount: categories.length,
                                   ),
-                                );
-                              },
-                              separatorBuilder:
-                                  (BuildContext context, int index) {
-                                return SizedBox(
-                                  width: 5.0,
-                                );
-                              },
-                              itemCount: categories.length,
-                            ),
-                          ),
+                                ),
+                              );
+                            }
+                            return Container(
+                              height: 0,
+                            );
+                          },
                         ),
                         _activeTab == 0
                             ? Expanded(

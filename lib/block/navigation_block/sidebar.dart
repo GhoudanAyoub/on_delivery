@@ -295,7 +295,8 @@ class _SideBarState extends State<SideBar>
                             AsyncSnapshot<DocumentSnapshot> snapshot) {
                           if (snapshot.hasData) {
                             user1 = UserModel.fromJson(snapshot.data.data());
-                            if (user1.type == "Client") {
+                            if (user1.type == "Client" &&
+                                int.parse(user1.percentage) != 91) {
                               return Align(
                                 alignment: Alignment.bottomCenter,
                                 child: RaisedGradientButton(
@@ -320,7 +321,32 @@ class _SideBarState extends State<SideBar>
                                       //todo : add route to setup Page info data Section
                                     }),
                               );
-                            }
+                            } else if (user1.type == "Client" &&
+                                int.parse(user1.percentage) == 91)
+                              return Align(
+                                alignment: Alignment.bottomCenter,
+                                child: RaisedGradientButton(
+                                    child: Text(
+                                      'Switch to Agent',
+                                      style: TextStyle(
+                                        fontSize: 16,
+                                        color: Colors.grey[600],
+                                      ),
+                                    ),
+                                    border: true,
+                                    gradient: LinearGradient(
+                                      colors: <Color>[
+                                        Colors.white,
+                                        Colors.white
+                                      ],
+                                    ),
+                                    width: SizeConfig.screenWidth - 150,
+                                    onPressed: () async {
+                                      FirebaseService().switchCurrentUserType(
+                                          firebaseAuth.currentUser, "Agent");
+                                      onIconPressed();
+                                    }),
+                              );
                             return Container(
                               height: 0,
                             );
@@ -374,40 +400,25 @@ class _SideBarState extends State<SideBar>
             shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(5.0)),
             children: [
-              Center(
-                child: Text(
-                  'Are you sure, you want to Sign out?',
-                  style: TextStyle(
-                    fontSize: 16,
-                    letterSpacing: 1,
-                    color: Colors.black,
+              Container(
+                padding:
+                    EdgeInsets.only(left: 40, right: 40, bottom: 40, top: 40),
+                width: 150,
+                child: Center(
+                  child: Text(
+                    'Are you sure, you want to Sign out?',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      fontSize: 14,
+                      letterSpacing: 1,
+                      color: Colors.black,
+                    ),
                   ),
                 ),
               ),
               Container(
-                padding: EdgeInsets.all(20),
-                width: 150,
-                child: RaisedGradientButton(
-                    child: Text(
-                      'Cancel',
-                      style: TextStyle(
-                        fontSize: 16,
-                        color: Colors.white,
-                      ),
-                    ),
-                    gradient: LinearGradient(
-                      colors: <Color>[
-                        Color.fromRGBO(82, 238, 79, 1),
-                        Color.fromRGBO(5, 151, 0, 1)
-                      ],
-                    ),
-                    width: SizeConfig.screenWidth - 150,
-                    onPressed: () async {
-                      Navigator.pop(context);
-                    }),
-              ),
-              Container(
-                padding: EdgeInsets.all(20),
+                padding:
+                    EdgeInsets.only(left: 40, right: 40, bottom: 10, top: 20),
                 width: 150,
                 child: RaisedGradientButton(
                     child: Text(
@@ -425,6 +436,29 @@ class _SideBarState extends State<SideBar>
                       Navigator.pop(context);
                       FirebaseService().signOut();
                       Navigator.pushNamed(context, SignInScreen.routeName);
+                    }),
+              ),
+              Container(
+                padding: EdgeInsets.only(left: 40, right: 40, bottom: 10),
+                width: 150,
+                child: RaisedGradientButton(
+                    child: Text(
+                      'Cancel',
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                      ),
+                    ),
+                    gradient: LinearGradient(
+                      colors: <Color>[
+                        Color.fromRGBO(82, 238, 79, 1),
+                        Color.fromRGBO(5, 151, 0, 1)
+                      ],
+                    ),
+                    width: SizeConfig.screenWidth - 150,
+                    onPressed: () async {
+                      Navigator.pop(context);
                     }),
               ),
             ],
