@@ -57,6 +57,7 @@ class AuthService extends Service {
           'maxWeight': '',
           'RIB': "",
           'bankName': "",
+          'percentage': "",
         });
       }
     }
@@ -91,6 +92,7 @@ class AuthService extends Service {
         'maxWeight': '',
         'RIB': "",
         'bankName': "",
+        'percentage': "",
       });
     }
   }
@@ -191,6 +193,7 @@ class AuthService extends Service {
         usersRef.doc(user.uid).update({
           'RIB': RIB,
           'bankName': bankName,
+          'percentage': "91",
         });
       }
     }
@@ -235,7 +238,7 @@ class AuthService extends Service {
                     'lastName': lName,
                     'city': city,
                     'phone': phone,
-                    'photoUrl': value
+                    'photoUrl': value,
                   }));
         } else
           await usersRef.doc(user.uid).update({

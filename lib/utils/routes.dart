@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:on_delivery/Condition & rules/C&R.dart';
 import 'package:on_delivery/SetUpProfile/ChooseSide.dart';
 import 'package:on_delivery/SetUpProfile/UpdateProfile.dart';
 import 'package:on_delivery/SignIn/sign_in_screen.dart';
@@ -23,6 +24,7 @@ final Map<String, WidgetBuilder> routes = {
         user: firebaseAuth.currentUser,
       ),
   Home.routeName: (context) => Home(),
+  CR.routeName: (context) => CR(),
   Base.routeName: (context) => Base(),
   Profile.routeName: (context) => Profile(),
 /*  ForgotPasswordScreen.routeName: (context) => ForgotPasswordScreen(),

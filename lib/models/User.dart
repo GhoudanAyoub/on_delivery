@@ -21,7 +21,7 @@ class UserModel {
   String activities;
   List<dynamic> agentTripsLocationList;
   List<dynamic> wareHouseLocationList;
-
+  String percentage;
   String maxWeight;
   String unity;
   String RIB;
@@ -49,6 +49,7 @@ class UserModel {
       this.agentTripsLocationList,
       this.wareHouseLocationList,
       this.maxWeight,
+      this.percentage,
       this.unity,
       this.RIB,
       this.bankName,
@@ -78,6 +79,7 @@ class UserModel {
     agentTripsLocationList = json['agentTripsLocationList'];
     wareHouseLocationList = json['wareHouseLocationList'];
     maxWeight = json['maxWeight'];
+    percentage = json['percentage'];
     unity = json['unity'];
     RIB = json['RIB'];
     bankName = json['bankName'];

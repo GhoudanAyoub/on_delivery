@@ -77,7 +77,7 @@ class _SideBarState extends State<SideBar>
           child: Row(
             children: <Widget>[
               Align(
-                alignment: Alignment(0, -0.8),
+                alignment: Alignment(0, -0.9),
                 child: GestureDetector(
                   onTap: () {
                     onIconPressed();
@@ -214,6 +214,9 @@ class _SideBarState extends State<SideBar>
                             title: "Conditions & rules",
                             onTap: () {
                               onIconPressed();
+                              BlocProvider.of<NavigationBloc>(context).add(
+                                  NavigationEvents
+                                      .ConditionRulesPageClickedEvent);
                             },
                           ),
                           SizedBox(
