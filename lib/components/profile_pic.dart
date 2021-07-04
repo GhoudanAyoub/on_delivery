@@ -19,10 +19,10 @@ class ProfilePic extends StatelessWidget {
           child,
           Positioned(
             right: -20,
-            bottom: 0,
+            bottom: -40,
             child: Image.asset(
               "assets/images/edit profile.png",
-              height: 30,
+              height: 80,
             ),
           )
         ],
