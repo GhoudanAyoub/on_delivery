@@ -1,13 +1,14 @@
 import 'dart:async';
+import 'dart:collection';
 import 'dart:io';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:custom_switch/custom_switch.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_google_places/flutter_google_places.dart';
-import 'package:geolocator/geolocator.dart';
 import 'package:google_api_headers/google_api_headers.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:google_maps_webservice/places.dart';
@@ -17,6 +18,7 @@ import 'package:on_delivery/components/RaisedGradientButton.dart';
 import 'package:on_delivery/components/text_form_builder.dart';
 import 'package:on_delivery/helpers/location_provider.dart';
 import 'package:on_delivery/home/base.dart';
+import 'package:on_delivery/models/User.dart';
 import 'package:on_delivery/services/auth_service.dart';
 import 'package:on_delivery/utils/FirebaseService.dart';
 import 'package:on_delivery/utils/SizeConfig.dart';
@@ -74,7 +76,9 @@ class _UpdateProfilesState extends State<UpdateProfiles> {
   File side1Image;
   File side2Image;
   File passportImage;
-  String userImgLink;
+  String userImgLink,
+      startingPointString = "Starting Point",
+      arrivalPointString = "Arrive Point";
 
   GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
   TextEditingController _fNameController = TextEditingController();
@@ -967,98 +971,264 @@ class _UpdateProfilesState extends State<UpdateProfiles> {
                             SizedBox(
                               height: 40,
                             ),
-                            Container(
-                                child: Column(
-                              children: [
-                                TextField(
-                                  controller: startingPointController,
-                                  readOnly: !locationState,
-                                  decoration: InputDecoration(
-                                      suffixIcon: Icon(
-                                        CupertinoIcons.location_fill,
-                                        size: 20.0,
-                                        color: Colors.green,
-                                      ),
-                                      border: OutlineInputBorder(
-                                        borderRadius: BorderRadius.all(
-                                          Radius.circular(10.0),
+                            StreamBuilder(
+                              stream: usersRef
+                                  .doc(firebaseAuth.currentUser.uid)
+                                  .snapshots(),
+                              builder: (context,
+                                  AsyncSnapshot<DocumentSnapshot> snapshot) {
+                                if (snapshot.hasData) {
+                                  UserModel userModel =
+                                      UserModel.fromJson(snapshot.data.data());
+
+                                  List<Widget> list = new List<Widget>();
+                                  if (userModel.agentTripsLocationList !=
+                                      null) {
+                                    for (int e = 0;
+                                        e <
+                                            userModel
+                                                .agentTripsLocationList.length;
+                                        e++) {
+                                      list.add(Container(
+                                          padding: EdgeInsets.all(10),
+                                          decoration: BoxDecoration(
+                                            borderRadius:
+                                                BorderRadius.circular(10.0),
+                                            border: Border.all(
+                                              color: Colors.grey[400],
+                                            ),
+                                          ),
+                                          child: Column(
+                                            children: [
+                                              Container(
+                                                width: 300,
+                                                height: 50,
+                                                child: ElevatedButton(
+                                                  style:
+                                                      ElevatedButton.styleFrom(
+                                                    onSurface: Colors.white,
+                                                    primary: Colors.transparent,
+                                                    onPrimary: Colors.white,
+                                                    elevation: 4,
+                                                    shape:
+                                                        RoundedRectangleBorder(
+                                                      borderRadius:
+                                                          BorderRadius.only(
+                                                        topRight:
+                                                            Radius.circular(10),
+                                                        topLeft:
+                                                            Radius.circular(10),
+                                                      ),
+                                                    ),
+                                                    minimumSize: Size(
+                                                        100, 40), //////// HERE
+                                                  ),
+                                                  child: Row(
+                                                    mainAxisAlignment:
+                                                        MainAxisAlignment
+                                                            .spaceBetween,
+                                                    children: [
+                                                      Container(
+                                                        width: 220,
+                                                        child: Text(
+                                                          userModel.agentTripsLocationList[
+                                                                  e][
+                                                              "startingPointString"],
+                                                          overflow: TextOverflow
+                                                              .ellipsis,
+                                                          style: TextStyle(
+                                                              color:
+                                                                  Colors.black,
+                                                              fontSize: 14,
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .normal),
+                                                        ),
+                                                      ),
+                                                      Image.asset(
+                                                          'assets/images/starting point.png')
+                                                    ],
+                                                  ),
+                                                ),
+                                              ),
+                                              Container(
+                                                height: 1,
+                                                color: Colors.grey[400],
+                                              ),
+                                              Container(
+                                                width: 300,
+                                                height: 50,
+                                                child: ElevatedButton(
+                                                  style:
+                                                      ElevatedButton.styleFrom(
+                                                    elevation: 4,
+                                                    onSurface: Colors.white,
+                                                    primary: Colors.transparent,
+                                                    onPrimary: Colors.white,
+                                                    shape:
+                                                        RoundedRectangleBorder(
+                                                      borderRadius:
+                                                          BorderRadius.only(
+                                                        bottomLeft:
+                                                            Radius.circular(10),
+                                                        bottomRight:
+                                                            Radius.circular(10),
+                                                      ),
+                                                    ),
+                                                    minimumSize: Size(
+                                                        100, 40), //////// HERE
+                                                  ),
+                                                  child: Row(
+                                                    mainAxisAlignment:
+                                                        MainAxisAlignment
+                                                            .spaceBetween,
+                                                    children: [
+                                                      Container(
+                                                        width: 220,
+                                                        child: Text(
+                                                          userModel.agentTripsLocationList[
+                                                                  e][
+                                                              "arrivalPointString"],
+                                                          overflow: TextOverflow
+                                                              .ellipsis,
+                                                          style: TextStyle(
+                                                              color:
+                                                                  Colors.black,
+                                                              fontSize: 14,
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .normal),
+                                                        ),
+                                                      ),
+                                                      Image.asset(
+                                                          'assets/images/arrival point.png')
+                                                    ],
+                                                  ),
+                                                ),
+                                              ),
+                                            ],
+                                          )));
+                                    }
+
+                                    return Column(
+                                      children: list,
+                                    );
+                                  } else
+                                    return Container(
+                                        padding: EdgeInsets.all(10),
+                                        decoration: BoxDecoration(
+                                          borderRadius:
+                                              BorderRadius.circular(10.0),
+                                          border: Border.all(
+                                            color: Colors.grey[400],
+                                          ),
                                         ),
-                                        borderSide: BorderSide(
-                                          color:
-                                              Color.fromRGBO(224, 224, 224, 1),
-                                          width: 1.0,
-                                        ),
-                                      ),
-                                      enabledBorder: OutlineInputBorder(
-                                        borderRadius: BorderRadius.all(
-                                          Radius.circular(10.0),
-                                        ),
-                                        borderSide: BorderSide(
-                                          color:
-                                              Color.fromRGBO(224, 224, 224, 1),
-                                          width: 1.0,
-                                        ),
-                                      ),
-                                      focusedBorder: OutlineInputBorder(
-                                        borderRadius: BorderRadius.all(
-                                          Radius.circular(10.0),
-                                        ),
-                                        borderSide: BorderSide(
-                                          color:
-                                              Color.fromRGBO(224, 224, 224, 1),
-                                          width: 1.0,
-                                        ),
-                                      ),
-                                      labelStyle: TextStyle(
-                                          color: Colors.grey[700],
-                                          fontSize: 16),
-                                      labelText: 'Starting point'),
-                                ),
-                                TextField(
-                                  controller: arrivalPointController,
-                                  decoration: InputDecoration(
-                                      suffixIcon: Icon(
-                                        CupertinoIcons.location,
-                                        size: 20.0,
-                                        color: Colors.green,
-                                      ),
-                                      border: OutlineInputBorder(
-                                        borderRadius: BorderRadius.all(
-                                          Radius.circular(10.0),
-                                        ),
-                                        borderSide: BorderSide(
-                                          color:
-                                              Color.fromRGBO(224, 224, 224, 1),
-                                          width: 1.0,
-                                        ),
-                                      ),
-                                      enabledBorder: OutlineInputBorder(
-                                        borderRadius: BorderRadius.all(
-                                          Radius.circular(10.0),
-                                        ),
-                                        borderSide: BorderSide(
-                                          color:
-                                              Color.fromRGBO(224, 224, 224, 1),
-                                          width: 1.0,
-                                        ),
-                                      ),
-                                      focusedBorder: OutlineInputBorder(
-                                        borderRadius: BorderRadius.all(
-                                          Radius.circular(10.0),
-                                        ),
-                                        borderSide: BorderSide(
-                                          color:
-                                              Color.fromRGBO(224, 224, 224, 1),
-                                          width: 1.0,
-                                        ),
-                                      ),
-                                      labelStyle: TextStyle(
-                                          color: Colors.grey[700],
-                                          fontSize: 16),
-                                      labelText: 'Arrival point'),
-                                ),
-                              ],
-                            )),
+                                        child: Column(
+                                          children: [
+                                            Container(
+                                              width: 300,
+                                              height: 50,
+                                              child: ElevatedButton(
+                                                style: ElevatedButton.styleFrom(
+                                                  onSurface: Colors.white,
+                                                  primary: Colors.transparent,
+                                                  onPrimary: Colors.white,
+                                                  elevation: 4,
+                                                  shape: RoundedRectangleBorder(
+                                                    borderRadius:
+                                                        BorderRadius.only(
+                                                      topRight:
+                                                          Radius.circular(10),
+                                                      topLeft:
+                                                          Radius.circular(10),
+                                                    ),
+                                                  ),
+                                                  minimumSize: Size(
+                                                      100, 40), //////// HERE
+                                                ),
+                                                child: Row(
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment
+                                                          .spaceBetween,
+                                                  children: [
+                                                    Container(
+                                                      width: 220,
+                                                      child: Text(
+                                                        startingPointString,
+                                                        overflow: TextOverflow
+                                                            .ellipsis,
+                                                        style: TextStyle(
+                                                            color: Colors.black,
+                                                            fontSize: 14,
+                                                            fontWeight:
+                                                                FontWeight
+                                                                    .normal),
+                                                      ),
+                                                    ),
+                                                    Image.asset(
+                                                        'assets/images/starting point.png')
+                                                  ],
+                                                ),
+                                              ),
+                                            ),
+                                            Container(
+                                              height: 1,
+                                              color: Colors.grey[400],
+                                            ),
+                                            Container(
+                                              width: 300,
+                                              height: 50,
+                                              child: ElevatedButton(
+                                                style: ElevatedButton.styleFrom(
+                                                  elevation: 4,
+                                                  onSurface: Colors.white,
+                                                  primary: Colors.transparent,
+                                                  onPrimary: Colors.white,
+                                                  shape: RoundedRectangleBorder(
+                                                    borderRadius:
+                                                        BorderRadius.only(
+                                                      bottomLeft:
+                                                          Radius.circular(10),
+                                                      bottomRight:
+                                                          Radius.circular(10),
+                                                    ),
+                                                  ),
+                                                  minimumSize: Size(
+                                                      100, 40), //////// HERE
+                                                ),
+                                                child: Row(
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment
+                                                          .spaceBetween,
+                                                  children: [
+                                                    Container(
+                                                      width: 220,
+                                                      child: Text(
+                                                        arrivalPointString,
+                                                        overflow: TextOverflow
+                                                            .ellipsis,
+                                                        style: TextStyle(
+                                                            color: Colors.black,
+                                                            fontSize: 14,
+                                                            fontWeight:
+                                                                FontWeight
+                                                                    .normal),
+                                                      ),
+                                                    ),
+                                                    Image.asset(
+                                                        'assets/images/arrival point.png')
+                                                  ],
+                                                ),
+                                              ),
+                                            ),
+                                          ],
+                                        ));
+                                }
+                                return Container(
+                                  height: 0,
+                                );
+                              },
+                            ),
                             SizedBox(
                               height: 40,
                             ),
@@ -2214,68 +2384,221 @@ class _UpdateProfilesState extends State<UpdateProfiles> {
                                 SizedBox(
                                   height: 20,
                                 ),
-                                warehouseYes
-                                    ? Container(
-                                        height: 50.0,
-                                        padding: EdgeInsets.all(10),
-                                        decoration: BoxDecoration(
-                                          border: Border.all(
-                                              width: 1, color: Colors.grey),
-                                          color: Colors.white,
-                                          borderRadius:
-                                              BorderRadius.circular(10.0),
-                                        ),
-                                        child: Material(
-                                          color: Colors.transparent,
-                                          child: InkWell(
-                                              onTap: () async {
-                                                await locationData
-                                                    .getCurrentPosition();
-                                                if (locationData
-                                                    .permissionGranted) {
-                                                  Navigator.pushNamed(context,
-                                                      MapScreen.routeName);
+                                StreamBuilder(
+                                  stream: usersRef
+                                      .doc(firebaseAuth.currentUser.uid)
+                                      .snapshots(),
+                                  builder: (context,
+                                      AsyncSnapshot<DocumentSnapshot>
+                                          snapshot) {
+                                    if (snapshot.hasData) {
+                                      UserModel userModel = UserModel.fromJson(
+                                          snapshot.data.data());
 
-                                                  setState(() {
-                                                    valid = false;
-                                                    agentInt = false;
-                                                    businessInt = true;
-                                                  });
-                                                }
-                                              },
-                                              child: Center(
-                                                child: Row(
-                                                  mainAxisAlignment:
-                                                      MainAxisAlignment
-                                                          .spaceAround,
-                                                  crossAxisAlignment:
-                                                      CrossAxisAlignment.center,
-                                                  children: [
-                                                    Container(
-                                                        child: Text(
-                                                      "Add warehouse address",
-                                                      style: TextStyle(
-                                                        fontSize: 14,
-                                                        color: Colors.grey[800],
-                                                        letterSpacing: 1,
-                                                        fontWeight:
-                                                            FontWeight.normal,
-                                                      ),
-                                                    )),
-                                                    Icon(
-                                                      CupertinoIcons.house,
-                                                      size: 20,
-                                                      color: Colors.green,
+                                      List<Widget> list = new List<Widget>();
+                                      if (userModel.wareHouseLocationList !=
+                                          null) {
+                                        for (int e = 0;
+                                            e <
+                                                userModel.wareHouseLocationList
+                                                    .length;
+                                            e++) {
+                                          list.add(Column(
+                                            children: [
+                                              warehouseYes
+                                                  ? Column(
+                                                      children: [
+                                                        Container(
+                                                          height: 50.0,
+                                                          padding:
+                                                              EdgeInsets.all(
+                                                                  10),
+                                                          decoration:
+                                                              BoxDecoration(
+                                                            border: Border.all(
+                                                                width: 1,
+                                                                color: Colors
+                                                                    .grey),
+                                                            color: Colors.white,
+                                                            borderRadius:
+                                                                BorderRadius
+                                                                    .circular(
+                                                                        10.0),
+                                                          ),
+                                                          child: Material(
+                                                            color: Colors
+                                                                .transparent,
+                                                            child: Center(
+                                                              child: Row(
+                                                                mainAxisAlignment:
+                                                                    MainAxisAlignment
+                                                                        .spaceAround,
+                                                                crossAxisAlignment:
+                                                                    CrossAxisAlignment
+                                                                        .center,
+                                                                children: [
+                                                                  Container(
+                                                                    child: Text(
+                                                                      userModel.wareHouseLocationList[
+                                                                              e]
+                                                                          [
+                                                                          "wareHouseAddress"],
+                                                                      overflow:
+                                                                          TextOverflow
+                                                                              .ellipsis,
+                                                                      style:
+                                                                          TextStyle(
+                                                                        fontSize:
+                                                                            14,
+                                                                        color: Colors
+                                                                            .grey[800],
+                                                                        letterSpacing:
+                                                                            1,
+                                                                        fontWeight:
+                                                                            FontWeight.normal,
+                                                                      ),
+                                                                    ),
+                                                                    width: 250,
+                                                                  ),
+                                                                  Icon(
+                                                                    CupertinoIcons
+                                                                        .house,
+                                                                    size: 20,
+                                                                    color: Colors
+                                                                        .green,
+                                                                  ),
+                                                                ],
+                                                              ),
+                                                            ),
+                                                          ),
+                                                        ),
+                                                        SizedBox(
+                                                          height: 20,
+                                                        ),
+                                                        Align(
+                                                          alignment:
+                                                              Alignment.topLeft,
+                                                          child: Row(
+                                                            children: [
+                                                              Image.asset(
+                                                                "assets/images/add another one.png",
+                                                              ),
+                                                              SizedBox(
+                                                                width: 10,
+                                                              ),
+                                                              GestureDetector(
+                                                                onTap:
+                                                                    () async {
+                                                                  await locationData
+                                                                      .getCurrentPosition();
+                                                                  if (locationData
+                                                                      .permissionGranted) {
+                                                                    Navigator.pushNamed(
+                                                                        context,
+                                                                        MapScreen
+                                                                            .routeName);
+                                                                  }
+                                                                },
+                                                                child: Text(
+                                                                    "Update warehouse Address",
+                                                                    textAlign:
+                                                                        TextAlign
+                                                                            .center,
+                                                                    style:
+                                                                        TextStyle(
+                                                                      fontSize:
+                                                                          14,
+                                                                      letterSpacing:
+                                                                          1,
+                                                                      fontWeight:
+                                                                          FontWeight
+                                                                              .normal,
+                                                                      color: Color
+                                                                          .fromRGBO(
+                                                                              5,
+                                                                              151,
+                                                                              0,
+                                                                              1),
+                                                                    )),
+                                                              ),
+                                                            ],
+                                                          ),
+                                                        )
+                                                      ],
+                                                    )
+                                                  : Container(
+                                                      height: 0,
+                                                      width: 0,
                                                     ),
-                                                  ],
-                                                ),
-                                              )),
-                                        ),
-                                      )
-                                    : Container(
-                                        height: 0,
-                                        width: 0,
-                                      ),
+                                            ],
+                                          ));
+                                        }
+
+                                        return Column(
+                                          children: list,
+                                        );
+                                      } else
+                                        return Column(
+                                          children: [
+                                            warehouseYes
+                                                ? Align(
+                                                    alignment:
+                                                        Alignment.topLeft,
+                                                    child: Row(
+                                                      children: [
+                                                        Image.asset(
+                                                          "assets/images/add another one.png",
+                                                        ),
+                                                        SizedBox(
+                                                          width: 10,
+                                                        ),
+                                                        GestureDetector(
+                                                          onTap: () async {
+                                                            await locationData
+                                                                .getCurrentPosition();
+                                                            if (locationData
+                                                                .permissionGranted) {
+                                                              Navigator.pushNamed(
+                                                                  context,
+                                                                  MapScreen
+                                                                      .routeName);
+                                                            }
+                                                          },
+                                                          child: Text(
+                                                              "Add warehouse Address",
+                                                              textAlign:
+                                                                  TextAlign
+                                                                      .center,
+                                                              style: TextStyle(
+                                                                fontSize: 14,
+                                                                letterSpacing:
+                                                                    1,
+                                                                fontWeight:
+                                                                    FontWeight
+                                                                        .normal,
+                                                                color: Color
+                                                                    .fromRGBO(
+                                                                        5,
+                                                                        151,
+                                                                        0,
+                                                                        1),
+                                                              )),
+                                                        ),
+                                                      ],
+                                                    ),
+                                                  )
+                                                : Container(
+                                                    height: 0,
+                                                    width: 0,
+                                                  ),
+                                          ],
+                                        );
+                                    }
+                                    return Container(
+                                      height: 0,
+                                    );
+                                  },
+                                ),
                               ],
                             ),
                           ],
@@ -2965,7 +3288,8 @@ class _UpdateProfilesState extends State<UpdateProfiles> {
                                       authService
                                           .updateVerificationDataToFireStore(
                                               firebaseAuth.currentUser,
-                                              _verificationSelected,
+                                              _verificationSelected
+                                                  .toLowerCase(),
                                               side1Image,
                                               side2Image,
                                               passportImage);
@@ -3451,12 +3775,16 @@ class _MapScreenState extends State<MapScreen> {
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Text(
-                            controllerLocationString,
-                            style: TextStyle(
-                                color: Colors.black,
-                                fontSize: 14,
-                                fontWeight: FontWeight.normal),
+                          Container(
+                            width: 250,
+                            child: Text(
+                              controllerLocationString,
+                              overflow: TextOverflow.ellipsis,
+                              style: TextStyle(
+                                  color: Colors.black,
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.normal),
+                            ),
                           ),
                           Image.asset('assets/images/arrival point.png')
                         ],
@@ -3494,16 +3822,29 @@ class _MapScreenState extends State<MapScreen> {
                     ),
                     width: SizeConfig.screenWidth - 150,
                     onPressed: () async {
-                      authService.updateBusinessLocationToFireStore(
-                          widget.user,
-                          p != null ? p.description : controllerLocationString,
-                          Position(
-                              latitude: locationData.lnt != null
+                      Map<String, dynamic> agentTripsLocationList =
+                          new HashMap();
+                      agentTripsLocationList.putIfAbsent(
+                          "wareHouseAddress",
+                          () => p != null
+                              ? p.description
+                              : controllerLocationString);
+                      agentTripsLocationList.putIfAbsent(
+                          "wareHousePosition",
+                          () => GeoPoint(
+                              locationData.lnt != null
                                   ? locationData.lnt
                                   : searchedLocationLnt,
-                              longitude: locationData.lng != null
+                              locationData.lng != null
                                   ? locationData.lng
                                   : searchedLocationLnt));
+                      List<HashMap<String, dynamic>> list = [];
+                      list.add(agentTripsLocationList);
+                      authService.updateBusinessLocationToFireStore(
+                          widget.user, list, "Yes");
+                      /*authService.addNewBusinessLocationToFireStore(
+                          widget.user, agentTripsLocationList, "Yes");*/
+
                       Navigator.pop(context);
                     }),
               ),
@@ -3569,6 +3910,356 @@ class _MapScreenState extends State<MapScreen> {
       });
       _goToPosition(
           _controller.future, searchedLocationLnt, searchedLocationLng);
+    }
+  }
+}
+
+class MapTripScreen extends StatefulWidget {
+  static String routeName = '/MapTripScreen';
+  final User user;
+
+  const MapTripScreen({Key key, this.user}) : super(key: key);
+  @override
+  _MapTripScreenState createState() => _MapTripScreenState();
+}
+
+class _MapTripScreenState extends State<MapTripScreen> {
+  LocationProvider locationData;
+  LatLng currentLocation;
+  GoogleMapController _mapController;
+  AuthService authService = AuthService();
+  Completer<GoogleMapController> _controller = Completer();
+  static CameraPosition _myPosition;
+  static CameraPosition initPosition;
+  String startingTripLocationString = "Starting Point";
+  String arriveTripLocationString = "Arrival Point";
+  PlacesDetailsResponse detail;
+  Prediction p, p2;
+  final searchScaffoldKey = GlobalKey<ScaffoldState>();
+  final homeScaffoldKey = GlobalKey<ScaffoldState>();
+  double startingLocationLnt, startingLocationLng;
+  double arrivedLocationLnt, arrivedLocationLng;
+  bool start = true;
+  @override
+  Widget build(BuildContext context) {
+    locationData = Provider.of<LocationProvider>(context);
+    setState(() {
+      currentLocation = LatLng(locationData.lnt, locationData.lng);
+    });
+    void onCreate(GoogleMapController controller) {
+      setState(() async {
+        _controller.complete(controller);
+        _mapController = controller;
+        initPosition =
+            CameraPosition(target: LatLng(locationData.lnt, locationData.lng));
+      });
+    }
+
+    return Scaffold(
+      backgroundColor: Colors.white,
+      body: SafeArea(
+        child: Stack(
+          children: [
+            GoogleMap(
+              initialCameraPosition: CameraPosition(target: currentLocation),
+              zoomControlsEnabled: false,
+              minMaxZoomPreference: MinMaxZoomPreference(1.5, 20.8),
+              myLocationEnabled: true,
+              myLocationButtonEnabled: false,
+              mapType: MapType.normal,
+              mapToolbarEnabled: true,
+              onCameraMove: (CameraPosition positon) {
+                locationData.onCameraMove(positon);
+              },
+              onMapCreated: onCreate,
+              onCameraIdle: () {
+                locationData.getMoveCamera().then((value) => setState(() {
+                      start
+                          ? startingTripLocationString = value
+                          : arriveTripLocationString = value;
+                    }));
+              },
+            ),
+            Align(
+              alignment: Alignment.topCenter,
+              child: Column(
+                children: [
+                  Container(
+                    margin: EdgeInsets.fromLTRB(20, 50, 20, 5),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        GestureDetector(
+                          onTap: () {
+                            Navigator.pop(context);
+                          },
+                          child: Image.asset(
+                            "assets/images/Back Arrow.png",
+                          ),
+                        ),
+                        FloatingActionButton(
+                          onPressed: () => _goToMyPosition(_controller.future),
+                          mini: true,
+                          elevation: 8,
+                          backgroundColor: Colors.white,
+                          child: Image.asset("assets/images/geolocate me.png"),
+                        ),
+                      ],
+                    ),
+                  ),
+                  SizedBox(
+                    height: 20,
+                  ),
+                  Container(
+                    width: 300,
+                    height: 50,
+                    child: ElevatedButton(
+                      onPressed: _handlePressButton,
+                      style: ElevatedButton.styleFrom(
+                        onSurface: Colors.white,
+                        primary: Colors.white,
+                        onPrimary: Colors.white,
+                        elevation: 4,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.only(
+                            topRight: Radius.circular(10),
+                            topLeft: Radius.circular(10),
+                          ),
+                        ),
+                        minimumSize: Size(100, 40), //////// HERE
+                      ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Container(
+                            width: 220,
+                            child: Text(
+                              startingTripLocationString,
+                              overflow: TextOverflow.ellipsis,
+                              style: TextStyle(
+                                  color: Colors.black,
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.normal),
+                            ),
+                          ),
+                          Image.asset('assets/images/starting point.png')
+                        ],
+                      ),
+                    ),
+                  ),
+                  Container(
+                    height: 1,
+                    color: Colors.grey[400],
+                    width: 250,
+                  ),
+                  Container(
+                    width: 300,
+                    height: 50,
+                    child: ElevatedButton(
+                      onPressed: _handlePressButton2,
+                      style: ElevatedButton.styleFrom(
+                        elevation: 4,
+                        onSurface: Colors.white,
+                        primary: Colors.white,
+                        onPrimary: Colors.white,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.only(
+                            bottomLeft: Radius.circular(10),
+                            bottomRight: Radius.circular(10),
+                          ),
+                        ),
+                        minimumSize: Size(100, 40), //////// HERE
+                      ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Container(
+                            width: 220,
+                            child: Text(
+                              arriveTripLocationString,
+                              overflow: TextOverflow.ellipsis,
+                              style: TextStyle(
+                                  color: Colors.black,
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.normal),
+                            ),
+                          ),
+                          Image.asset('assets/images/arrival point.png')
+                        ],
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            Align(
+                alignment: Alignment.center,
+                child: Container(
+                    height: 100,
+                    margin: EdgeInsets.only(bottom: 40),
+                    child: Image.asset(
+                        'assets/images/fixed location in map.png'))),
+            Align(
+              alignment: Alignment.bottomCenter,
+              child: Container(
+                margin: EdgeInsets.only(bottom: 40),
+                child: RaisedGradientButton(
+                    child: Text(
+                      'Confirm',
+                      style: TextStyle(
+                        fontSize: 16,
+                        color: Colors.white,
+                      ),
+                    ),
+                    gradient: LinearGradient(
+                      colors: <Color>[
+                        Color.fromRGBO(82, 238, 79, 1),
+                        Color.fromRGBO(5, 151, 0, 1)
+                      ],
+                    ),
+                    width: SizeConfig.screenWidth - 150,
+                    onPressed: () async {
+                      Map<String, dynamic> agentTripsLocationList =
+                          new HashMap();
+                      agentTripsLocationList.putIfAbsent(
+                          "startingPointString",
+                          () => p != null
+                              ? p.description
+                              : startingTripLocationString);
+                      agentTripsLocationList.putIfAbsent(
+                          "arrivalPointString",
+                          () => p2 != null
+                              ? p2.description
+                              : arriveTripLocationString);
+                      agentTripsLocationList.putIfAbsent(
+                          "arrivalPoint",
+                          () => GeoPoint(
+                              locationData.lnt != null
+                                  ? locationData.lnt
+                                  : arrivedLocationLnt,
+                              locationData.lng != null
+                                  ? locationData.lng
+                                  : arrivedLocationLng));
+                      agentTripsLocationList.putIfAbsent(
+                          "startingPoint",
+                          () => GeoPoint(
+                              locationData.lnt != null
+                                  ? locationData.lnt
+                                  : startingLocationLnt,
+                              locationData.lng != null
+                                  ? locationData.lng
+                                  : startingLocationLng));
+                      List<HashMap<String, dynamic>> list = [];
+                      list.add(agentTripsLocationList);
+                      authService.updateTripsLocationToFireStore(
+                          widget.user, list);
+                      /* authService.addNewTripsLocationToFireStore(
+                          widget.user, agentTripsLocationList);*/
+                      Navigator.pop(context);
+                    }),
+              ),
+            )
+          ],
+        ),
+      ),
+    );
+  }
+
+  Future<void> _goToMyPosition(c) async {
+    _myPosition = CameraPosition(
+      target:
+          LatLng(initPosition.target.latitude, initPosition.target.longitude),
+      zoom: 14.5,
+    );
+    await locationData.getCurrentPosition();
+    final GoogleMapController controller = await c;
+    controller.animateCamera(CameraUpdate.newCameraPosition(_myPosition));
+  }
+
+  Future<void> _goToPosition(c, latitude, longitude) async {
+    _myPosition = CameraPosition(
+      target: LatLng(latitude, longitude),
+      zoom: 18.5,
+    );
+    await locationData.getCurrentPosition();
+    final GoogleMapController controller = await c;
+    controller.animateCamera(CameraUpdate.newCameraPosition(_myPosition));
+  }
+
+  void onError(PlacesAutocompleteResponse response) {
+    debugPrint('${response.errorMessage}');
+  }
+
+  Future<void> _handlePressButton() async {
+    setState(() {
+      start = true;
+    });
+    p = await PlacesAutocomplete.show(
+      context: context,
+      apiKey: kGoogleApiKey,
+      mode: Mode.overlay,
+      hint: 'Starting Point',
+      onError: onError,
+      language: "fr",
+      overlayBorderRadius: BorderRadius.all(Radius.circular(10)),
+      components: [Component(Component.country, "mar")],
+    );
+
+    displayStartingPrediction(p, homeScaffoldKey.currentState);
+  }
+
+  Future<void> _handlePressButton2() async {
+    setState(() {
+      start = false;
+    });
+    p2 = await PlacesAutocomplete.show(
+      context: context,
+      apiKey: kGoogleApiKey,
+      mode: Mode.overlay,
+      hint: 'Arrive Point',
+      onError: onError,
+      language: "fr",
+      overlayBorderRadius: BorderRadius.all(Radius.circular(10)),
+      components: [Component(Component.country, "mar")],
+    );
+
+    displayArrivedPrediction(p2, homeScaffoldKey.currentState);
+  }
+
+  Future<Null> displayStartingPrediction(
+      Prediction p, ScaffoldState scaffold) async {
+    if (p != null) {
+      GoogleMapsPlaces _places = GoogleMapsPlaces(
+        apiKey: kGoogleApiKey,
+        apiHeaders: await GoogleApiHeaders().getHeaders(),
+      );
+      PlacesDetailsResponse detail =
+          await _places.getDetailsByPlaceId(p.placeId);
+      setState(() {
+        startingLocationLnt = detail.result.geometry.location.lat;
+        startingLocationLng = detail.result.geometry.location.lng;
+        startingTripLocationString = p.description;
+      });
+      _goToPosition(
+          _controller.future, startingLocationLnt, startingLocationLng);
+    }
+  }
+
+  Future<Null> displayArrivedPrediction(
+      Prediction p, ScaffoldState scaffold) async {
+    if (p != null) {
+      GoogleMapsPlaces _places = GoogleMapsPlaces(
+        apiKey: kGoogleApiKey,
+        apiHeaders: await GoogleApiHeaders().getHeaders(),
+      );
+      PlacesDetailsResponse detail =
+          await _places.getDetailsByPlaceId(p.placeId);
+      setState(() {
+        arrivedLocationLnt = detail.result.geometry.location.lat;
+        arrivedLocationLng = detail.result.geometry.location.lng;
+        arriveTripLocationString = p2.description;
+      });
+      _goToPosition(_controller.future, arrivedLocationLnt, arrivedLocationLng);
     }
   }
 }

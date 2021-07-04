@@ -19,6 +19,9 @@ final Map<String, WidgetBuilder> routes = {
   MapScreen.routeName: (context) => MapScreen(
         user: firebaseAuth.currentUser,
       ),
+  MapTripScreen.routeName: (context) => MapTripScreen(
+        user: firebaseAuth.currentUser,
+      ),
   Home.routeName: (context) => Home(),
   Base.routeName: (context) => Base(),
   Profile.routeName: (context) => Profile(),

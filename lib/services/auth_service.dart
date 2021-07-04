@@ -1,11 +1,10 @@
+import 'dart:collection';
 import 'dart:io';
 
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:geolocator/geolocator.dart';
+import 'package:on_delivery/models/User.dart';
 import 'package:on_delivery/services/services.dart';
 import 'package:on_delivery/utils/firebase.dart';
-
-import '../models/agent_trips_location.dart';
 
 class AuthService extends Service {
   User getCurrentUser() {
@@ -52,9 +51,8 @@ class AuthService extends Service {
           'businessName': "",
           'transportType': "",
           'wareHouse': "",
-          'wareHouseAddress': "",
-          'wareHousePosition': null,
           'agentTripsLocationList': null,
+          'wareHouseLocationList': null,
           'unity': '',
           'maxWeight': '',
           'RIB': "",
@@ -87,9 +85,8 @@ class AuthService extends Service {
         'businessName': "",
         'transportType': "",
         'wareHouse': "",
-        'wareHouseAddress': "",
-        'wareHousePosition': null,
         'agentTripsLocationList': null,
+        'wareHouseLocationList': null,
         'unity': '',
         'maxWeight': '',
         'RIB': "",
@@ -119,12 +116,69 @@ class AuthService extends Service {
   }
 
   updateTripsLocationToFireStore(
-      User user, List<AgentTripsLocation> agentTripsLocationList) async {
+      User user, List<HashMap<String, dynamic>> agentTripsLocationList) async {
     if (user != null) {
       final snapShot = await usersRef.doc(user.uid).get();
       if (snapShot.exists) {
         usersRef.doc(user.uid).update({
           'agentTripsLocationList': agentTripsLocationList,
+        });
+      }
+    }
+  }
+
+  addNewTripsLocationToFireStore(
+      User user, HashMap<String, dynamic> agentTripsLocationList) async {
+    if (user != null) {
+      final snapShot = await usersRef.doc(user.uid).get();
+      if (snapShot.exists) {
+        UserModel userModel = UserModel.fromJson(snapShot.data());
+
+        var list = [];
+        for (int e = 0; e < userModel.agentTripsLocationList.length; e++) {
+          list.add(userModel.agentTripsLocationList[e]);
+        }
+        list.add(agentTripsLocationList);
+        usersRef.doc(user.uid).update({
+          'agentTripsLocationList': list,
+        });
+      }
+    }
+  }
+
+  addNewBusinessLocationToFireStore(
+    User user,
+    HashMap<String, dynamic> wareHouseLocationList,
+    String wareHouse,
+  ) async {
+    if (user != null) {
+      final snapShot = await usersRef.doc(user.uid).get();
+      if (snapShot.exists) {
+        UserModel userModel = UserModel.fromJson(snapShot.data());
+        var list = [];
+        for (int e = 0; e < userModel.wareHouseLocationList.length; e++) {
+          list.add(userModel.wareHouseLocationList[e]);
+        }
+        list.add(wareHouseLocationList);
+        usersRef.doc(user.uid).update({
+          'wareHouseLocationList': list,
+          'wareHouse': wareHouse,
+        });
+      }
+    }
+  }
+
+  updateBusinessLocationToFireStore(
+    User user,
+    List<HashMap<String, dynamic>> wareHouseLocationList,
+    String wareHouse,
+  ) async {
+    if (user != null) {
+      final snapShot = await usersRef.doc(user.uid).get();
+      if (snapShot.exists) {
+        usersRef.doc(user.uid).update({
+          'wareHouseLocationList': wareHouseLocationList,
+          'wareHouse': wareHouse,
         });
       }
     }
@@ -142,25 +196,28 @@ class AuthService extends Service {
     }
   }
 
+  updateCompanyToFireStore(User user, String activities, String companyName,
+      String transport, String maxWeight, String unity) async {
+    if (user != null) {
+      final snapShot = await usersRef.doc(user.uid).get();
+      if (snapShot.exists) {
+        usersRef.doc(user.uid).update({
+          'activities': activities,
+          'businessName': companyName,
+          'transportType': transport,
+          'maxWeight': maxWeight,
+          'unity': unity,
+        });
+      }
+    }
+  }
+
   updateActivitiesToFireStore(User user, String activities) async {
     if (user != null) {
       final snapShot = await usersRef.doc(user.uid).get();
       if (snapShot.exists) {
         usersRef.doc(user.uid).update({
           'activities': activities,
-        });
-      }
-    }
-  }
-
-  updateBusinessLocationToFireStore(
-      User user, String wareHouseAddress, Position wareHousePosition) async {
-    if (user != null) {
-      final snapShot = await usersRef.doc(user.uid).get();
-      if (snapShot.exists) {
-        usersRef.doc(user.uid).update({
-          'wareHouseAddress': wareHouseAddress,
-          'wareHousePosition': wareHousePosition,
         });
       }
     }

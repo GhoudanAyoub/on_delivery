@@ -1,7 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-import 'agent_trips_location.dart';
-
 class UserModel {
   String id;
   String email;
@@ -20,10 +18,10 @@ class UserModel {
   String businessName;
   String transportType;
   String wareHouse;
-  String wareHouseAddress;
-  GeoPoint wareHousePosition;
   String activities;
-  List<AgentTripsLocation> agentTripsLocationList;
+  List<dynamic> agentTripsLocationList;
+  List<dynamic> wareHouseLocationList;
+
   String maxWeight;
   String unity;
   String RIB;
@@ -47,10 +45,9 @@ class UserModel {
       this.businessName,
       this.transportType,
       this.wareHouse,
-      this.wareHouseAddress,
-      this.wareHousePosition,
       this.activities,
       this.agentTripsLocationList,
+      this.wareHouseLocationList,
       this.maxWeight,
       this.unity,
       this.RIB,
@@ -77,10 +74,9 @@ class UserModel {
     businessName = json['businessName'];
     transportType = json['transportType'];
     wareHouse = json['wareHouse'];
-    wareHouseAddress = json['wareHouseAddress'];
-    wareHousePosition = json['wareHousePosition'];
     activities = json['activities'];
     agentTripsLocationList = json['agentTripsLocationList'];
+    wareHouseLocationList = json['wareHouseLocationList'];
     maxWeight = json['maxWeight'];
     unity = json['unity'];
     RIB = json['RIB'];

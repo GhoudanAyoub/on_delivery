@@ -24,7 +24,7 @@ class CustomCard extends StatelessWidget {
               color: color == null ? Theme.of(context).cardColor : color,
               boxShadow: [
                 BoxShadow(
-                  color: Colors.grey[300].withOpacity(0.8),
+                  color: Colors.grey[100].withOpacity(0.8),
                   blurRadius: 10.0,
                   spreadRadius: 0.0,
                   offset: Offset(

@@ -98,6 +98,7 @@ class _TextFormBuilderState extends State<TextFormBuilder> {
                     }
                   },
                   decoration: InputDecoration(
+                      labelText: widget.hintText,
                       prefixIcon: Icon(
                         widget.prefix,
                         size: 15.0,
@@ -124,9 +125,9 @@ class _TextFormBuilderState extends State<TextFormBuilder> {
                             ),
                       fillColor: Color.fromRGBO(239, 240, 246, 1),
                       filled: true,
-                      hintText: widget.hintText,
+                      /*hintText: widget.hintText,*/
                       hintStyle: TextStyle(
-                        color: Color.fromRGBO(110, 113, 145, 1),
+                        color: Color.fromRGBO(110, 113, 130, 1),
                       ),
                       contentPadding: EdgeInsets.symmetric(horizontal: 10.0),
                       border: border(context),
