@@ -12,6 +12,7 @@ final Uuid uuid = Uuid();
 CollectionReference paymentRef = firestore.collection('onDeliveryPayment');
 CollectionReference reportRef = firestore.collection('onDeliveryReport');
 CollectionReference usersRef = firestore.collection('onDeliveryUsers');
+CollectionReference plansRef = firestore.collection('onDeliveryPlans');
 CollectionReference chatRef = firestore.collection("onDeliveryChats");
 CollectionReference notificationRef =
     firestore.collection('onDeliveryNotifications');

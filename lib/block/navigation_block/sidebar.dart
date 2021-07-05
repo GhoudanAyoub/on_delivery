@@ -4,13 +4,16 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:on_delivery/SetUpProfile/ChooseSide.dart';
 import 'package:on_delivery/SignIn/sign_in_screen.dart';
 import 'package:on_delivery/block/navigation_block/navigation_block.dart';
 import 'package:on_delivery/components/RaisedGradientButton.dart';
+import 'package:on_delivery/components/text_form_builder.dart';
 import 'package:on_delivery/models/User.dart';
 import 'package:on_delivery/utils/FirebaseService.dart';
 import 'package:on_delivery/utils/SizeConfig.dart';
 import 'package:on_delivery/utils/firebase.dart';
+import 'package:on_delivery/utils/validation.dart';
 import 'package:rxdart/rxdart.dart';
 
 import 'menu_item.dart';
@@ -28,6 +31,8 @@ class _SideBarState extends State<SideBar>
   StreamSink<bool> isSidebarOpenedSink;
   final _animationDuration = const Duration(milliseconds: 500);
   UserModel user1;
+  TextEditingController ribController = TextEditingController();
+  TextEditingController bankNameController = TextEditingController();
 
   @override
   void initState() {
@@ -154,6 +159,10 @@ class _SideBarState extends State<SideBar>
                                         title: "Plans",
                                         onTap: () {
                                           onIconPressed();
+                                          BlocProvider.of<NavigationBloc>(
+                                                  context)
+                                              .add(NavigationEvents
+                                                  .PlansPageClickedEvent);
                                         },
                                       ),
                                       SizedBox(
@@ -162,6 +171,7 @@ class _SideBarState extends State<SideBar>
                                       MenuItem(
                                         title: "Bank account ID",
                                         onTap: () {
+                                          bankAccountID(context);
                                           onIconPressed();
                                         },
                                       ),
@@ -315,10 +325,12 @@ class _SideBarState extends State<SideBar>
                                     ),
                                     width: SizeConfig.screenWidth - 150,
                                     onPressed: () async {
-                                      FirebaseService().switchCurrentUserType(
-                                          firebaseAuth.currentUser, "Agent");
+                                      /* FirebaseService().switchCurrentUserType(
+                                          firebaseAuth.currentUser, "Agent");*/
                                       onIconPressed();
                                       //todo : add route to setup Page info data Section
+                                      Navigator.pushNamed(
+                                          context, ChooseSide.routeName);
                                     }),
                               );
                             } else if (user1.type == "Client" &&
@@ -461,6 +473,91 @@ class _SideBarState extends State<SideBar>
                       Navigator.pop(context);
                     }),
               ),
+            ],
+          );
+        });
+  }
+
+  bankAccountID(BuildContext parentContext) {
+    return showDialog(
+        context: parentContext,
+        builder: (context) {
+          return SimpleDialog(
+            contentPadding: EdgeInsets.only(left: 30, right: 30, bottom: 20),
+            backgroundColor: Colors.white,
+            shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(5.0)),
+            children: [
+              Container(
+                padding:
+                    EdgeInsets.only(left: 10, right: 10, bottom: 20, top: 40),
+                width: 150,
+                child: Center(
+                  child: Text(
+                    'There are the bank account information of agent name',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      fontSize: 14,
+                      letterSpacing: 1,
+                      fontFamily: "Poppins",
+                      color: Colors.grey[600],
+                    ),
+                  ),
+                ),
+              ),
+              StreamBuilder(
+                stream: usersRef.doc(firebaseAuth.currentUser.uid).snapshots(),
+                builder: (context, AsyncSnapshot<DocumentSnapshot> snapshot) {
+                  if (snapshot.hasData) {
+                    user1 = UserModel.fromJson(snapshot.data.data());
+                    ribController.text = user1.RIB;
+                    bankNameController.text = user1.bankName;
+                    return Column(
+                      children: [
+                        TextFormBuilder(
+                          controller: ribController,
+                          hintText: "RIB",
+                          suffix: false,
+                          textInputAction: TextInputAction.next,
+                          validateFunction: Validations.validateRib,
+                        ),
+                        SizedBox(
+                          height: 20,
+                        ),
+                        TextFormBuilder(
+                          controller: bankNameController,
+                          hintText: "Bank Name",
+                          suffix: false,
+                          textInputAction: TextInputAction.next,
+                          validateFunction: Validations.validateBankName,
+                        ),
+                      ],
+                    );
+                  }
+                  return Container(
+                    height: 0,
+                  );
+                },
+              ),
+              SizedBox(
+                height: 20,
+              ),
+              RaisedGradientButton(
+                  child: Text(
+                    'Close',
+                    style: TextStyle(
+                      fontSize: 16,
+                      color: Colors.grey[600],
+                    ),
+                  ),
+                  border: true,
+                  gradient: LinearGradient(
+                    colors: <Color>[Colors.white, Colors.white],
+                  ),
+                  width: SizeConfig.screenWidth - 150,
+                  onPressed: () async {
+                    Navigator.pop(context);
+                  })
             ],
           );
         });

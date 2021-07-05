@@ -7,6 +7,7 @@ import 'package:on_delivery/SignUp/sign_up_screen.dart';
 import 'package:on_delivery/SplashScreen/splash_screen.dart';
 import 'package:on_delivery/home/Home.dart';
 import 'package:on_delivery/home/base.dart';
+import 'package:on_delivery/plans/plans_screen.dart';
 import 'package:on_delivery/profiles/profile.dart';
 
 import 'firebase.dart';
@@ -27,6 +28,7 @@ final Map<String, WidgetBuilder> routes = {
   CR.routeName: (context) => CR(),
   Base.routeName: (context) => Base(),
   Profile.routeName: (context) => Profile(),
+  Plans.routeName: (context) => Plans(),
 /*  ForgotPasswordScreen.routeName: (context) => ForgotPasswordScreen(),
   StoreHome.routeName: (context) => StoreHome(),
   CategoriesList.routeName: (context) => CategoriesList(),
