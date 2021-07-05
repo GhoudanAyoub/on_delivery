@@ -24,6 +24,7 @@ class UserModel {
   String percentage;
   String maxWeight;
   String unity;
+  String price;
   String RIB;
   String bankName;
   Timestamp signedUpAt;
@@ -51,6 +52,7 @@ class UserModel {
       this.maxWeight,
       this.percentage,
       this.unity,
+      this.price,
       this.RIB,
       this.bankName,
       this.signedUpAt,
@@ -81,6 +83,7 @@ class UserModel {
     maxWeight = json['maxWeight'];
     percentage = json['percentage'];
     unity = json['unity'];
+    price = json['price'];
     RIB = json['RIB'];
     bankName = json['bankName'];
     signedUpAt = json['signedUpAt'];

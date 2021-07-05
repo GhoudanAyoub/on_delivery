@@ -524,7 +524,7 @@ class _HomeState extends State<Home> {
                                                           color: Colors.grey,
                                                         )),
                                                     Text(
-                                                        "${_user.maxWeight}/${_user.unity.toLowerCase()}",
+                                                        "${_user.price}/${_user.unity.toLowerCase()}",
                                                         style: TextStyle(
                                                           fontSize: 12,
                                                           letterSpacing: 1,
@@ -770,7 +770,7 @@ class _HomeState extends State<Home> {
                                                         color: Colors.grey,
                                                       )),
                                                   Text(
-                                                      "${_user.maxWeight}/${_user.unity.toLowerCase()}",
+                                                      "${_user.price}/${_user.unity.toLowerCase()}",
                                                       style: TextStyle(
                                                         fontSize: 12,
                                                         letterSpacing: 1,

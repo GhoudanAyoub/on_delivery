@@ -17,6 +17,14 @@ class Validations {
     return null;
   }
 
+  static String validateNumber2(String value) {
+    if (value.isEmpty) return 'Price is Required.';
+    final RegExp nameExp = new RegExp(r'^-?(([0-9]*)|(([0-9]*)\.([0-9]*)))$');
+    if (!nameExp.hasMatch(value))
+      return 'Please enter only Numbers characters.';
+    return null;
+  }
+
   static String validateBankName(String value) {
     if (value.isEmpty) return 'Bank Name is Required.';
     final RegExp nameExp = new RegExp(r'^[A-za-zğüşöçİĞÜŞÖÇ ]+$');

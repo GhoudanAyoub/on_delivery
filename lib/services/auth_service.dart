@@ -200,7 +200,7 @@ class AuthService extends Service {
   }
 
   updateCompanyToFireStore(User user, String activities, String companyName,
-      String transport, String maxWeight, String unity) async {
+      String transport, String maxWeight, String unity, String price) async {
     if (user != null) {
       final snapShot = await usersRef.doc(user.uid).get();
       if (snapShot.exists) {
@@ -210,6 +210,7 @@ class AuthService extends Service {
           'transportType': transport,
           'maxWeight': maxWeight,
           'unity': unity,
+          'price': price
         });
       }
     }

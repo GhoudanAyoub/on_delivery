@@ -39,6 +39,7 @@ class _ProfileState extends State<Profile> {
   TextEditingController ribController = TextEditingController();
   TextEditingController bankNameController = TextEditingController();
   TextEditingController maxWeightController = TextEditingController();
+  TextEditingController pricingController = TextEditingController();
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   bool loading = false;
   bool moto = false, car = false;
@@ -752,72 +753,83 @@ class _ProfileState extends State<Profile> {
                                   ),
                                   Row(
                                     children: [
-                                      CustomDropdown<int>(
-                                        child: Text(
-                                          'Unity',
-                                        ),
-                                        onChange: (int value, int index) => {
-                                          setState(() {
-                                            unity = unityList[index];
-                                          }),
-                                        },
-                                        dropdownButtonStyle:
-                                            DropdownButtonStyle(
-                                          width: 150,
-                                          height: 45,
-                                          backgroundColor:
-                                              Color.fromRGBO(239, 240, 246, 1),
-                                          primaryColor: Colors.black87,
-                                        ),
-                                        dropdownStyle: DropdownStyle(
-                                          color:
-                                              Color.fromRGBO(239, 240, 246, 1),
-                                          borderRadius:
-                                              BorderRadius.circular(8),
-                                          elevation: 6,
-                                          padding: EdgeInsets.all(5),
-                                        ),
-                                        items: [
-                                          'KG',
-                                          'KM',
-                                          'Miter',
-                                          'Gram',
-                                          'Unity',
-                                        ]
-                                            .asMap()
-                                            .entries
-                                            .map(
-                                              (item) => DropdownItem<int>(
-                                                value: item.key + 1,
-                                                child: Padding(
-                                                  padding:
-                                                      const EdgeInsets.all(8.0),
-                                                  child: Text(
-                                                    item.value,
-                                                    style: TextStyle(
-                                                        color: Colors.black),
-                                                  ),
-                                                ),
-                                              ),
-                                            )
-                                            .toList(),
-                                      ),
                                       Container(
                                         child: TextFormBuilder(
                                           controller: maxWeightController,
                                           hintText: "Max Weight",
                                           suffix: false,
-                                          prefix: CupertinoIcons.arrow_up_down,
                                           textInputAction: TextInputAction.next,
                                           validateFunction:
                                               Validations.validateNumber,
                                         ),
-                                        width: 180,
+                                        width: 160,
+                                      ),
+                                      Container(
+                                        child: TextFormBuilder(
+                                          controller: pricingController,
+                                          hintText: "Pricing",
+                                          suffix: false,
+                                          prefix: CupertinoIcons.money_dollar,
+                                          textInputAction: TextInputAction.next,
+                                          validateFunction:
+                                              Validations.validateNumber2,
+                                        ),
+                                        width: 160,
                                       ),
                                     ],
                                   ),
                                   SizedBox(
-                                    height: 20,
+                                    height: 10,
+                                  ),
+                                  CustomDropdown<int>(
+                                    child: Text(
+                                      'Unity',
+                                    ),
+                                    onChange: (int value, int index) => {
+                                      setState(() {
+                                        unity = unityList[index];
+                                      }),
+                                    },
+                                    dropdownButtonStyle: DropdownButtonStyle(
+                                      width: 150,
+                                      height: 45,
+                                      backgroundColor:
+                                          Color.fromRGBO(239, 240, 246, 1),
+                                      primaryColor: Colors.black87,
+                                    ),
+                                    dropdownStyle: DropdownStyle(
+                                      color: Color.fromRGBO(239, 240, 246, 1),
+                                      borderRadius: BorderRadius.circular(8),
+                                      elevation: 6,
+                                      padding: EdgeInsets.all(5),
+                                    ),
+                                    items: [
+                                      'KG',
+                                      'KM',
+                                      'Miter',
+                                      'Gram',
+                                      'Unity',
+                                    ]
+                                        .asMap()
+                                        .entries
+                                        .map(
+                                          (item) => DropdownItem<int>(
+                                            value: item.key + 1,
+                                            child: Padding(
+                                              padding:
+                                                  const EdgeInsets.all(8.0),
+                                              child: Text(
+                                                item.value,
+                                                style: TextStyle(
+                                                    color: Colors.black),
+                                              ),
+                                            ),
+                                          ),
+                                        )
+                                        .toList(),
+                                  ),
+                                  SizedBox(
+                                    height: 10,
                                   ),
                                   //tripShit
                                   StreamBuilder(
@@ -1527,7 +1539,8 @@ class _ProfileState extends State<Profile> {
                                             _businessController.text,
                                             moto ? "Moto" : "Car",
                                             maxWeightController.text,
-                                            unity);
+                                            unity,
+                                            pricingController.text);
                                         break;
                                       case 2:
                                         authService.updateRIBToFireStore(
