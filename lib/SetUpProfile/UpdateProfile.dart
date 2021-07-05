@@ -1926,7 +1926,7 @@ class _UpdateProfilesState extends State<UpdateProfiles> {
                                   onPressed: () async {
                                     authService.updateActivitiesToFireStore(
                                         firebaseAuth.currentUser,
-                                        "${food ? "FOOD/" : ""}${move ? "MOVE/" : ""}${courier ? "COURIER/" : ""}${ecom ? "E-COMMERCE" : ""}");
+                                        "${food ? "FOOD," : ""}${move ? "MOVE," : ""}${courier ? "COURIER," : ""}${ecom ? "E-COMMERCE" : ""}");
                                     setState(() {
                                       valid = false;
                                       agentInt = false;

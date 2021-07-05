@@ -73,6 +73,7 @@ class _ProfileState extends State<Profile> {
           _businessController.text = value.businessName,
           ribController.text = value.RIB,
           bankNameController.text = value.bankName,
+          userImgLink = value.photoUrl,
           moto = value.transportType.toLowerCase().contains("moto"),
           car = !value.transportType.toLowerCase().contains("moto"),
           food = value.activities.toLowerCase().contains("food"),
@@ -1522,7 +1523,7 @@ class _ProfileState extends State<Profile> {
                                       case 1:
                                         authService.updateCompanyToFireStore(
                                             firebaseAuth.currentUser,
-                                            "${food ? "FOOD/" : ""}${move ? "MOVE/" : ""}${courier ? "COURIER/" : ""}${ecom ? "E-COMMERCE" : ""}",
+                                            "${food ? "FOOD," : ""}${move ? "MOVE," : ""}${courier ? "COURIER," : ""}${ecom ? "E-COMMERCE" : ""}",
                                             _businessController.text,
                                             moto ? "Moto" : "Car",
                                             maxWeightController.text,

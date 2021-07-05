@@ -10,7 +10,7 @@ dependencies:
   flutter:
     sdk: flutter
 
-
+  lottie:
   firebase_messaging:
   flutter_local_notifications:
   country_list_pick: ^1.0.1+4
@@ -86,4 +86,5 @@ flutter:
   assets:
     - assets/images/
     - assets/icons/
+    - assets/lotties/
 

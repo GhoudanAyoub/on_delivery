@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:lottie/lottie.dart';
 import 'package:on_delivery/SignIn/sign_in_screen.dart';
 import 'package:on_delivery/home/base.dart';
 import 'package:on_delivery/utils/firebase.dart';
@@ -28,6 +29,7 @@ class _BodyState extends State<Body> {
           fit: BoxFit.cover,
         ),
       ),
+      child: Center(child: Lottie.asset('assets/lotties/delivery.json')),
     );
   }
 }

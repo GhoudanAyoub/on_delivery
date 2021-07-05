@@ -1,8 +1,12 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:on_delivery/block/navigation_block/navigation_block.dart';
 import 'package:on_delivery/components/RaisedGradientButton.dart';
+import 'package:on_delivery/models/plans.dart';
 import 'package:on_delivery/utils/SizeConfig.dart';
+import 'package:on_delivery/utils/firebase.dart';
+import 'package:on_delivery/utils/utils.dart';
 
 class Plans extends StatefulWidget with NavigationStates {
   static String routeName = "/plans";
@@ -37,19 +41,34 @@ class _PlansState extends State<Plans> {
                     )),
               ),
               SizedBox(height: 20),
-              /*
-              StreamBuilder(
-                stream: plansRef.doc(firebaseAuth.currentUser.uid).snapshots(),
-                builder: (context, AsyncSnapshot<DocumentSnapshot> snapshot) {
-                  if (snapshot.hasData) {
-                    PlansModel plans =
-                        PlansModel.fromJson(snapshot.data.data());
-                    if (Utils.getCurrentDate()
-                        .isBefore(DateTime.parse(plans.endAt))) {
+              Padding(
+                padding: const EdgeInsets.all(10.0),
+                child: StreamBuilder(
+                  stream:
+                      plansRef.doc(firebaseAuth.currentUser.uid).snapshots(),
+                  builder: (context, AsyncSnapshot<DocumentSnapshot> snapshot) {
+                    if (snapshot.data.exists) {
+                      PlansModel plans =
+                          PlansModel.fromJson(snapshot.data.data());
+                      if (Utils.getCurrentDate()
+                          .isBefore(DateTime.parse(plans.endAt))) {
+                        return Align(
+                          alignment: Alignment.topCenter,
+                          child: Text(
+                              "You have ${Utils.getCurrentDate().difference(DateTime.parse(plans.endAt))} days left before your finish your free plan. Please try to chose a plan before that.",
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                letterSpacing: 1,
+                                fontSize: 14,
+                                fontWeight: FontWeight.normal,
+                                color: Colors.black,
+                              )),
+                        );
+                      }
                       return Align(
                         alignment: Alignment.topCenter,
                         child: Text(
-                            "You have ${Utils.getCurrentDate().difference(DateTime.parse(plans.endAt))} days left before your finish your free plan. Please try to chose a plan before that.",
+                            "Your plan Ends ${Utils.getCurrentDate().difference(DateTime.parse(plans.endAt))} days ago. You are welcomed to replan again.",
                             textAlign: TextAlign.center,
                             style: TextStyle(
                               letterSpacing: 1,
@@ -62,7 +81,7 @@ class _PlansState extends State<Plans> {
                     return Align(
                       alignment: Alignment.topCenter,
                       child: Text(
-                          "Your plan Ends ${Utils.getCurrentDate().difference(DateTime.parse(plans.endAt))} days ago. You are welcomed to replan again.",
+                          "You can choose the plan that works for you, but we recommend the Economical one",
                           textAlign: TextAlign.center,
                           style: TextStyle(
                             letterSpacing: 1,
@@ -71,26 +90,62 @@ class _PlansState extends State<Plans> {
                             color: Colors.black,
                           )),
                     );
-                  }
-                  return Align(
-                    alignment: Alignment.topCenter,
-                    child: Text(
-                        "You can choose the plan that works for you, but we recommend the Economical one",
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                          letterSpacing: 1,
-                          fontSize: 14,
-                          fontWeight: FontWeight.normal,
-                          color: Colors.black,
-                        )),
-                  );
-                },
+                  },
+                ),
               ),
-              * */
               Expanded(
                   child: ListView(
                 padding: EdgeInsets.only(left: 40, right: 40, top: 40),
                 children: [
+                  GestureDetector(
+                    child: Card(
+                        elevation: starter ? 8 : 1,
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10)),
+                        child: Container(
+                          height: 180,
+                          width: 160,
+                          padding: EdgeInsets.all(10),
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            border: Border.all(
+                                width: 1,
+                                color: starter ? Colors.green : Colors.grey),
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.spaceAround,
+                            children: [
+                              Text("Starter",
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w600,
+                                    color: starter
+                                        ? Colors.blueAccent
+                                        : Colors.black,
+                                  )),
+                              Text("70",
+                                  style: TextStyle(
+                                    fontSize: 30,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.black,
+                                  )),
+                              Text("dh/month",
+                                  style: TextStyle(
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.w600,
+                                    color: Colors.grey,
+                                  ))
+                            ],
+                          ),
+                        )),
+                    onTap: () {
+                      setState(() {
+                        starter = true;
+                        eco = false;
+                      });
+                    },
+                  ),
                   GestureDetector(
                     child: Card(
                         elevation: starter ? 8 : 1,

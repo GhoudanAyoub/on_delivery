@@ -29,8 +29,4 @@ final Map<String, WidgetBuilder> routes = {
   Base.routeName: (context) => Base(),
   Profile.routeName: (context) => Profile(),
   Plans.routeName: (context) => Plans(),
-/*  ForgotPasswordScreen.routeName: (context) => ForgotPasswordScreen(),
-  StoreHome.routeName: (context) => StoreHome(),
-  CategoriesList.routeName: (context) => CategoriesList(),
-  StoreDetail.routeName: (context) => StoreDetail()*/
 };
