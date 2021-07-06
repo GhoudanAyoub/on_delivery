@@ -14,6 +14,8 @@ String favoritesName = "onDeliveryFavorites";
 CollectionReference paymentRef = firestore.collection('onDeliveryPayment');
 CollectionReference reportRef = firestore.collection('onDeliveryReport');
 CollectionReference usersRef = firestore.collection('onDeliveryUsers');
+CollectionReference userLocationRef =
+    firestore.collection('onDeliveryUserLocation');
 CollectionReference orderRef = firestore.collection('onDeliveryOrders');
 CollectionReference favoriteRef = firestore.collection('onDeliveryFavorites');
 CollectionReference plansRef = firestore.collection('onDeliveryPlans');

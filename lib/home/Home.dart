@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
 import 'package:on_delivery/block/navigation_block/navigation_block.dart';
 import 'package:on_delivery/home/search_screen.dart';
+import 'package:on_delivery/models/AgentLocation.dart';
 import 'package:on_delivery/models/User.dart';
 import 'package:on_delivery/models/category.dart';
 import 'package:on_delivery/models/favorite.dart';
@@ -33,7 +34,7 @@ class _HomeState extends State<Home> {
   bool loadingFavoriteAgents = true;
   bool fav = false;
   TextEditingController _searchedController = TextEditingController();
-
+  AgentLocation locationService;
   getFavoritesAgents() async {
     QuerySnapshot snap = await favoriteRef.get();
     List<DocumentSnapshot> doc = snap.docs;
@@ -106,6 +107,7 @@ class _HomeState extends State<Home> {
 
   @override
   Widget build(BuildContext context) {
+    // locationService = Provider.of<AgentLocation>(context);
     return SafeArea(
         child: Scaffold(
             body: Container(

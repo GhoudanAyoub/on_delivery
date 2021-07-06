@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:collection';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:custom_switch/custom_switch.dart';
@@ -16,8 +15,11 @@ import 'package:on_delivery/components/RaisedGradientButton.dart';
 import 'package:on_delivery/components/custom_dropdown.dart';
 import 'package:on_delivery/components/text_form_builder.dart';
 import 'package:on_delivery/helpers/location_provider.dart';
+import 'package:on_delivery/models/order.dart';
 import 'package:on_delivery/services/auth_service.dart';
+import 'package:on_delivery/utils/FirebaseService.dart';
 import 'package:on_delivery/utils/SizeConfig.dart';
+import 'package:on_delivery/utils/firebase.dart';
 import 'package:on_delivery/utils/validation.dart';
 import 'package:provider/provider.dart';
 
@@ -734,7 +736,24 @@ class _SearchScreenState extends State<SearchScreen> {
                                     ],
                                   ),
                                   width: SizeConfig.screenWidth - 150,
-                                  onPressed: () async {}),
+                                  onPressed: () async {
+                                    if (startingPointString != null &&
+                                        arrivalPointString != null) {
+                                      Orders order = new Orders(
+                                        userId: firebaseAuth.currentUser.uid,
+                                        lunchStatus: true,
+                                        maxWeight: maxWeightController.text,
+                                        brand: brand,
+                                        iceBox: icebox,
+                                        numberItem: itemNumberController.text,
+                                        transport: transport,
+                                        startAt: GeoPoint(
+                                            locationData.lnt, locationData.lng),
+                                      );
+                                      FirebaseService().addOrder(
+                                          firebaseAuth.currentUser, order);
+                                    }
+                                  }),
                               SizedBox(height: 10),
                               Container(
                                 width: 135,
@@ -1013,7 +1032,24 @@ class _SearchScreenState extends State<SearchScreen> {
                                     ],
                                   ),
                                   width: SizeConfig.screenWidth - 150,
-                                  onPressed: () async {}),
+                                  onPressed: () async {
+                                    if (startingPointString != null &&
+                                        arrivalPointString != null) {
+                                      Orders order = new Orders(
+                                        userId: firebaseAuth.currentUser.uid,
+                                        lunchStatus: true,
+                                        maxWeight: maxWeightController.text,
+                                        brand: brand,
+                                        iceBox: icebox,
+                                        numberItem: itemNumberController.text,
+                                        transport: transport,
+                                        startAt: GeoPoint(
+                                            locationData.lnt, locationData.lng),
+                                      );
+                                      FirebaseService().addOrder(
+                                          firebaseAuth.currentUser, order);
+                                    }
+                                  }),
                               SizedBox(height: 10),
                               Container(
                                 width: 135,
@@ -1171,8 +1207,15 @@ class _SearchScreenState extends State<SearchScreen> {
                                 onTap: () async {
                                   await locationData.getCurrentPosition();
                                   if (locationData.permissionGranted) {
-                                    Navigator.pushNamed(
-                                        context, MapTripScreen.routeName);
+                                    final result = await Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (context) =>
+                                              SearchMapTripScreen(),
+                                        ));
+                                    setState(() {
+                                      arrivalPointString = result;
+                                    });
                                   }
                                 },
                                 child: Container(
@@ -1259,7 +1302,7 @@ class _SearchScreenState extends State<SearchScreen> {
                                                 Container(
                                                   width: 220,
                                                   child: Text(
-                                                    arrivalPointString,
+                                                    arrivalPointString ?? "",
                                                     overflow:
                                                         TextOverflow.ellipsis,
                                                     style: TextStyle(
@@ -1362,7 +1405,24 @@ class _SearchScreenState extends State<SearchScreen> {
                                     ],
                                   ),
                                   width: SizeConfig.screenWidth - 150,
-                                  onPressed: () async {}),
+                                  onPressed: () async {
+                                    if (startingPointString != null &&
+                                        arrivalPointString != null) {
+                                      Orders order = new Orders(
+                                        userId: firebaseAuth.currentUser.uid,
+                                        lunchStatus: true,
+                                        maxWeight: maxWeightController.text,
+                                        brand: brand,
+                                        iceBox: icebox,
+                                        numberItem: itemNumberController.text,
+                                        transport: transport,
+                                        startAt: GeoPoint(
+                                            locationData.lnt, locationData.lng),
+                                      );
+                                      FirebaseService().addOrder(
+                                          firebaseAuth.currentUser, order);
+                                    }
+                                  }),
                               SizedBox(height: 10),
                               Container(
                                 width: 135,
@@ -1706,7 +1766,24 @@ class _SearchScreenState extends State<SearchScreen> {
                                     ],
                                   ),
                                   width: SizeConfig.screenWidth - 150,
-                                  onPressed: () async {}),
+                                  onPressed: () async {
+                                    if (startingPointString != null &&
+                                        arrivalPointString != null) {
+                                      Orders order = new Orders(
+                                        userId: firebaseAuth.currentUser.uid,
+                                        lunchStatus: true,
+                                        maxWeight: maxWeightController.text,
+                                        brand: brand,
+                                        iceBox: icebox,
+                                        numberItem: itemNumberController.text,
+                                        transport: transport,
+                                        startAt: GeoPoint(
+                                            locationData.lnt, locationData.lng),
+                                      );
+                                      FirebaseService().addOrder(
+                                          firebaseAuth.currentUser, order);
+                                    }
+                                  }),
                               SizedBox(height: 10),
                               Container(
                                 width: 135,
@@ -1777,209 +1854,209 @@ class _SearchMapTripScreenState extends State<SearchMapTripScreen> {
 
     return Scaffold(
       backgroundColor: Colors.white,
-      body: SafeArea(
-        child: Stack(
-          children: [
-            GoogleMap(
-              initialCameraPosition: CameraPosition(target: currentLocation),
-              zoomControlsEnabled: false,
-              minMaxZoomPreference: MinMaxZoomPreference(1.5, 20.8),
-              myLocationEnabled: true,
-              myLocationButtonEnabled: false,
-              mapType: MapType.normal,
-              mapToolbarEnabled: true,
-              onCameraMove: (CameraPosition positon) {
-                locationData.onCameraMove(positon);
-              },
-              onMapCreated: onCreate,
-              onCameraIdle: () {
-                locationData.getMoveCamera().then((value) => setState(() {
-                      start
-                          ? startingTripLocationString = value
-                          : arriveTripLocationString = value;
-                    }));
-              },
-            ),
-            Align(
-              alignment: Alignment.topCenter,
-              child: Column(
-                children: [
-                  Container(
-                    margin: EdgeInsets.fromLTRB(20, 50, 20, 5),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        GestureDetector(
-                          onTap: () {
-                            Navigator.pop(context);
-                          },
-                          child: Image.asset(
-                            "assets/images/Back Arrow.png",
-                          ),
-                        ),
-                        FloatingActionButton(
-                          onPressed: () => _goToMyPosition(_controller.future),
-                          mini: true,
-                          elevation: 8,
-                          backgroundColor: Colors.white,
-                          child: Image.asset("assets/images/geolocate me.png"),
-                        ),
-                      ],
-                    ),
-                  ),
-                  SizedBox(
-                    height: 20,
-                  ),
-                  Container(
-                    width: 300,
-                    height: 50,
-                    child: ElevatedButton(
-                      onPressed: _handlePressButton,
-                      style: ElevatedButton.styleFrom(
-                        onSurface: Colors.white,
-                        primary: Colors.white,
-                        onPrimary: Colors.white,
-                        elevation: 4,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.only(
-                            topRight: Radius.circular(10),
-                            topLeft: Radius.circular(10),
-                          ),
-                        ),
-                        minimumSize: Size(100, 40), //////// HERE
-                      ),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Container(
-                            width: 220,
-                            child: Text(
-                              startingTripLocationString,
-                              overflow: TextOverflow.ellipsis,
-                              style: TextStyle(
-                                  color: Colors.black,
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.normal),
-                            ),
-                          ),
-                          Image.asset('assets/images/starting point.png')
-                        ],
-                      ),
-                    ),
-                  ),
-                  Container(
-                    height: 1,
-                    color: Colors.grey[400],
-                    width: 250,
-                  ),
-                  Container(
-                    width: 300,
-                    height: 50,
-                    child: ElevatedButton(
-                      onPressed: _handlePressButton2,
-                      style: ElevatedButton.styleFrom(
-                        elevation: 4,
-                        onSurface: Colors.white,
-                        primary: Colors.white,
-                        onPrimary: Colors.white,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.only(
-                            bottomLeft: Radius.circular(10),
-                            bottomRight: Radius.circular(10),
-                          ),
-                        ),
-                        minimumSize: Size(100, 40), //////// HERE
-                      ),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Container(
-                            width: 220,
-                            child: Text(
-                              arriveTripLocationString,
-                              overflow: TextOverflow.ellipsis,
-                              style: TextStyle(
-                                  color: Colors.black,
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.normal),
-                            ),
-                          ),
-                          Image.asset('assets/images/arrival point.png')
-                        ],
-                      ),
-                    ),
-                  ),
-                ],
+      body: WillPopScope(
+        onWillPop: () {
+          Navigator.pop(
+              context, p2 != null ? p2.description : arriveTripLocationString);
+        },
+        child: SafeArea(
+          child: Stack(
+            children: [
+              GoogleMap(
+                initialCameraPosition: CameraPosition(target: currentLocation),
+                zoomControlsEnabled: false,
+                minMaxZoomPreference: MinMaxZoomPreference(1.5, 20.8),
+                myLocationEnabled: true,
+                myLocationButtonEnabled: false,
+                mapType: MapType.normal,
+                mapToolbarEnabled: true,
+                onCameraMove: (CameraPosition positon) {
+                  locationData.onCameraMove(positon);
+                },
+                onMapCreated: onCreate,
+                onCameraIdle: () {
+                  locationData.getMoveCamera().then((value) => setState(() {
+                        start
+                            ? startingTripLocationString = value
+                            : arriveTripLocationString = value;
+                      }));
+                },
               ),
-            ),
-            Align(
-                alignment: Alignment.center,
+              Align(
+                alignment: Alignment.topCenter,
+                child: Column(
+                  children: [
+                    Container(
+                      margin: EdgeInsets.fromLTRB(20, 50, 20, 5),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          GestureDetector(
+                            onTap: () {
+                              Navigator.pop(
+                                  context,
+                                  p2 != null
+                                      ? p2.description
+                                      : arriveTripLocationString);
+                            },
+                            child: Image.asset(
+                              "assets/images/Back Arrow.png",
+                            ),
+                          ),
+                          FloatingActionButton(
+                            onPressed: () =>
+                                _goToMyPosition(_controller.future),
+                            mini: true,
+                            elevation: 8,
+                            backgroundColor: Colors.white,
+                            child:
+                                Image.asset("assets/images/geolocate me.png"),
+                          ),
+                        ],
+                      ),
+                    ),
+                    SizedBox(
+                      height: 20,
+                    ),
+                    Container(
+                      width: 300,
+                      height: 50,
+                      child: ElevatedButton(
+                        onPressed: _handlePressButton,
+                        style: ElevatedButton.styleFrom(
+                          onSurface: Colors.white,
+                          primary: Colors.white,
+                          onPrimary: Colors.white,
+                          elevation: 4,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.only(
+                              topRight: Radius.circular(10),
+                              topLeft: Radius.circular(10),
+                            ),
+                          ),
+                          minimumSize: Size(100, 40), //////// HERE
+                        ),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Container(
+                              width: 220,
+                              child: Text(
+                                startingTripLocationString,
+                                overflow: TextOverflow.ellipsis,
+                                style: TextStyle(
+                                    color: Colors.black,
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.normal),
+                              ),
+                            ),
+                            Image.asset('assets/images/starting point.png')
+                          ],
+                        ),
+                      ),
+                    ),
+                    Container(
+                      height: 1,
+                      color: Colors.grey[400],
+                      width: 250,
+                    ),
+                    Container(
+                      width: 300,
+                      height: 50,
+                      child: ElevatedButton(
+                        onPressed: _handlePressButton2,
+                        style: ElevatedButton.styleFrom(
+                          elevation: 4,
+                          onSurface: Colors.white,
+                          primary: Colors.white,
+                          onPrimary: Colors.white,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.only(
+                              bottomLeft: Radius.circular(10),
+                              bottomRight: Radius.circular(10),
+                            ),
+                          ),
+                          minimumSize: Size(100, 40), //////// HERE
+                        ),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Container(
+                              width: 220,
+                              child: Text(
+                                arriveTripLocationString,
+                                overflow: TextOverflow.ellipsis,
+                                style: TextStyle(
+                                    color: Colors.black,
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.normal),
+                              ),
+                            ),
+                            Image.asset('assets/images/arrival point.png')
+                          ],
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              Align(
+                  alignment: Alignment.center,
+                  child: Container(
+                      height: 100,
+                      margin: EdgeInsets.only(bottom: 40),
+                      child: Image.asset(
+                          'assets/images/fixed location in map.png'))),
+              Align(
+                alignment: Alignment.bottomCenter,
                 child: Container(
-                    height: 100,
-                    margin: EdgeInsets.only(bottom: 40),
-                    child: Image.asset(
-                        'assets/images/fixed location in map.png'))),
-            Align(
-              alignment: Alignment.bottomCenter,
-              child: Container(
-                margin: EdgeInsets.only(bottom: 40),
-                child: RaisedGradientButton(
-                    child: Text(
-                      'Confirm',
-                      style: TextStyle(
-                        fontSize: 16,
-                        color: Colors.white,
+                  margin: EdgeInsets.only(bottom: 40),
+                  child: RaisedGradientButton(
+                      child: Text(
+                        'Confirm',
+                        style: TextStyle(
+                          fontSize: 16,
+                          color: Colors.white,
+                        ),
                       ),
-                    ),
-                    gradient: LinearGradient(
-                      colors: <Color>[
-                        Color.fromRGBO(82, 238, 79, 1),
-                        Color.fromRGBO(5, 151, 0, 1)
-                      ],
-                    ),
-                    width: SizeConfig.screenWidth - 150,
-                    onPressed: () async {
-                      Map<String, dynamic> agentTripsLocationList =
-                          new HashMap();
-                      agentTripsLocationList.putIfAbsent(
-                          "startingPointString",
-                          () => p != null
-                              ? p.description
-                              : startingTripLocationString);
-                      agentTripsLocationList.putIfAbsent(
-                          "arrivalPointString",
-                          () => p2 != null
-                              ? p2.description
-                              : arriveTripLocationString);
-                      agentTripsLocationList.putIfAbsent(
-                          "arrivalPoint",
-                          () => GeoPoint(
-                              locationData.lnt != null
-                                  ? locationData.lnt
-                                  : arrivedLocationLnt,
-                              locationData.lng != null
-                                  ? locationData.lng
-                                  : arrivedLocationLng));
-                      agentTripsLocationList.putIfAbsent(
-                          "startingPoint",
-                          () => GeoPoint(
-                              locationData.lnt != null
-                                  ? locationData.lnt
-                                  : startingLocationLnt,
-                              locationData.lng != null
-                                  ? locationData.lng
-                                  : startingLocationLng));
-                      List<HashMap<String, dynamic>> list = [];
-                      list.add(agentTripsLocationList);
-                      /* authService.updateTripsLocationToFireStore(
-                          widget.user, list);
-                       authService.addNewTripsLocationToFireStore(
-                          widget.user, agentTripsLocationList);*/
-                      Navigator.pop(context);
-                    }),
-              ),
-            )
-          ],
+                      gradient: LinearGradient(
+                        colors: <Color>[
+                          Color.fromRGBO(82, 238, 79, 1),
+                          Color.fromRGBO(5, 151, 0, 1)
+                        ],
+                      ),
+                      width: SizeConfig.screenWidth - 150,
+                      onPressed: () async {
+                        Orders order = new Orders(
+                            userId: firebaseAuth.currentUser.uid,
+                            lunchStatus: false,
+                            startAt: GeoPoint(
+                                locationData.lnt != null
+                                    ? locationData.lnt
+                                    : startingLocationLnt,
+                                locationData.lng != null
+                                    ? locationData.lng
+                                    : startingLocationLng),
+                            endAt: GeoPoint(
+                                locationData.lnt != null
+                                    ? locationData.lnt
+                                    : arrivedLocationLnt,
+                                locationData.lng != null
+                                    ? locationData.lng
+                                    : arrivedLocationLng));
+
+                        FirebaseService()
+                            .addOrder(firebaseAuth.currentUser, order);
+                        Navigator.pop(
+                            context,
+                            p2 != null
+                                ? p2.description
+                                : arriveTripLocationString);
+                      }),
+                ),
+              )
+            ],
+          ),
         ),
       ),
     );

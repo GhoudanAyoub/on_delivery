@@ -4,6 +4,7 @@ import 'package:google_sign_in/google_sign_in.dart';
 import 'package:on_delivery/models/User.dart';
 import 'package:on_delivery/models/message.dart';
 import 'package:on_delivery/models/message_list.dart';
+import 'package:on_delivery/models/order.dart';
 import 'package:on_delivery/models/plans.dart';
 import 'package:on_delivery/utils/firebase.dart';
 import 'package:on_delivery/utils/utils.dart';
@@ -132,6 +133,36 @@ class FirebaseService {
         'userId': _firebaseAuth.currentUser.uid,
         'planType': pType,
       });
+    }
+  }
+
+  addOrder(User user, Orders orders) async {
+    if (user != null) {
+      final snapShot = await orderRef.doc(user.uid).get();
+      var list = [];
+      if (snapShot.exists) {
+        list.add({
+          "date": Utils.getCurrentDate(),
+          "iceBox": orders.iceBox,
+          "brand": orders.brand,
+          "transport": orders.transport,
+          "maxWeight": orders.maxWeight,
+          "numberItem": orders.numberItem,
+          "lunchStatus": orders.lunchStatus,
+          "status": orders.status,
+          "price": orders.price,
+          "agentId": orders.agentId,
+          "userId": orders.userId,
+          "endAt": orders.endAt,
+          "startAt": orders.startAt,
+        });
+        orderRef.doc(user.uid).update({'orderData': list}).onError(
+            (error, stackTrace) => print(error));
+      } else {
+        list.add(orders.toJson());
+        orderRef.doc(user.uid).set({'orderData': list}).onError(
+            (error, stackTrace) => print(error));
+      }
     }
   }
 
