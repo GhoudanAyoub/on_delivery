@@ -9,6 +9,7 @@ import 'package:on_delivery/home/Home.dart';
 import 'package:on_delivery/home/agent_details.dart';
 import 'package:on_delivery/home/base.dart';
 import 'package:on_delivery/home/orders_screen.dart';
+import 'package:on_delivery/home/search_screen.dart';
 import 'package:on_delivery/plans/plans_screen.dart';
 import 'package:on_delivery/profiles/profile.dart';
 
@@ -33,4 +34,6 @@ final Map<String, WidgetBuilder> routes = {
   Plans.routeName: (context) => Plans(),
   OrderScreen.routeName: (context) => OrderScreen(),
   AgentsDetails.routeName: (context) => AgentsDetails(),
+  SearchScreen.routeName: (context) => SearchScreen(),
+  SearchMapTripScreen.routeName: (context) => SearchMapTripScreen(),
 };

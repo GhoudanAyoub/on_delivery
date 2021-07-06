@@ -940,12 +940,12 @@ class _UpdateProfilesState extends State<UpdateProfiles> {
                                     onChanged: (state) {
                                       if (state)
                                         locationData.getCurrentPosition();
-                                      setState(() {
+                                      locationData
+                                          .getMoveCamera()
+                                          .then((value) => setState(() {
                                         locationState = state;
-                                        locationData.getMoveCamera().then(
-                                            (value) => startingPointController
-                                                .text = value);
-                                      });
+                                        startingPointString = value;
+                                      }));
                                     },
                                   ),
 
@@ -1232,21 +1232,22 @@ class _UpdateProfilesState extends State<UpdateProfiles> {
                             SizedBox(
                               height: 40,
                             ),
-                            Row(
-                              children: [
-                                Icon(CupertinoIcons.plus_circle_fill,
-                                    size: 20, color: Colors.green),
-                                SizedBox(
-                                  width: 10,
-                                ),
-                                Text("Add another trip",
-                                    textAlign: TextAlign.center,
-                                    style: TextStyle(
-                                      fontSize: 14,
-                                      fontWeight: FontWeight.normal,
-                                      color: Colors.green,
-                                    )),
-                              ],
+                            GestureDetector(
+                              onTap: () async {
+                                await locationData.getCurrentPosition();
+                                if (locationData.permissionGranted) {
+                                  Navigator.pushNamed(
+                                      context, MapTripScreen.routeName);
+                                }
+                              },
+                              child: Text("Add another trip",
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(
+                                    fontSize: 14,
+                                    letterSpacing: 1,
+                                    fontWeight: FontWeight.normal,
+                                    color: Color.fromRGBO(5, 151, 0, 1),
+                                  )),
                             ),
                             SizedBox(
                               height: 20,

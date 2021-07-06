@@ -3,6 +3,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
 import 'package:on_delivery/block/navigation_block/navigation_block.dart';
+import 'package:on_delivery/home/search_screen.dart';
 import 'package:on_delivery/models/User.dart';
 import 'package:on_delivery/models/category.dart';
 import 'package:on_delivery/models/favorite.dart';
@@ -54,15 +55,15 @@ class _HomeState extends State<Home> {
   }
 
   search(String query) {
-    print("out");
     if (query == "") {
       filteredAgents = agents;
     } else {
-      print("in");
       List userSearch = agents.where((userSnap) {
         Map user = userSnap.data();
         String userName = user['firstName'];
-        return userName.toLowerCase().contains(query.toLowerCase());
+        return userName.toLowerCase().contains(query.toLowerCase()) ||
+            user['lastName'].toLowerCase().contains(query.toLowerCase()) ||
+            user['activities'].toLowerCase().contains(query.toLowerCase());
       }).toList();
 
       setState(() {
@@ -77,10 +78,9 @@ class _HomeState extends State<Home> {
     } else {
       List userSearch = favoriteAgents.where((userSnap) {
         Map user = userSnap.data();
-        String userName = user['firstName'];
-        return userName.toLowerCase().contains(query.toLowerCase()) ||
-            user['lastName'].toLowerCase().contains(query.toLowerCase()) ||
-            user['activities'].toLowerCase().contains(query.toLowerCase());
+        var fav = user['agentData'];
+        return fav['firstName'].toLowerCase().contains(query.toLowerCase()) ||
+            fav['activities'].toLowerCase().contains(query.toLowerCase());
       }).toList();
 
       setState(() {
@@ -271,7 +271,9 @@ class _HomeState extends State<Home> {
               child: Material(
                 color: Colors.transparent,
                 child: InkWell(
-                    onTap: () async {},
+                    onTap: () async {
+                      Navigator.pushNamed(context, SearchScreen.routeName);
+                    },
                     child: Center(
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.center,
