@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:on_delivery/block/navigation_block/navigation_block.dart';
 import 'package:on_delivery/components/RaisedGradientButton.dart';
 import 'package:on_delivery/models/User.dart';
-import 'package:on_delivery/models/favorite.dart';
 import 'package:on_delivery/utils/FirebaseService.dart';
 import 'package:on_delivery/utils/SizeConfig.dart';
 import 'package:on_delivery/utils/firebase.dart';
@@ -379,10 +378,9 @@ class _AgentsDetailsState extends State<AgentsDetails> {
                                     builder: (context,
                                         AsyncSnapshot<QuerySnapshot> snapshot) {
                                       if (snapshot.hasData) {
-                                        FavoriteModel user1 =
-                                            FavoriteModel.fromJson(snapshot
-                                                .data.docs.
-                                                .data());
+                                        /*FavoriteModel user1 =
+                                            FavoriteModel.fromJson(
+                                                snapshot.data.data());
                                         if (user1.agentData["id"] ==
                                             widget.id) {
                                           return Align(
@@ -406,6 +404,40 @@ class _AgentsDetailsState extends State<AgentsDetails> {
                                                     150,
                                                 onPressed: () async {}),
                                           );
+                                        }*/
+                                        for (DocumentSnapshot document
+                                            in snapshot.data.docs) {
+                                          if (document.data()["agentData"]
+                                                  ['id'] ==
+                                              widget.id)
+                                            return Align(
+                                              alignment: Alignment.bottomCenter,
+                                              child: RaisedGradientButton(
+                                                  child: Text(
+                                                    'Delete from favorite',
+                                                    style: TextStyle(
+                                                      fontSize: 16,
+                                                      color: Colors.grey[600],
+                                                    ),
+                                                  ),
+                                                  border: true,
+                                                  gradient: LinearGradient(
+                                                    colors: <Color>[
+                                                      Colors.white,
+                                                      Colors.white
+                                                    ],
+                                                  ),
+                                                  width:
+                                                      SizeConfig.screenWidth -
+                                                          150,
+                                                  onPressed: () async {
+                                                    FirebaseService()
+                                                        .deleteFromFavorite(
+                                                            firebaseAuth
+                                                                .currentUser,
+                                                            document.id);
+                                                  }),
+                                            );
                                         }
                                         return Align(
                                           alignment: Alignment.bottomCenter,

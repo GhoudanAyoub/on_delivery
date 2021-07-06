@@ -146,7 +146,7 @@ class FirebaseService {
 
   deleteFromFavorite(User user, String id) async {
     if (user != null) {
-      await favoriteRef.doc("").delete();
+      await favoriteRef.doc(id).delete();
     }
   }
 }
