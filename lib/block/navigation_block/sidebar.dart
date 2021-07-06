@@ -138,6 +138,8 @@ class _SideBarState extends State<SideBar>
                             title: "Orders",
                             onTap: () {
                               onIconPressed();
+                              BlocProvider.of<NavigationBloc>(context)
+                                  .add(NavigationEvents.OrderPageClickedEvent);
                             },
                           ),
                           SizedBox(

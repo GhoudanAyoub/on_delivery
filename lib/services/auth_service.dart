@@ -58,6 +58,8 @@ class AuthService extends Service {
           'RIB': "",
           'bankName': "",
           'percentage': "",
+          'price': "",
+          'verified': "",
         });
       }
     }
@@ -93,6 +95,8 @@ class AuthService extends Service {
         'RIB': "",
         'bankName': "",
         'percentage': "",
+        'price': "",
+        'verified': "",
       });
     }
   }

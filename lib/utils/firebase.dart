@@ -8,17 +8,18 @@ FirebaseFirestore firestore = FirebaseFirestore.instance;
 FirebaseStorage storage = FirebaseStorage.instance;
 final Uuid uuid = Uuid();
 
+String favoritesName = "onDeliveryFavorites";
+
 // Collection refs
 CollectionReference paymentRef = firestore.collection('onDeliveryPayment');
 CollectionReference reportRef = firestore.collection('onDeliveryReport');
 CollectionReference usersRef = firestore.collection('onDeliveryUsers');
+CollectionReference orderRef = firestore.collection('onDeliveryOrders');
 CollectionReference favoriteRef = firestore.collection('onDeliveryFavorites');
 CollectionReference plansRef = firestore.collection('onDeliveryPlans');
 CollectionReference chatRef = firestore.collection("onDeliveryChats");
 CollectionReference notificationRef =
     firestore.collection('onDeliveryNotifications');
-CollectionReference favUsersRef =
-    firestore.collection('onDeliveryFavoriteAgent');
 CollectionReference killAppRef = firestore.collection('kilApp');
 
 // Storage refs

@@ -1,3 +1,5 @@
+import 'dart:collection';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class UserModel {
@@ -19,6 +21,7 @@ class UserModel {
   String transportType;
   String wareHouse;
   String activities;
+  String verified;
   List<dynamic> agentTripsLocationList;
   List<dynamic> wareHouseLocationList;
   String percentage;
@@ -53,6 +56,7 @@ class UserModel {
       this.percentage,
       this.unity,
       this.price,
+      this.verified,
       this.RIB,
       this.bankName,
       this.signedUpAt,
@@ -84,10 +88,46 @@ class UserModel {
     percentage = json['percentage'];
     unity = json['unity'];
     price = json['price'];
+    verified = json['verified'];
     RIB = json['RIB'];
     bankName = json['bankName'];
     signedUpAt = json['signedUpAt'];
     lastSeen = json['lastSeen'];
     isOnline = json['isOnline'];
+  }
+
+  Map<String, dynamic> toJson() {
+    final HashMap<String, dynamic> data = new HashMap<String, dynamic>();
+    data.putIfAbsent('id', () => this.id);
+    data['email'] = this.email;
+    data['pass'] = this.pass;
+    data['type'] = this.type;
+    data['firstName'] = this.firstName;
+    data['lastname'] = this.lastname;
+    data['city'] = this.city;
+    data['phone'] = this.phone;
+    data['photoUrl'] = this.photoUrl;
+    data['verificationType'] = this.verificationType;
+    data['side1PhotoUrl'] = this.side1PhotoUrl;
+    data['side2PhotoUrl'] = this.side2PhotoUrl;
+    data['passportPhotoUrl'] = this.passportPhotoUrl;
+    data['businessType'] = this.businessType;
+    data['businessName'] = this.businessName;
+    data['transportType'] = this.transportType;
+    data['wareHouse'] = this.wareHouse;
+    data['activities'] = this.activities;
+    data['agentTripsLocationList'] = this.agentTripsLocationList;
+    data['wareHouseLocationList'] = this.wareHouseLocationList;
+    data['maxWeight'] = this.maxWeight;
+    data['percentage'] = this.percentage;
+    data['unity'] = this.unity;
+    data['price'] = this.price;
+    data['RIB'] = this.RIB;
+    data['bankName'] = this.bankName;
+    data['verified'] = this.verified;
+    data['signedUpAt'] = this.signedUpAt;
+    data['lastSeen'] = this.lastSeen;
+    data['isOnline'] = this.isOnline;
+    return data;
   }
 }

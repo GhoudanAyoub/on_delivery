@@ -47,7 +47,7 @@ class _PlansState extends State<Plans> {
                   stream:
                       plansRef.doc(firebaseAuth.currentUser.uid).snapshots(),
                   builder: (context, AsyncSnapshot<DocumentSnapshot> snapshot) {
-                    if (snapshot.data.exists) {
+                    if (snapshot.hasData && snapshot.data.exists) {
                       PlansModel plans =
                           PlansModel.fromJson(snapshot.data.data());
                       if (Utils.getCurrentDate()
@@ -97,55 +97,6 @@ class _PlansState extends State<Plans> {
                   child: ListView(
                 padding: EdgeInsets.only(left: 40, right: 40, top: 40),
                 children: [
-                  GestureDetector(
-                    child: Card(
-                        elevation: starter ? 8 : 1,
-                        shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(10)),
-                        child: Container(
-                          height: 180,
-                          width: 160,
-                          padding: EdgeInsets.all(10),
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            border: Border.all(
-                                width: 1,
-                                color: starter ? Colors.green : Colors.grey),
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.spaceAround,
-                            children: [
-                              Text("Starter",
-                                  style: TextStyle(
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.w600,
-                                    color: starter
-                                        ? Colors.blueAccent
-                                        : Colors.black,
-                                  )),
-                              Text("70",
-                                  style: TextStyle(
-                                    fontSize: 30,
-                                    fontWeight: FontWeight.bold,
-                                    color: Colors.black,
-                                  )),
-                              Text("dh/month",
-                                  style: TextStyle(
-                                    fontSize: 14,
-                                    fontWeight: FontWeight.w600,
-                                    color: Colors.grey,
-                                  ))
-                            ],
-                          ),
-                        )),
-                    onTap: () {
-                      setState(() {
-                        starter = true;
-                        eco = false;
-                      });
-                    },
-                  ),
                   GestureDetector(
                     child: Card(
                         elevation: starter ? 8 : 1,

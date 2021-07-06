@@ -134,4 +134,19 @@ class FirebaseService {
       });
     }
   }
+
+  addToFavorite(User user, UserModel userModel) async {
+    if (user != null) {
+      favoriteRef.doc().set({
+        'clientId': user.uid,
+        'agentData': userModel.toJson(),
+      }).onError((error, stackTrace) => print(error));
+    }
+  }
+
+  deleteFromFavorite(User user, String id) async {
+    if (user != null) {
+      await favoriteRef.doc("").delete();
+    }
+  }
 }

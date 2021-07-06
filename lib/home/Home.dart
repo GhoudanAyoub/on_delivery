@@ -3,27 +3,18 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
 import 'package:on_delivery/block/navigation_block/navigation_block.dart';
-import 'package:on_delivery/components/text_form_builder.dart';
 import 'package:on_delivery/models/User.dart';
 import 'package:on_delivery/models/category.dart';
+import 'package:on_delivery/models/favorite.dart';
 import 'package:on_delivery/utils/FirebaseService.dart';
+import 'package:on_delivery/utils/constants.dart';
 import 'package:on_delivery/utils/firebase.dart';
-import 'package:on_delivery/utils/validation.dart';
+
+import 'agent_details.dart';
 
 class Home extends StatefulWidget with NavigationStates {
-  final bool home;
-  final bool favoriteAgents;
-  final bool search;
-  final bool orders;
   static String routeName = "/home";
 
-  const Home(
-      {Key key,
-      this.home = true,
-      this.favoriteAgents = false,
-      this.search = false,
-      this.orders = false})
-      : super(key: key);
   @override
   _HomeState createState() => _HomeState();
 }
@@ -33,7 +24,86 @@ class _HomeState extends State<Home> {
   int _activeTabHome = 0;
   bool searchClicked = false;
   String CatName;
+  List<DocumentSnapshot> agents = [];
+  List<DocumentSnapshot> filteredAgents = [];
+  List<DocumentSnapshot> favoriteAgents = [];
+  List<DocumentSnapshot> filteredFavoriteAgents = [];
+  bool loading = true;
+  bool loadingFavoriteAgents = true;
+  bool fav = false;
   TextEditingController _searchedController = TextEditingController();
+
+  getFavoritesAgents() async {
+    QuerySnapshot snap = await favoriteRef.get();
+    List<DocumentSnapshot> doc = snap.docs;
+    favoriteAgents = doc;
+    filteredFavoriteAgents = doc;
+    setState(() {
+      loadingFavoriteAgents = false;
+    });
+  }
+
+  getAgents() async {
+    QuerySnapshot snap = await usersRef.get();
+    List<DocumentSnapshot> doc = snap.docs;
+    agents = doc;
+    filteredAgents = doc;
+    setState(() {
+      loading = false;
+    });
+  }
+
+  search(String query) {
+    print("out");
+    if (query == "") {
+      filteredAgents = agents;
+    } else {
+      print("in");
+      List userSearch = agents.where((userSnap) {
+        Map user = userSnap.data();
+        String userName = user['firstName'];
+        return userName.toLowerCase().contains(query.toLowerCase());
+      }).toList();
+
+      setState(() {
+        filteredAgents = userSearch;
+      });
+    }
+  }
+
+  searchFavoritesAgents(String query) {
+    if (query == "") {
+      filteredFavoriteAgents = favoriteAgents;
+    } else {
+      List userSearch = favoriteAgents.where((userSnap) {
+        Map user = userSnap.data();
+        String userName = user['firstName'];
+        return userName.toLowerCase().contains(query.toLowerCase()) ||
+            user['lastName'].toLowerCase().contains(query.toLowerCase()) ||
+            user['activities'].toLowerCase().contains(query.toLowerCase());
+      }).toList();
+
+      setState(() {
+        filteredFavoriteAgents = userSearch;
+      });
+    }
+  }
+
+  removeFromList(index) {
+    filteredAgents.removeAt(index);
+  }
+
+  currentUserId() {
+    return firebaseAuth.currentUser.uid;
+  }
+
+  @override
+  void initState() {
+    getFavoritesAgents();
+    getAgents();
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -229,10 +299,7 @@ class _HomeState extends State<Home> {
               ),
             ),
             SizedBox(height: 10),
-            if (widget.home) homeAgent(),
-            if (widget.favoriteAgents) favoriteAgent(),
-            if (widget.orders) orderAgent(),
-            if (widget.search) searchAgent(),
+            homeAgent(),
             Align(
               alignment: Alignment.bottomRight,
               child: FloatingActionButton(
@@ -379,13 +446,61 @@ class _HomeState extends State<Home> {
           height: 10,
         ),
         searchClicked
-            ? TextFormBuilder(
-                controller: _searchedController,
-                hintText: "Agent name,Activity...",
-                suffix: false,
-                textInputAction: TextInputAction.next,
-                validateFunction: Validations.validateName,
-              )
+            ? Theme(
+                data: ThemeData(
+                  primaryColor: Theme.of(context).accentColor,
+                  accentColor: Theme.of(context).accentColor,
+                ),
+                child: TextFormField(
+                  cursorColor: Colors.black,
+                  controller: _searchedController,
+                  onChanged: (query) {
+                    _activeTabHome == 0
+                        ? search(query)
+                        : searchFavoritesAgents(query);
+                  },
+                  style: TextStyle(
+                    fontSize: 15.0,
+                  ),
+                  decoration: InputDecoration(
+                      labelText: "First Name,Last Name, Activities",
+                      fillColor: Color.fromRGBO(239, 240, 246, 1),
+                      hintStyle: TextStyle(
+                        color: Color.fromRGBO(110, 113, 130, 1),
+                      ),
+                      filled: true,
+                      /*hintText: widget.hintText,*/
+                      contentPadding: EdgeInsets.symmetric(horizontal: 10.0),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.all(
+                          Radius.circular(10.0),
+                        ),
+                        borderSide: BorderSide(
+                          color: Colors.white,
+                          width: 0.0,
+                        ),
+                      ),
+                      enabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.all(
+                          Radius.circular(10.0),
+                        ),
+                        borderSide: BorderSide(
+                          color: Colors.white,
+                          width: 0.0,
+                        ),
+                      ),
+                      hoverColor: GBottomNav,
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.all(
+                          Radius.circular(10.0),
+                        ),
+                        borderSide: BorderSide(
+                          color: Color.fromRGBO(110, 113, 145, 1),
+                          width: 1.0,
+                        ),
+                      ),
+                      errorStyle: TextStyle(height: 0.0, fontSize: 0.0)),
+                ))
             : SizedBox(
                 height: 0,
               ),
@@ -393,30 +508,412 @@ class _HomeState extends State<Home> {
           height: 10,
         ),
         _activeTabHome == 0
-            ? StreamBuilder(
-                stream: usersRef.doc(firebaseAuth.currentUser.uid).snapshots(),
-                builder: (context, AsyncSnapshot<DocumentSnapshot> snapshot) {
-                  if (snapshot.hasData && snapshot.data.exists) {
-                    UserModel _user = UserModel.fromJson(snapshot.data.data());
-                    if (_user.type == "Agent" &&
-                        _user.city.toLowerCase().contains(user1.city)) {
-                      if (_user.firstName.toLowerCase().contains(
-                              _searchedController.text.toLowerCase()) ||
-                          _user.lastname.toLowerCase().contains(
-                              _searchedController.text.toLowerCase()) ||
-                          _user.activities
-                              .toLowerCase()
-                              .contains(_searchedController.text.toLowerCase()))
-                        return Align(
-                          alignment: Alignment.bottomCenter,
-                          child: GestureDetector(
-                            child: Card(
-                                elevation: 1,
-                                shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(10)),
-                                child: Container(
-                                  padding: EdgeInsets.only(left: 10, right: 10),
-                                  height: 150,
+            ? Container(
+                child: buildAgents(), margin: EdgeInsets.fromLTRB(0, 0, 0, 10))
+            : SizedBox(
+                height: 0,
+              ),
+        _activeTabHome == 1
+            ? Container(
+                child: buildFavoriteAgents(),
+                margin: EdgeInsets.fromLTRB(0, 0, 0, 10))
+            : SizedBox(
+                height: 0,
+              ),
+      ],
+    ));
+  }
+
+  buildAgents() {
+    if (!loading) {
+      if (filteredAgents.isEmpty) {
+        return Container(
+          child: Center(child: Lottie.asset('assets/lotties/not_found.json')),
+        );
+      } else {
+        return ListView.builder(
+          itemCount: filteredAgents.length,
+          scrollDirection: Axis.vertical,
+          shrinkWrap: true,
+          itemBuilder: (BuildContext context, int index) {
+            DocumentSnapshot doc = filteredAgents[index];
+            UserModel _user = UserModel.fromJson(doc.data());
+            /* if (firebaseAuth.currentUser != null && doc.id == currentUserId()) {
+              checkIfFollowing(user.id);
+              Timer(Duration(milliseconds: 50), () {
+                setState(() {
+                  removeFromList(index);
+                });
+              });
+            }*/
+            return Align(
+              alignment: Alignment.bottomCenter,
+              child: GestureDetector(
+                child: Card(
+                    elevation: 1,
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10)),
+                    child: Container(
+                      padding: EdgeInsets.only(left: 10, right: 10),
+                      height: 150,
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        border: Border.all(
+                            width: 1, color: Color.fromRGBO(231, 231, 231, 1)),
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.spaceAround,
+                        children: [
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Container(
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(20),
+                                  border: Border.all(
+                                    color: Colors.transparent,
+                                  ),
+                                  image: DecorationImage(
+                                    image: NetworkImage(_user.photoUrl != null
+                                        ? _user.photoUrl
+                                        : FirebaseService.getProfileImage()),
+                                    fit: BoxFit.cover,
+                                  ),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: Colors.grey.withOpacity(0.3),
+                                      offset: new Offset(0.0, 0.0),
+                                      blurRadius: 2.0,
+                                      spreadRadius: 0.0,
+                                    ),
+                                  ],
+                                ),
+                                height: 70,
+                                width: 70,
+                              ),
+                              Container(
+                                width: 280,
+                                child: Column(
+                                  children: [
+                                    Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Row(
+                                          children: [
+                                            Text(
+                                                "${_user.firstName} ${_user.lastname.toUpperCase()}",
+                                                style: TextStyle(
+                                                  fontSize: 12,
+                                                  letterSpacing: 1,
+                                                  fontWeight: FontWeight.w500,
+                                                  color: Colors.black,
+                                                )),
+                                            _user.verified == "true"
+                                                ? Image.asset(
+                                                    "assets/images/ver_agent.png")
+                                                : SizedBox(height: 0)
+                                          ],
+                                        ),
+                                        Row(
+                                          children: [
+                                            Image.asset(
+                                                'assets/images/agent rate.png'),
+                                            Text("5.0",
+                                                style: TextStyle(
+                                                  fontSize: 12,
+                                                  letterSpacing: 1,
+                                                  fontWeight: FontWeight.w500,
+                                                  color: Colors.black,
+                                                )),
+                                          ],
+                                        ),
+                                      ],
+                                    ),
+                                    SizedBox(
+                                      height: 3,
+                                    ),
+                                    Text("${_user.city}",
+                                        style: TextStyle(
+                                          fontSize: 12,
+                                          letterSpacing: 1,
+                                          fontWeight: FontWeight.normal,
+                                          color: Colors.grey,
+                                        )),
+                                    SizedBox(
+                                      height: 3,
+                                    ),
+                                    Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Text(
+                                            "${_user.activities.toLowerCase()}",
+                                            style: TextStyle(
+                                              fontSize: 14,
+                                              letterSpacing: 1,
+                                              fontWeight: FontWeight.normal,
+                                              color: Colors.grey,
+                                            )),
+                                        Text(
+                                            "${_user.price}/${_user.unity.toLowerCase()}",
+                                            style: TextStyle(
+                                              fontSize: 12,
+                                              letterSpacing: 1,
+                                              fontWeight: FontWeight.normal,
+                                              color: Colors.grey,
+                                            ))
+                                      ],
+                                    ),
+                                  ],
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                ),
+                              )
+                            ],
+                          ),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Container(
+                                decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  border: Border.all(
+                                      width: 1,
+                                      color: Color.fromRGBO(231, 231, 231, 1)),
+                                  borderRadius: BorderRadius.circular(10),
+                                ),
+                                height: 30,
+                                width: 197,
+                                margin: EdgeInsets.only(right: 20, bottom: 10),
+                                child: Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceAround,
+                                  children: [
+                                    Text("Orders delivered",
+                                        style: TextStyle(
+                                          fontSize: 12,
+                                          fontWeight: FontWeight.w600,
+                                          color: Colors.grey,
+                                        )),
+                                    Text("15/19",
+                                        style: TextStyle(
+                                          fontSize: 12,
+                                          fontWeight: FontWeight.bold,
+                                          color: Colors.black,
+                                        )),
+                                  ],
+                                ),
+                              ),
+                              Container(
+                                decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  border: Border.all(
+                                      width: 1,
+                                      color: Color.fromRGBO(238, 71, 0, 1)),
+                                  borderRadius: BorderRadius.circular(10),
+                                ),
+                                height: 30,
+                                width: 95,
+                                margin: EdgeInsets.only(left: 20, bottom: 10),
+                                child: Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceAround,
+                                  children: [
+                                    Text("Details",
+                                        style: TextStyle(
+                                          fontSize: 12,
+                                          fontWeight: FontWeight.w600,
+                                          color: Color.fromRGBO(238, 71, 0, 1),
+                                        )),
+                                  ],
+                                ),
+                              )
+                            ],
+                          )
+                        ],
+                      ),
+                    )),
+                onTap: () {
+                  // Within the `FirstRoute` widget
+                  /*   BlocProvider.of<NavigationBloc>(context)
+                      .add(NavigationEvents.AgentsDetailsPageClickedEvent);*/
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => AgentsDetails(
+                              id: doc.id,
+                            )),
+                  );
+                },
+              ),
+            );
+          },
+        );
+      }
+    } else {
+      return Container(
+        child: Center(
+            child: Lottie.asset('assets/lotties/loading-animation.json')),
+      );
+    }
+  }
+
+  buildFavoriteAgents() {
+    if (!loadingFavoriteAgents) {
+      if (filteredFavoriteAgents.isEmpty) {
+        return Container(
+          child: Center(child: Lottie.asset('assets/lotties/not_found.json')),
+        );
+      } else {
+        return ListView.builder(
+          itemCount: filteredFavoriteAgents.length,
+          scrollDirection: Axis.vertical,
+          shrinkWrap: true,
+          itemBuilder: (BuildContext context, int index) {
+            DocumentSnapshot doc = filteredFavoriteAgents[index];
+            FavoriteModel _user = FavoriteModel.fromJson(doc.data());
+            if (_user.clientId == firebaseAuth.currentUser.uid)
+              return Align(
+                alignment: Alignment.bottomCenter,
+                child: GestureDetector(
+                  child: Card(
+                      elevation: 1,
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10)),
+                      child: Container(
+                        padding: EdgeInsets.only(left: 10, right: 10),
+                        height: 150,
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          border: Border.all(
+                              width: 1,
+                              color: Color.fromRGBO(231, 231, 231, 1)),
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.spaceAround,
+                          children: [
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Container(
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(20),
+                                    border: Border.all(
+                                      color: Colors.transparent,
+                                    ),
+                                    image: DecorationImage(
+                                      image: NetworkImage(_user
+                                                  .agentData['photoUrl'] !=
+                                              null
+                                          ? _user.agentData['photoUrl']
+                                          : FirebaseService.getProfileImage()),
+                                      fit: BoxFit.cover,
+                                    ),
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: Colors.grey.withOpacity(0.3),
+                                        offset: new Offset(0.0, 0.0),
+                                        blurRadius: 2.0,
+                                        spreadRadius: 0.0,
+                                      ),
+                                    ],
+                                  ),
+                                  height: 70,
+                                  width: 70,
+                                ),
+                                Container(
+                                  width: 280,
+                                  child: Column(
+                                    children: [
+                                      Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          Row(
+                                            children: [
+                                              Text(
+                                                  "${_user.agentData['firstName']} ${_user.agentData['lastname'].toUpperCase()}",
+                                                  overflow:
+                                                      TextOverflow.ellipsis,
+                                                  style: TextStyle(
+                                                    fontSize: 14,
+                                                    letterSpacing: 1,
+                                                    fontWeight: FontWeight.bold,
+                                                    color: Colors.black,
+                                                  )),
+                                              _user.agentData['verified'] ==
+                                                      "true"
+                                                  ? Image.asset(
+                                                      "assets/images/ver_agent.png")
+                                                  : SizedBox(height: 0)
+                                            ],
+                                          ),
+                                          Row(
+                                            children: [
+                                              Image.asset(
+                                                  'assets/images/agent rate.png'),
+                                              Text("5.0",
+                                                  style: TextStyle(
+                                                    fontSize: 12,
+                                                    letterSpacing: 1,
+                                                    fontWeight: FontWeight.w500,
+                                                    color: Colors.black,
+                                                  )),
+                                            ],
+                                          ),
+                                        ],
+                                      ),
+                                      SizedBox(
+                                        height: 3,
+                                      ),
+                                      Text(
+                                        "${_user.agentData['city']}",
+                                        style: TextStyle(
+                                          fontSize: 12,
+                                          letterSpacing: 1,
+                                          fontWeight: FontWeight.normal,
+                                          color: Colors.grey,
+                                        ),
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
+                                      SizedBox(
+                                        height: 3,
+                                      ),
+                                      Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          Text(
+                                              "${_user.agentData['activities'].toLowerCase()}",
+                                              style: TextStyle(
+                                                fontSize: 14,
+                                                letterSpacing: 1,
+                                                fontWeight: FontWeight.normal,
+                                                color: Colors.grey,
+                                              )),
+                                          Text(
+                                              "${_user.agentData['price']}/${_user.agentData['unity'].toLowerCase()}",
+                                              style: TextStyle(
+                                                fontSize: 12,
+                                                letterSpacing: 1,
+                                                fontWeight: FontWeight.normal,
+                                                color: Colors.grey,
+                                              ))
+                                        ],
+                                      ),
+                                    ],
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                  ),
+                                )
+                              ],
+                            ),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Container(
                                   decoration: BoxDecoration(
                                     color: Colors.white,
                                     border: Border.all(
@@ -425,480 +922,80 @@ class _HomeState extends State<Home> {
                                             Color.fromRGBO(231, 231, 231, 1)),
                                     borderRadius: BorderRadius.circular(10),
                                   ),
-                                  child: Column(
+                                  height: 30,
+                                  width: 197,
+                                  margin:
+                                      EdgeInsets.only(right: 20, bottom: 10),
+                                  child: Row(
                                     mainAxisAlignment:
                                         MainAxisAlignment.spaceAround,
                                     children: [
-                                      Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.spaceBetween,
-                                        children: [
-                                          Container(
-                                            decoration: BoxDecoration(
-                                              borderRadius:
-                                                  BorderRadius.circular(20),
-                                              border: Border.all(
-                                                color: Colors.transparent,
-                                              ),
-                                              image: DecorationImage(
-                                                image: NetworkImage(
-                                                    _user.photoUrl != null
-                                                        ? _user.photoUrl
-                                                        : FirebaseService
-                                                            .getProfileImage()),
-                                                fit: BoxFit.cover,
-                                              ),
-                                              boxShadow: [
-                                                BoxShadow(
-                                                  color: Colors.grey
-                                                      .withOpacity(0.3),
-                                                  offset: new Offset(0.0, 0.0),
-                                                  blurRadius: 2.0,
-                                                  spreadRadius: 0.0,
-                                                ),
-                                              ],
-                                            ),
-                                            height: 70,
-                                            width: 70,
-                                          ),
-                                          Container(
-                                            width: 280,
-                                            child: Column(
-                                              children: [
-                                                Row(
-                                                  mainAxisAlignment:
-                                                      MainAxisAlignment
-                                                          .spaceBetween,
-                                                  children: [
-                                                    Text(
-                                                        "${_user.firstName} ${_user.lastname.toUpperCase()}",
-                                                        overflow: TextOverflow
-                                                            .ellipsis,
-                                                        style: TextStyle(
-                                                          fontSize: 14,
-                                                          letterSpacing: 1,
-                                                          fontWeight:
-                                                              FontWeight.bold,
-                                                          color: Colors.black,
-                                                        )),
-                                                    Text(
-                                                      "${_user.city}",
-                                                      style: TextStyle(
-                                                        fontSize: 12,
-                                                        letterSpacing: 1,
-                                                        fontWeight:
-                                                            FontWeight.normal,
-                                                        color: Colors.grey,
-                                                      ),
-                                                      overflow:
-                                                          TextOverflow.ellipsis,
-                                                    ),
-                                                  ],
-                                                ),
-                                                SizedBox(
-                                                  height: 3,
-                                                ),
-                                                Text("${_user.city}",
-                                                    style: TextStyle(
-                                                      fontSize: 12,
-                                                      letterSpacing: 1,
-                                                      fontWeight:
-                                                          FontWeight.normal,
-                                                      color: Colors.black,
-                                                    )),
-                                                SizedBox(
-                                                  height: 3,
-                                                ),
-                                                Row(
-                                                  mainAxisAlignment:
-                                                      MainAxisAlignment
-                                                          .spaceBetween,
-                                                  children: [
-                                                    Text(
-                                                        "${_user.activities.toLowerCase()}",
-                                                        style: TextStyle(
-                                                          fontSize: 14,
-                                                          letterSpacing: 1,
-                                                          fontWeight:
-                                                              FontWeight.normal,
-                                                          color: Colors.grey,
-                                                        )),
-                                                    Text(
-                                                        "${_user.price}/${_user.unity.toLowerCase()}",
-                                                        style: TextStyle(
-                                                          fontSize: 12,
-                                                          letterSpacing: 1,
-                                                          fontWeight:
-                                                              FontWeight.normal,
-                                                          color: Colors.grey,
-                                                        ))
-                                                  ],
-                                                ),
-                                              ],
-                                              crossAxisAlignment:
-                                                  CrossAxisAlignment.start,
-                                            ),
-                                          )
-                                        ],
-                                      ),
-                                      Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.spaceBetween,
-                                        children: [
-                                          Container(
-                                            decoration: BoxDecoration(
-                                              color: Colors.white,
-                                              border: Border.all(
-                                                  width: 1,
-                                                  color: Color.fromRGBO(
-                                                      231, 231, 231, 1)),
-                                              borderRadius:
-                                                  BorderRadius.circular(10),
-                                            ),
-                                            height: 30,
-                                            width: 197,
-                                            margin: EdgeInsets.only(
-                                                right: 20, bottom: 10),
-                                            child: Row(
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment.spaceAround,
-                                              children: [
-                                                Text("Orders delivered",
-                                                    style: TextStyle(
-                                                      fontSize: 12,
-                                                      fontWeight:
-                                                          FontWeight.w600,
-                                                      color: Colors.grey,
-                                                    )),
-                                                Text("15/19",
-                                                    style: TextStyle(
-                                                      fontSize: 12,
-                                                      fontWeight:
-                                                          FontWeight.bold,
-                                                      color: Colors.black,
-                                                    )),
-                                              ],
-                                            ),
-                                          ),
-                                          Container(
-                                            decoration: BoxDecoration(
-                                              color: Colors.white,
-                                              border: Border.all(
-                                                  width: 1,
-                                                  color: Color.fromRGBO(
-                                                      238, 71, 0, 1)),
-                                              borderRadius:
-                                                  BorderRadius.circular(10),
-                                            ),
-                                            height: 30,
-                                            width: 95,
-                                            margin: EdgeInsets.only(
-                                                left: 20, bottom: 10),
-                                            child: Row(
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment.spaceAround,
-                                              children: [
-                                                Text("Details",
-                                                    style: TextStyle(
-                                                      fontSize: 12,
-                                                      fontWeight:
-                                                          FontWeight.w600,
-                                                      color: Color.fromRGBO(
-                                                          238, 71, 0, 1),
-                                                    )),
-                                              ],
-                                            ),
-                                          )
-                                        ],
-                                      )
+                                      Text("Orders delivered",
+                                          style: TextStyle(
+                                            fontSize: 12,
+                                            fontWeight: FontWeight.w600,
+                                            color: Colors.grey,
+                                          )),
+                                      Text("15/19",
+                                          style: TextStyle(
+                                            fontSize: 12,
+                                            fontWeight: FontWeight.bold,
+                                            color: Colors.black,
+                                          )),
                                     ],
                                   ),
-                                )),
-                            onTap: () {},
-                          ),
-                        );
-                      else
-                        return Container(
-                          child: Center(
-                              child: Lottie.asset(
-                                  'assets/lotties/loading-animation.json')),
-                        );
-                    }
-                    return Container(
-                      height: 0,
-                    );
-                  }
-                  return Container(
-                    child: Center(
-                        child: Lottie.asset(
-                            'assets/lotties/loading-animation.json')),
-                  );
-                },
-              )
-            : SizedBox(
-                height: 0,
-              ),
-        _activeTabHome == 1
-            ? StreamBuilder(
-                stream:
-                    favoriteRef.doc(firebaseAuth.currentUser.uid).snapshots(),
-                builder: (context, AsyncSnapshot<DocumentSnapshot> snapshot) {
-                  if (snapshot.hasData && snapshot.data.exists) {
-                    UserModel _user = UserModel.fromJson(snapshot.data.data());
-                    if (_user.firstName
-                            .toLowerCase()
-                            .contains(_searchedController.text.toLowerCase()) ||
-                        _user.lastname
-                            .toLowerCase()
-                            .contains(_searchedController.text.toLowerCase()) ||
-                        _user.activities
-                            .toLowerCase()
-                            .contains(_searchedController.text.toLowerCase()))
-                      return Align(
-                        alignment: Alignment.bottomCenter,
-                        child: GestureDetector(
-                          child: Card(
-                              elevation: 1,
-                              shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(10)),
-                              child: Container(
-                                padding: EdgeInsets.only(left: 10, right: 10),
-                                height: 150,
-                                decoration: BoxDecoration(
-                                  color: Colors.white,
-                                  border: Border.all(
-                                      width: 1,
-                                      color: Color.fromRGBO(231, 231, 231, 1)),
-                                  borderRadius: BorderRadius.circular(10),
                                 ),
-                                child: Column(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceAround,
-                                  children: [
-                                    Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceBetween,
-                                      children: [
-                                        Container(
-                                          decoration: BoxDecoration(
-                                            borderRadius:
-                                                BorderRadius.circular(20),
-                                            border: Border.all(
-                                              color: Colors.transparent,
-                                            ),
-                                            image: DecorationImage(
-                                              image: NetworkImage(
-                                                  _user.photoUrl != null
-                                                      ? _user.photoUrl
-                                                      : FirebaseService
-                                                          .getProfileImage()),
-                                              fit: BoxFit.cover,
-                                            ),
-                                            boxShadow: [
-                                              BoxShadow(
-                                                color: Colors.grey
-                                                    .withOpacity(0.3),
-                                                offset: new Offset(0.0, 0.0),
-                                                blurRadius: 2.0,
-                                                spreadRadius: 0.0,
-                                              ),
-                                            ],
-                                          ),
-                                          height: 70,
-                                          width: 70,
-                                        ),
-                                        Container(
-                                          width: 280,
-                                          child: Column(
-                                            children: [
-                                              Row(
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment
-                                                        .spaceBetween,
-                                                children: [
-                                                  Text(
-                                                      "${_user.firstName} ${_user.lastname.toUpperCase()}",
-                                                      overflow:
-                                                          TextOverflow.ellipsis,
-                                                      style: TextStyle(
-                                                        fontSize: 14,
-                                                        letterSpacing: 1,
-                                                        fontWeight:
-                                                            FontWeight.bold,
-                                                        color: Colors.black,
-                                                      )),
-                                                  Text(
-                                                    "${_user.city}",
-                                                    style: TextStyle(
-                                                      fontSize: 12,
-                                                      letterSpacing: 1,
-                                                      fontWeight:
-                                                          FontWeight.normal,
-                                                      color: Colors.grey,
-                                                    ),
-                                                    overflow:
-                                                        TextOverflow.ellipsis,
-                                                  ),
-                                                ],
-                                              ),
-                                              SizedBox(
-                                                height: 3,
-                                              ),
-                                              Text("${_user.city}",
-                                                  style: TextStyle(
-                                                    fontSize: 12,
-                                                    letterSpacing: 1,
-                                                    fontWeight:
-                                                        FontWeight.normal,
-                                                    color: Colors.black,
-                                                  )),
-                                              SizedBox(
-                                                height: 3,
-                                              ),
-                                              Row(
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment
-                                                        .spaceBetween,
-                                                children: [
-                                                  Text(
-                                                      "${_user.activities.toLowerCase()}",
-                                                      style: TextStyle(
-                                                        fontSize: 14,
-                                                        letterSpacing: 1,
-                                                        fontWeight:
-                                                            FontWeight.normal,
-                                                        color: Colors.grey,
-                                                      )),
-                                                  Text(
-                                                      "${_user.price}/${_user.unity.toLowerCase()}",
-                                                      style: TextStyle(
-                                                        fontSize: 12,
-                                                        letterSpacing: 1,
-                                                        fontWeight:
-                                                            FontWeight.normal,
-                                                        color: Colors.grey,
-                                                      ))
-                                                ],
-                                              ),
-                                            ],
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.start,
-                                          ),
-                                        )
-                                      ],
-                                    ),
-                                    Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceBetween,
-                                      children: [
-                                        Container(
-                                          decoration: BoxDecoration(
-                                            color: Colors.white,
-                                            border: Border.all(
-                                                width: 1,
-                                                color: Color.fromRGBO(
-                                                    231, 231, 231, 1)),
-                                            borderRadius:
-                                                BorderRadius.circular(10),
-                                          ),
-                                          height: 30,
-                                          width: 197,
-                                          margin: EdgeInsets.only(
-                                              right: 20, bottom: 10),
-                                          child: Row(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.spaceAround,
-                                            children: [
-                                              Text("Orders delivered",
-                                                  style: TextStyle(
-                                                    fontSize: 12,
-                                                    fontWeight: FontWeight.w600,
-                                                    color: Colors.grey,
-                                                  )),
-                                              Text("15/19",
-                                                  style: TextStyle(
-                                                    fontSize: 12,
-                                                    fontWeight: FontWeight.bold,
-                                                    color: Colors.black,
-                                                  )),
-                                            ],
-                                          ),
-                                        ),
-                                        Container(
-                                          decoration: BoxDecoration(
-                                            color: Colors.white,
-                                            border: Border.all(
-                                                width: 1,
-                                                color: Color.fromRGBO(
-                                                    238, 71, 0, 1)),
-                                            borderRadius:
-                                                BorderRadius.circular(10),
-                                          ),
-                                          height: 30,
-                                          width: 95,
-                                          margin: EdgeInsets.only(
-                                              left: 20, bottom: 10),
-                                          child: Row(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.spaceAround,
-                                            children: [
-                                              Text("Details",
-                                                  style: TextStyle(
-                                                    fontSize: 12,
-                                                    fontWeight: FontWeight.w600,
-                                                    color: Color.fromRGBO(
-                                                        238, 71, 0, 1),
-                                                  )),
-                                            ],
-                                          ),
-                                        )
-                                      ],
-                                    )
-                                  ],
-                                ),
-                              )),
-                          onTap: () {},
+                                Container(
+                                  decoration: BoxDecoration(
+                                    color: Colors.white,
+                                    border: Border.all(
+                                        width: 1,
+                                        color: Color.fromRGBO(238, 71, 0, 1)),
+                                    borderRadius: BorderRadius.circular(10),
+                                  ),
+                                  height: 30,
+                                  width: 95,
+                                  margin: EdgeInsets.only(left: 20, bottom: 10),
+                                  child: Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceAround,
+                                    children: [
+                                      Text("Details",
+                                          style: TextStyle(
+                                            fontSize: 12,
+                                            fontWeight: FontWeight.w600,
+                                            color:
+                                                Color.fromRGBO(238, 71, 0, 1),
+                                          )),
+                                    ],
+                                  ),
+                                )
+                              ],
+                            )
+                          ],
                         ),
-                      );
-                    else
-                      return Container(
-                        child: Center(
-                            child: Lottie.asset(
-                                'assets/lotties/loading-animation.json')),
-                      );
-                  }
-                  return Container(
-                    child: Center(
-                        child:
-                            Lottie.asset('assets/lotties/empty-favorite.json')),
-                  );
-                },
-              )
-            : SizedBox(
-                height: 0,
-              ),
-      ],
-    ));
-  }
-
-  favoriteAgent() {
-    return Expanded(
-        child: ListView(
-      children: [],
-    ));
-  }
-
-  orderAgent() {
-    return Expanded(
-        child: ListView(
-      children: [],
-    ));
-  }
-
-  searchAgent() {
-    return Expanded(
-        child: ListView(
-      children: [],
-    ));
+                      )),
+                  onTap: () {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => AgentsDetails(
+                                  id: _user.agentData['id'],
+                                )));
+                  },
+                ),
+              );
+            return SizedBox(
+              height: 0,
+            );
+          },
+        );
+      }
+    } else {
+      return Container(
+        child: Center(
+            child: Lottie.asset('assets/lotties/loading-animation.json')),
+      );
+    }
   }
 }

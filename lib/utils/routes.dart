@@ -6,7 +6,9 @@ import 'package:on_delivery/SignIn/sign_in_screen.dart';
 import 'package:on_delivery/SignUp/sign_up_screen.dart';
 import 'package:on_delivery/SplashScreen/splash_screen.dart';
 import 'package:on_delivery/home/Home.dart';
+import 'package:on_delivery/home/agent_details.dart';
 import 'package:on_delivery/home/base.dart';
+import 'package:on_delivery/home/orders_screen.dart';
 import 'package:on_delivery/plans/plans_screen.dart';
 import 'package:on_delivery/profiles/profile.dart';
 
@@ -29,4 +31,6 @@ final Map<String, WidgetBuilder> routes = {
   Base.routeName: (context) => Base(),
   Profile.routeName: (context) => Profile(),
   Plans.routeName: (context) => Plans(),
+  OrderScreen.routeName: (context) => OrderScreen(),
+  AgentsDetails.routeName: (context) => AgentsDetails(),
 };
