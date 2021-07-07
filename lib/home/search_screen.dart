@@ -26,6 +26,8 @@ import 'package:on_delivery/utils/firebase.dart';
 import 'package:on_delivery/utils/validation.dart';
 import 'package:provider/provider.dart';
 
+import 'agent_details.dart';
+
 class SearchScreen extends StatefulWidget {
   static String routeName = "/search";
   @override
@@ -2259,94 +2261,40 @@ class _SearchMapAgentScreenState extends State<SearchMapAgentScreen> {
   BitmapDescriptor agentNotSelected;
   MyModel myModel;
   Set<Marker> customMarkers = {};
-  final double _infoWindowWidth = 250;
-  final double _markerOffset = 170;
   UserModel agent1;
-  List<DocumentSnapshot> agents = [];
+  List<UserModel> userList = [];
   List<DocumentSnapshot> filteredAgents = [];
-  bool loading = true;
+  List<DocumentSnapshot> filteredAgentsLocation = [];
+  String agentLocationId;
 
   getAgents() async {
     QuerySnapshot snap = await usersRef.get();
     List<DocumentSnapshot> doc = snap.docs;
-    agents = doc;
     filteredAgents = doc;
-    setState(() {
-      loading = false;
-    });
+    for (DocumentSnapshot d in filteredAgents) {
+      UserModel u = UserModel.fromJson(d.data());
+      if ((u.type.toLowerCase().contains("agent") && u.isOnline == true) ||
+          u.id.contains(firebaseAuth.currentUser.uid)) userList.add(u);
+    }
+  }
+
+  getAgentsLocation() async {
+    QuerySnapshot snap = await userLocationRef.get();
+    List<DocumentSnapshot> doc = snap.docs;
+    filteredAgentsLocation = doc;
+    for (DocumentSnapshot d in filteredAgentsLocation) {
+      AgentLocation user1 = AgentLocation.fromJson(d.data());
+      setState(() {
+        customMarkers.add(_createMarker(user1.Lnt, user1.Lng, d.id));
+      });
+    }
   }
 
   @override
   void initState() {
+    getAgentsLocation();
     getAgents();
-    BitmapDescriptor.fromAssetImage(ImageConfiguration(size: Size(48, 48)),
-            'assets/images/fixed location in map.png')
-        .then((onValue) {
-      myIcon = onValue;
-    });
-    BitmapDescriptor.fromAssetImage(ImageConfiguration(size: Size(48, 48)),
-            'assets/images/agent not selected in map.png')
-        .then((onValue) {
-      agentSelected = onValue;
-    });
-    BitmapDescriptor.fromAssetImage(ImageConfiguration(size: Size(48, 48)),
-            'assets/images/agent selected in map.png')
-        .then((onValue) {
-      agentNotSelected = onValue;
-    });
     super.initState();
-  }
-
-  buildAgents(onCreate) {
-    return StreamBuilder(
-      stream: usersRef.snapshots(),
-      builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
-        if (snapshot.data != null) {
-          for (DocumentSnapshot d in snapshot.data.docs) {
-            agent1 = UserModel.fromJson(d.data());
-            if (agent1.type.toLowerCase().contains("agent") ||
-                agent1.id.contains(firebaseAuth.currentUser.uid)) {
-              return StreamBuilder(
-                stream: userLocationRef.snapshots(),
-                builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
-                  if (snapshot.data != null) {
-                    for (DocumentSnapshot d in snapshot.data.docs) {
-                      AgentLocation user1 = AgentLocation.fromJson(d.data());
-                      customMarkers
-                          .add(_createMarker(user1.Lnt, user1.Lng, agent1));
-                    }
-                    return GoogleMap(
-                      initialCameraPosition:
-                          CameraPosition(target: currentLocation),
-                      zoomControlsEnabled: false,
-                      minMaxZoomPreference: MinMaxZoomPreference(1.5, 20.8),
-                      myLocationEnabled: false,
-                      myLocationButtonEnabled: false,
-                      mapType: MapType.normal,
-                      markers: customMarkers,
-                      mapToolbarEnabled: true,
-                      onCameraMove: (CameraPosition positon) {
-                        locationData.onCameraMove(positon);
-                      },
-                      onMapCreated: onCreate,
-                      onCameraIdle: () {
-                        /* locationData.getMoveCamera().then((value) => setState(() {
-                        start
-                            ? startingTripLocationString = value
-                            : arriveTripLocationString = value;
-                      }));*/
-                      },
-                    );
-                  }
-                  return Container();
-                },
-              );
-            }
-          }
-        }
-        return Container();
-      },
-    );
   }
 
   notificationInto(BuildContext parentContext) {
@@ -2415,7 +2363,7 @@ class _SearchMapAgentScreenState extends State<SearchMapAgentScreen> {
         initPosition = CameraPosition(
             target: LatLng(locationService.Lnt, locationService.Lng));
       });
-      notificationInto(context);
+      //notificationInto(context);
     }
 
     return Scaffold(
@@ -2424,11 +2372,11 @@ class _SearchMapAgentScreenState extends State<SearchMapAgentScreen> {
         child: Stack(
           children: [
             Align(
-              alignment: Alignment.bottomCenter,
+              alignment: Alignment.topCenter,
               child: GoogleMap(
                 initialCameraPosition: CameraPosition(target: currentLocation),
                 zoomControlsEnabled: false,
-                minMaxZoomPreference: MinMaxZoomPreference(1.5, 20.8),
+                minMaxZoomPreference: MinMaxZoomPreference(1.5, 15.8),
                 myLocationEnabled: false,
                 myLocationButtonEnabled: false,
                 mapType: MapType.normal,
@@ -2447,6 +2395,243 @@ class _SearchMapAgentScreenState extends State<SearchMapAgentScreen> {
                 },
               ),
             ),
+            Align(
+                alignment: Alignment.bottomCenter,
+                child: ListView.builder(
+                  itemCount: userList.length,
+                  scrollDirection: Axis.vertical,
+                  shrinkWrap: true,
+                  padding: EdgeInsets.only(left: 20, right: 20, bottom: 50),
+                  itemBuilder: (BuildContext context, int index) {
+                    agentLocationId = userList[index].id;
+                    return Align(
+                      alignment: Alignment.bottomCenter,
+                      child: GestureDetector(
+                        child: Card(
+                            elevation: 1,
+                            shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(10)),
+                            child: Container(
+                              padding: EdgeInsets.only(left: 10, right: 10),
+                              height: 150,
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                border: Border.all(
+                                    width: 1,
+                                    color: Color.fromRGBO(231, 231, 231, 1)),
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                              child: Column(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceAround,
+                                children: [
+                                  Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Container(
+                                        decoration: BoxDecoration(
+                                          borderRadius:
+                                              BorderRadius.circular(20),
+                                          border: Border.all(
+                                            color: Colors.transparent,
+                                          ),
+                                          image: DecorationImage(
+                                            image: NetworkImage(
+                                                userList[index].photoUrl != null
+                                                    ? userList[index].photoUrl
+                                                    : FirebaseService
+                                                        .getProfileImage()),
+                                            fit: BoxFit.cover,
+                                          ),
+                                          boxShadow: [
+                                            BoxShadow(
+                                              color:
+                                                  Colors.grey.withOpacity(0.3),
+                                              offset: new Offset(0.0, 0.0),
+                                              blurRadius: 2.0,
+                                              spreadRadius: 0.0,
+                                            ),
+                                          ],
+                                        ),
+                                        height: 70,
+                                        width: 70,
+                                      ),
+                                      Container(
+                                        width: 280,
+                                        child: Column(
+                                          children: [
+                                            Row(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment
+                                                      .spaceBetween,
+                                              children: [
+                                                Row(
+                                                  children: [
+                                                    Text(
+                                                        "${userList[index].firstName} ${userList[index].lastname.toUpperCase()}",
+                                                        style: TextStyle(
+                                                          fontSize: 12,
+                                                          letterSpacing: 1,
+                                                          fontWeight:
+                                                              FontWeight.w500,
+                                                          color: Colors.black,
+                                                        )),
+                                                    userList[index].verified ==
+                                                            "true"
+                                                        ? Image.asset(
+                                                            "assets/images/ver_agent.png")
+                                                        : SizedBox(height: 0)
+                                                  ],
+                                                ),
+                                                Row(
+                                                  children: [
+                                                    Image.asset(
+                                                        'assets/images/agent rate.png'),
+                                                    Text("5.0",
+                                                        style: TextStyle(
+                                                          fontSize: 12,
+                                                          letterSpacing: 1,
+                                                          fontWeight:
+                                                              FontWeight.w500,
+                                                          color: Colors.black,
+                                                        )),
+                                                  ],
+                                                ),
+                                              ],
+                                            ),
+                                            SizedBox(
+                                              height: 3,
+                                            ),
+                                            Text("${userList[index].city}",
+                                                style: TextStyle(
+                                                  fontSize: 12,
+                                                  letterSpacing: 1,
+                                                  fontWeight: FontWeight.normal,
+                                                  color: Colors.grey,
+                                                )),
+                                            SizedBox(
+                                              height: 3,
+                                            ),
+                                            Row(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment
+                                                      .spaceBetween,
+                                              children: [
+                                                Text(
+                                                    "${userList[index].activities.toLowerCase()}",
+                                                    style: TextStyle(
+                                                      fontSize: 14,
+                                                      letterSpacing: 1,
+                                                      fontWeight:
+                                                          FontWeight.normal,
+                                                      color: Colors.grey,
+                                                    )),
+                                                Text(
+                                                    "${userList[index].price}/${userList[index].unity.toLowerCase()}",
+                                                    style: TextStyle(
+                                                      fontSize: 12,
+                                                      letterSpacing: 1,
+                                                      fontWeight:
+                                                          FontWeight.normal,
+                                                      color: Colors.grey,
+                                                    ))
+                                              ],
+                                            ),
+                                          ],
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                        ),
+                                      )
+                                    ],
+                                  ),
+                                  Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Container(
+                                        decoration: BoxDecoration(
+                                          color: Colors.white,
+                                          border: Border.all(
+                                              width: 1,
+                                              color: Color.fromRGBO(
+                                                  231, 231, 231, 1)),
+                                          borderRadius:
+                                              BorderRadius.circular(10),
+                                        ),
+                                        height: 30,
+                                        width: 197,
+                                        margin: EdgeInsets.only(
+                                            right: 20, bottom: 10),
+                                        child: Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceAround,
+                                          children: [
+                                            Text("Orders delivered",
+                                                style: TextStyle(
+                                                  fontSize: 12,
+                                                  fontWeight: FontWeight.w600,
+                                                  color: Colors.grey,
+                                                )),
+                                            Text("15/19",
+                                                style: TextStyle(
+                                                  fontSize: 12,
+                                                  fontWeight: FontWeight.bold,
+                                                  color: Colors.black,
+                                                )),
+                                          ],
+                                        ),
+                                      ),
+                                      Container(
+                                        decoration: BoxDecoration(
+                                          color: Colors.white,
+                                          border: Border.all(
+                                              width: 1,
+                                              color: Color.fromRGBO(
+                                                  238, 71, 0, 1)),
+                                          borderRadius:
+                                              BorderRadius.circular(10),
+                                        ),
+                                        height: 30,
+                                        width: 95,
+                                        margin: EdgeInsets.only(
+                                            left: 20, bottom: 10),
+                                        child: Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceAround,
+                                          children: [
+                                            Text("calculating ...",
+                                                style: TextStyle(
+                                                  fontSize: 12,
+                                                  fontWeight: FontWeight.w600,
+                                                  color: Color.fromRGBO(
+                                                      238, 71, 0, 1),
+                                                )),
+                                          ],
+                                        ),
+                                      )
+                                    ],
+                                  )
+                                ],
+                              ),
+                            )),
+                        onTap: () {
+                          // Within the `FirstRoute` widget
+                          /*   BlocProvider.of<NavigationBloc>(context)
+                      .add(NavigationEvents.AgentsDetailsPageClickedEvent);*/
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => AgentsDetails(
+                                      id: userList[index].id,
+                                      time: "qsd",
+                                    )),
+                          );
+                        },
+                      ),
+                    );
+                  },
+                )),
             StreamBuilder(
               stream: orderRef.doc(widget.orders).snapshots(),
               builder: (context, AsyncSnapshot<DocumentSnapshot> snapshot) {
@@ -2469,7 +2654,7 @@ class _SearchMapAgentScreenState extends State<SearchMapAgentScreen> {
                     child: Column(
                       children: [
                         Container(
-                          margin: EdgeInsets.fromLTRB(20, 50, 20, 5),
+                          margin: EdgeInsets.fromLTRB(20, 40, 20, 5),
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
@@ -2498,7 +2683,7 @@ class _SearchMapAgentScreenState extends State<SearchMapAgentScreen> {
                           ),
                         ),
                         SizedBox(
-                          height: 20,
+                          height: 10,
                         ),
                         Container(
                           width: 300,
@@ -2588,47 +2773,56 @@ class _SearchMapAgentScreenState extends State<SearchMapAgentScreen> {
                 );
               },
             ),
+            Align(
+              alignment: Alignment.bottomCenter,
+              child: Container(
+                margin: EdgeInsets.only(bottom: 25),
+                child: Text("Show All",
+                    style: TextStyle(
+                      decoration: TextDecoration.underline,
+                      fontSize: 14,
+                      letterSpacing: 1,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black,
+                    )),
+              ),
+            ),
+            Align(
+              alignment: Alignment.bottomCenter,
+              child: Container(
+                margin: EdgeInsets.only(bottom: 8),
+                width: 135,
+                height: 5,
+                decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      colors: <Color>[Colors.grey, Colors.grey],
+                    ),
+                    borderRadius: BorderRadius.circular(10.0),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.grey[500],
+                        offset: Offset(0.0, 1.5),
+                        blurRadius: 1.5,
+                      ),
+                    ]),
+              ),
+            ),
           ],
         ),
       ),
     );
   }
 
-  Marker _createMarker(lat, lon, UserModel userModel) {
+  Marker _createMarker(lat, lon, id) {
     return Marker(
-      markerId: MarkerId(userModel.firstName),
+      markerId: MarkerId("Id"),
       position: LatLng(lat, lon),
-      onTap: () {
-        myModel.updateInfoWindow(
-            context,
-            _mapController,
-            LatLng(lat, lon),
-            _infoWindowWidth,
-            _markerOffset,
-            "${userModel.firstName} ${userModel.lastname.toUpperCase()}",
-            "restoModel.address");
-        myModel.updateVisibility(true);
-        myModel.rebuildInfoWindow();
-      },
-      infoWindow: InfoWindow(
-          title: "${userModel.firstName} ${userModel.lastname.toUpperCase()}",
-          snippet: "restoModel.address",
-          onTap: () => {
-                /*  Navigator.push(
-              context,
-              MaterialPageRoute(
-                  builder: (context) => NewRestoDetails(
-                    restoModel: restoModel,
-                    selectedDateTxt: null,
-                    selectedTimeTxt: null,
-                    dropdownValue: null,
-                    locationId: locationId,
-                  )),
-            )*/
-              }),
-      icon: userModel.id == firebaseAuth.currentUser.uid
-          ? myIcon
-          : agentNotSelected,
+      draggable: false,
+      icon: BitmapDescriptor.fromAsset(id == firebaseAuth.currentUser.uid
+          ? "assets/images/mylocationmarker.png"
+          : agentLocationId == id
+              ? "assets/images/agentselected.png"
+              : "assets/images/agentnotselected.png"),
     );
   }
 
