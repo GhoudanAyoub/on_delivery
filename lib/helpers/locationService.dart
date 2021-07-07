@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/cupertino.dart';
+import 'package:geocoder/geocoder.dart';
 import 'package:location/location.dart';
 import 'package:on_delivery/models/AgentLocation.dart';
 import 'package:on_delivery/utils/firebase.dart';
@@ -33,6 +34,14 @@ class LocationService with ChangeNotifier {
               })
             }
         });
+  }
+
+  Future<String> getCurrentCoordinatesName(lnts, lngs) async {
+    final coordinates = new Coordinates(lnts, lngs);
+    final addresses =
+        await Geocoder.local.findAddressesFromCoordinates(coordinates);
+    this.selectedAddress = addresses.first;
+    return addresses.first.addressLine;
   }
 
   updateLocationToFirebase(latitude, longitude) async {

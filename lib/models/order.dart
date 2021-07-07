@@ -7,7 +7,7 @@ class Orders {
   String agentId;
   String price;
   String status;
-  String date;
+  Timestamp date;
   bool iceBox;
   String brand;
   String transport;

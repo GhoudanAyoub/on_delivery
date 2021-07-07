@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:geocoder/geocoder.dart';
 import 'package:geolocator/geolocator.dart';
@@ -34,6 +35,18 @@ class LocationProvider with ChangeNotifier {
 
   Future<String> getMoveCamera() async {
     final coordinates = new Coordinates(this.lnt, this.lng);
+    final addresses =
+        await Geocoder.local.findAddressesFromCoordinates(coordinates);
+    this.selectedAddress = addresses.first;
+    return addresses.first.addressLine;
+  }
+
+  Future<GeoPoint> getMoveCameraLntLng() async {
+    return GeoPoint(this.lnt, this.lng);
+  }
+
+  Future<String> getCurrentCoordinatesName(lnts, lngs) async {
+    final coordinates = new Coordinates(lnts, lngs);
     final addresses =
         await Geocoder.local.findAddressesFromCoordinates(coordinates);
     this.selectedAddress = addresses.first;

@@ -15,6 +15,9 @@ import 'package:on_delivery/components/RaisedGradientButton.dart';
 import 'package:on_delivery/components/custom_dropdown.dart';
 import 'package:on_delivery/components/text_form_builder.dart';
 import 'package:on_delivery/helpers/location_provider.dart';
+import 'package:on_delivery/helpers/map_model.dart';
+import 'package:on_delivery/models/AgentLocation.dart';
+import 'package:on_delivery/models/User.dart';
 import 'package:on_delivery/models/order.dart';
 import 'package:on_delivery/services/auth_service.dart';
 import 'package:on_delivery/utils/FirebaseService.dart';
@@ -758,8 +761,18 @@ class _SearchScreenState extends State<SearchScreen> {
                                         startAt: GeoPoint(
                                             locationData.lnt, locationData.lng),
                                       );
-                                      FirebaseService().addOrder(
-                                          firebaseAuth.currentUser, order);
+                                      FirebaseService().updateOrders(
+                                          firebaseAuth.currentUser,
+                                          order,
+                                          result.split('/')[0]);
+                                      Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder: (context) =>
+                                                SearchMapAgentScreen(
+                                              orders: result.split('/')[0],
+                                            ),
+                                          ));
                                     }
                                   }),
                               SizedBox(height: 10),
@@ -1061,8 +1074,18 @@ class _SearchScreenState extends State<SearchScreen> {
                                         startAt: GeoPoint(
                                             locationData.lnt, locationData.lng),
                                       );
-                                      FirebaseService().addOrder(
-                                          firebaseAuth.currentUser, order);
+                                      FirebaseService().updateOrders(
+                                          firebaseAuth.currentUser,
+                                          order,
+                                          result.split('/')[0]);
+                                      Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder: (context) =>
+                                                SearchMapAgentScreen(
+                                              orders: result.split('/')[0],
+                                            ),
+                                          ));
                                     }
                                   }),
                               SizedBox(height: 10),
@@ -1434,8 +1457,18 @@ class _SearchScreenState extends State<SearchScreen> {
                                         startAt: GeoPoint(
                                             locationData.lnt, locationData.lng),
                                       );
-                                      FirebaseService().addOrder(
-                                          firebaseAuth.currentUser, order);
+                                      FirebaseService().updateOrders(
+                                          firebaseAuth.currentUser,
+                                          order,
+                                          result.split('/')[0]);
+                                      Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder: (context) =>
+                                                SearchMapAgentScreen(
+                                              orders: result.split('/')[0],
+                                            ),
+                                          ));
                                     }
                                   }),
                               SizedBox(height: 10),
@@ -1807,6 +1840,14 @@ class _SearchScreenState extends State<SearchScreen> {
                                           firebaseAuth.currentUser,
                                           order,
                                           result.split('/')[0]);
+                                      Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder: (context) =>
+                                                SearchMapAgentScreen(
+                                              orders: result.split('/')[0],
+                                            ),
+                                          ));
                                     }
                                   }),
                               SizedBox(height: 10),
@@ -1905,6 +1946,12 @@ class _SearchMapTripScreenState extends State<SearchMapTripScreen> {
                             ? startingTripLocationString = value
                             : arriveTripLocationString = value;
                       }));
+                  locationData.getMoveCameraLntLng().then((value) => start
+                      ? startingLocationLnt = value.latitude
+                      : startingLocationLng = value.longitude);
+                  locationData.getMoveCameraLntLng().then((value) => start
+                      ? arrivedLocationLnt = value.latitude
+                      : arrivedLocationLng = value.longitude);
                 },
               ),
               Align(
@@ -2063,12 +2110,7 @@ class _SearchMapTripScreenState extends State<SearchMapTripScreen> {
                                     ? locationData.lng
                                     : startingLocationLng),
                             endAt: GeoPoint(
-                                locationData.lnt != null
-                                    ? locationData.lnt
-                                    : arrivedLocationLnt,
-                                locationData.lng != null
-                                    ? locationData.lng
-                                    : arrivedLocationLng));
+                                arrivedLocationLnt, arrivedLocationLng));
 
                         var id = await FirebaseService()
                             .addOrder(firebaseAuth.currentUser, order);
@@ -2180,5 +2222,434 @@ class _SearchMapTripScreenState extends State<SearchMapTripScreen> {
       });
       _goToPosition(_controller.future, arrivedLocationLnt, arrivedLocationLng);
     }
+  }
+}
+
+class SearchMapAgentScreen extends StatefulWidget {
+  static String routeName = '/SearchMapAgentScreen';
+  final User user;
+  final String orders;
+
+  const SearchMapAgentScreen({Key key, this.user, this.orders})
+      : super(key: key);
+  @override
+  _SearchMapAgentScreenState createState() => _SearchMapAgentScreenState();
+}
+
+class _SearchMapAgentScreenState extends State<SearchMapAgentScreen> {
+  LocationProvider locationData;
+  LatLng currentLocation;
+  GoogleMapController _mapController;
+  AuthService authService = AuthService();
+  Completer<GoogleMapController> _controller = Completer();
+  static CameraPosition _myPosition;
+  static CameraPosition initPosition;
+  String startingTripLocationString = "Starting Point";
+  String arriveTripLocationString = "Arrival Point";
+  PlacesDetailsResponse detail;
+  Prediction p, p2;
+  final searchScaffoldKey = GlobalKey<ScaffoldState>();
+  final homeScaffoldKey = GlobalKey<ScaffoldState>();
+  double startingLocationLnt, startingLocationLng;
+  double arrivedLocationLnt, arrivedLocationLng;
+  bool start = true;
+  AgentLocation locationService;
+  BitmapDescriptor myIcon;
+  BitmapDescriptor agentSelected;
+  BitmapDescriptor agentNotSelected;
+  MyModel myModel;
+  Set<Marker> customMarkers = {};
+  final double _infoWindowWidth = 250;
+  final double _markerOffset = 170;
+  UserModel agent1;
+  List<DocumentSnapshot> agents = [];
+  List<DocumentSnapshot> filteredAgents = [];
+  bool loading = true;
+
+  getAgents() async {
+    QuerySnapshot snap = await usersRef.get();
+    List<DocumentSnapshot> doc = snap.docs;
+    agents = doc;
+    filteredAgents = doc;
+    setState(() {
+      loading = false;
+    });
+  }
+
+  @override
+  void initState() {
+    getAgents();
+    BitmapDescriptor.fromAssetImage(ImageConfiguration(size: Size(48, 48)),
+            'assets/images/fixed location in map.png')
+        .then((onValue) {
+      myIcon = onValue;
+    });
+    BitmapDescriptor.fromAssetImage(ImageConfiguration(size: Size(48, 48)),
+            'assets/images/agent not selected in map.png')
+        .then((onValue) {
+      agentSelected = onValue;
+    });
+    BitmapDescriptor.fromAssetImage(ImageConfiguration(size: Size(48, 48)),
+            'assets/images/agent selected in map.png')
+        .then((onValue) {
+      agentNotSelected = onValue;
+    });
+    super.initState();
+  }
+
+  buildAgents(onCreate) {
+    return StreamBuilder(
+      stream: usersRef.snapshots(),
+      builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
+        if (snapshot.data != null) {
+          for (DocumentSnapshot d in snapshot.data.docs) {
+            agent1 = UserModel.fromJson(d.data());
+            if (agent1.type.toLowerCase().contains("agent") ||
+                agent1.id.contains(firebaseAuth.currentUser.uid)) {
+              return StreamBuilder(
+                stream: userLocationRef.snapshots(),
+                builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
+                  if (snapshot.data != null) {
+                    for (DocumentSnapshot d in snapshot.data.docs) {
+                      AgentLocation user1 = AgentLocation.fromJson(d.data());
+                      customMarkers
+                          .add(_createMarker(user1.Lnt, user1.Lng, agent1));
+                    }
+                    return GoogleMap(
+                      initialCameraPosition:
+                          CameraPosition(target: currentLocation),
+                      zoomControlsEnabled: false,
+                      minMaxZoomPreference: MinMaxZoomPreference(1.5, 20.8),
+                      myLocationEnabled: false,
+                      myLocationButtonEnabled: false,
+                      mapType: MapType.normal,
+                      markers: customMarkers,
+                      mapToolbarEnabled: true,
+                      onCameraMove: (CameraPosition positon) {
+                        locationData.onCameraMove(positon);
+                      },
+                      onMapCreated: onCreate,
+                      onCameraIdle: () {
+                        /* locationData.getMoveCamera().then((value) => setState(() {
+                        start
+                            ? startingTripLocationString = value
+                            : arriveTripLocationString = value;
+                      }));*/
+                      },
+                    );
+                  }
+                  return Container();
+                },
+              );
+            }
+          }
+        }
+        return Container();
+      },
+    );
+  }
+
+  notificationInto(BuildContext parentContext) {
+    return showDialog(
+        context: parentContext,
+        builder: (context) {
+          return SimpleDialog(
+            contentPadding: EdgeInsets.only(left: 30, right: 30, bottom: 20),
+            backgroundColor: Colors.white,
+            shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(5.0)),
+            children: [
+              Container(
+                padding:
+                    EdgeInsets.only(left: 10, right: 10, bottom: 20, top: 40),
+                width: 150,
+                child: Center(
+                  child: Text(
+                    'Click on the agents on the map to chose the one you want or slid them in the bottom',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      fontSize: 14,
+                      letterSpacing: 1,
+                      fontFamily: "Poppins",
+                      color: Colors.grey[600],
+                    ),
+                  ),
+                ),
+              ),
+              SizedBox(
+                height: 20,
+              ),
+              RaisedGradientButton(
+                  child: Text(
+                    'Close',
+                    style: TextStyle(
+                      fontSize: 16,
+                      color: Colors.grey[600],
+                    ),
+                  ),
+                  border: true,
+                  gradient: LinearGradient(
+                    colors: <Color>[Colors.white, Colors.white],
+                  ),
+                  width: SizeConfig.screenWidth - 150,
+                  onPressed: () async {
+                    Navigator.pop(context);
+                  })
+            ],
+          );
+        });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    locationData = Provider.of<LocationProvider>(context);
+    locationService = Provider.of<AgentLocation>(context);
+    myModel = Provider.of<MyModel>(context);
+    setState(() {
+      currentLocation = LatLng(locationService.Lnt, locationService.Lng);
+    });
+    void onCreate(GoogleMapController controller) {
+      setState(() async {
+        _controller.complete(controller);
+        _mapController = controller;
+        initPosition = CameraPosition(
+            target: LatLng(locationService.Lnt, locationService.Lng));
+      });
+      notificationInto(context);
+    }
+
+    return Scaffold(
+      backgroundColor: Colors.white,
+      body: SafeArea(
+        child: Stack(
+          children: [
+            Align(
+              alignment: Alignment.bottomCenter,
+              child: GoogleMap(
+                initialCameraPosition: CameraPosition(target: currentLocation),
+                zoomControlsEnabled: false,
+                minMaxZoomPreference: MinMaxZoomPreference(1.5, 20.8),
+                myLocationEnabled: false,
+                myLocationButtonEnabled: false,
+                mapType: MapType.normal,
+                markers: customMarkers,
+                mapToolbarEnabled: true,
+                onCameraMove: (CameraPosition positon) {
+                  locationData.onCameraMove(positon);
+                },
+                onMapCreated: onCreate,
+                onCameraIdle: () {
+                  /* locationData.getMoveCamera().then((value) => setState(() {
+                        start
+                            ? startingTripLocationString = value
+                            : arriveTripLocationString = value;
+                      }));*/
+                },
+              ),
+            ),
+            StreamBuilder(
+              stream: orderRef.doc(widget.orders).snapshots(),
+              builder: (context, AsyncSnapshot<DocumentSnapshot> snapshot) {
+                if (snapshot.hasData) {
+                  Orders orders = Orders.fromJson(snapshot.data.data());
+                  locationData
+                      .getCurrentCoordinatesName(
+                          orders.startAt.latitude, orders.startAt.longitude)
+                      .then((value) => setState(() {
+                            startingTripLocationString = value;
+                          }));
+                  locationData
+                      .getCurrentCoordinatesName(
+                          orders.endAt.latitude, orders.endAt.longitude)
+                      .then((value) => setState(() {
+                            arriveTripLocationString = value;
+                          }));
+                  return Align(
+                    alignment: Alignment.topCenter,
+                    child: Column(
+                      children: [
+                        Container(
+                          margin: EdgeInsets.fromLTRB(20, 50, 20, 5),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              GestureDetector(
+                                onTap: () {
+                                  Navigator.pop(
+                                      context,
+                                      p2 != null
+                                          ? p2.description
+                                          : arriveTripLocationString);
+                                },
+                                child: Image.asset(
+                                  "assets/images/Back Arrow.png",
+                                ),
+                              ),
+                              FloatingActionButton(
+                                onPressed: () =>
+                                    _goToMyPosition(_controller.future),
+                                mini: true,
+                                elevation: 8,
+                                backgroundColor: Colors.white,
+                                child: Image.asset(
+                                    "assets/images/geolocate me.png"),
+                              ),
+                            ],
+                          ),
+                        ),
+                        SizedBox(
+                          height: 20,
+                        ),
+                        Container(
+                          width: 300,
+                          height: 50,
+                          child: ElevatedButton(
+                            onPressed: () {},
+                            style: ElevatedButton.styleFrom(
+                              onSurface: Colors.white,
+                              primary: Colors.white,
+                              onPrimary: Colors.white,
+                              elevation: 4,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.only(
+                                  topRight: Radius.circular(10),
+                                  topLeft: Radius.circular(10),
+                                ),
+                              ),
+                              minimumSize: Size(100, 40), //////// HERE
+                            ),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Container(
+                                  width: 220,
+                                  child: Text(
+                                    "$startingTripLocationString",
+                                    overflow: TextOverflow.ellipsis,
+                                    style: TextStyle(
+                                        color: Colors.black,
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.normal),
+                                  ),
+                                ),
+                                Image.asset('assets/images/starting point.png')
+                              ],
+                            ),
+                          ),
+                        ),
+                        Container(
+                          height: 1,
+                          color: Colors.grey[400],
+                          width: 250,
+                        ),
+                        Container(
+                          width: 300,
+                          height: 50,
+                          child: ElevatedButton(
+                            onPressed: () {},
+                            style: ElevatedButton.styleFrom(
+                              elevation: 4,
+                              onSurface: Colors.white,
+                              primary: Colors.white,
+                              onPrimary: Colors.white,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.only(
+                                  bottomLeft: Radius.circular(10),
+                                  bottomRight: Radius.circular(10),
+                                ),
+                              ),
+                              minimumSize: Size(100, 40), //////// HERE
+                            ),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Container(
+                                  width: 220,
+                                  child: Text(
+                                    "$arriveTripLocationString",
+                                    overflow: TextOverflow.ellipsis,
+                                    style: TextStyle(
+                                        color: Colors.black,
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.normal),
+                                  ),
+                                ),
+                                Image.asset('assets/images/arrival point.png')
+                              ],
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  );
+                }
+                return Container(
+                  height: 0,
+                );
+              },
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Marker _createMarker(lat, lon, UserModel userModel) {
+    return Marker(
+      markerId: MarkerId(userModel.firstName),
+      position: LatLng(lat, lon),
+      onTap: () {
+        myModel.updateInfoWindow(
+            context,
+            _mapController,
+            LatLng(lat, lon),
+            _infoWindowWidth,
+            _markerOffset,
+            "${userModel.firstName} ${userModel.lastname.toUpperCase()}",
+            "restoModel.address");
+        myModel.updateVisibility(true);
+        myModel.rebuildInfoWindow();
+      },
+      infoWindow: InfoWindow(
+          title: "${userModel.firstName} ${userModel.lastname.toUpperCase()}",
+          snippet: "restoModel.address",
+          onTap: () => {
+                /*  Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (context) => NewRestoDetails(
+                    restoModel: restoModel,
+                    selectedDateTxt: null,
+                    selectedTimeTxt: null,
+                    dropdownValue: null,
+                    locationId: locationId,
+                  )),
+            )*/
+              }),
+      icon: userModel.id == firebaseAuth.currentUser.uid
+          ? myIcon
+          : agentNotSelected,
+    );
+  }
+
+  Future<void> _goToMyPosition(c) async {
+    _myPosition = CameraPosition(
+      target:
+          LatLng(initPosition.target.latitude, initPosition.target.longitude),
+      zoom: 14.5,
+    );
+    await locationData.getCurrentPosition();
+    final GoogleMapController controller = await c;
+    controller.animateCamera(CameraUpdate.newCameraPosition(_myPosition));
+  }
+
+  Future<void> _goToPosition(c, latitude, longitude) async {
+    _myPosition = CameraPosition(
+      target: LatLng(latitude, longitude),
+      zoom: 18.5,
+    );
+    await locationData.getCurrentPosition();
+    final GoogleMapController controller = await c;
+    controller.animateCamera(CameraUpdate.newCameraPosition(_myPosition));
   }
 }
