@@ -136,34 +136,30 @@ class FirebaseService {
     }
   }
 
-  addOrder(User user, Orders orders) async {
+  Future<String> addOrder(User user, Orders orders) async {
+    String docId;
+    final doc = orderRef.doc();
     if (user != null) {
-      final snapShot = await orderRef.doc(user.uid).get();
-      var list = [];
-      if (snapShot.exists) {
-        list.add({
-          "date": Utils.getCurrentDate(),
-          "iceBox": orders.iceBox,
-          "brand": orders.brand,
-          "transport": orders.transport,
-          "maxWeight": orders.maxWeight,
-          "numberItem": orders.numberItem,
-          "lunchStatus": orders.lunchStatus,
-          "status": orders.status,
-          "price": orders.price,
-          "agentId": orders.agentId,
-          "userId": orders.userId,
-          "endAt": orders.endAt,
-          "startAt": orders.startAt,
-        });
-        orderRef.doc(user.uid).update({'orderData': list}).onError(
-            (error, stackTrace) => print(error));
-      } else {
-        list.add(orders.toJson());
-        orderRef.doc(user.uid).set({'orderData': list}).onError(
-            (error, stackTrace) => print(error));
-      }
+      docId = doc.id;
+      doc.set(orders.toJson()).onError((error, stackTrace) => print(error));
     }
+    return docId;
+  }
+
+  updateOrders(User user, Orders orders, String docId) {
+    orderRef.doc(docId).update({
+      "date": Utils.getCurrentDate(),
+      "iceBox": orders.iceBox,
+      "brand": orders.brand,
+      "transport": orders.transport,
+      "maxWeight": orders.maxWeight,
+      "numberItem": orders.numberItem,
+      "lunchStatus": orders.lunchStatus,
+      "status": orders.status,
+      "price": orders.price,
+      "agentId": orders.agentId,
+      "userId": orders.userId,
+    }).onError((error, stackTrace) => print(error));
   }
 
   addToFavorite(User user, UserModel userModel) async {

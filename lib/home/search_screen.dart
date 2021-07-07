@@ -47,7 +47,8 @@ class _SearchScreenState extends State<SearchScreen> {
   String startingPointString = "Starting Point",
       arrivalPointString = "Arrive Point",
       brand,
-      transport;
+      transport,
+      result;
 
   List brandList = [
     'KFC',
@@ -572,8 +573,15 @@ class _SearchScreenState extends State<SearchScreen> {
                                 onTap: () async {
                                   await locationData.getCurrentPosition();
                                   if (locationData.permissionGranted) {
-                                    Navigator.pushNamed(
-                                        context, MapTripScreen.routeName);
+                                    result = await Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (context) =>
+                                              SearchMapTripScreen(),
+                                        ));
+                                    setState(() {
+                                      arrivalPointString = result.split("/")[1];
+                                    });
                                   }
                                 },
                                 child: Container(
@@ -880,8 +888,15 @@ class _SearchScreenState extends State<SearchScreen> {
                                 onTap: () async {
                                   await locationData.getCurrentPosition();
                                   if (locationData.permissionGranted) {
-                                    Navigator.pushNamed(
-                                        context, MapTripScreen.routeName);
+                                    result = await Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (context) =>
+                                              SearchMapTripScreen(),
+                                        ));
+                                    setState(() {
+                                      arrivalPointString = result.split("/")[1];
+                                    });
                                   }
                                 },
                                 child: Container(
@@ -1207,14 +1222,14 @@ class _SearchScreenState extends State<SearchScreen> {
                                 onTap: () async {
                                   await locationData.getCurrentPosition();
                                   if (locationData.permissionGranted) {
-                                    final result = await Navigator.push(
+                                    result = await Navigator.push(
                                         context,
                                         MaterialPageRoute(
                                           builder: (context) =>
                                               SearchMapTripScreen(),
                                         ));
                                     setState(() {
-                                      arrivalPointString = result;
+                                      arrivalPointString = result.split("/")[1];
                                     });
                                   }
                                 },
@@ -1549,8 +1564,16 @@ class _SearchScreenState extends State<SearchScreen> {
                                 onTap: () async {
                                   await locationData.getCurrentPosition();
                                   if (locationData.permissionGranted) {
-                                    Navigator.pushNamed(
-                                        context, MapTripScreen.routeName);
+                                    result = await Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (context) =>
+                                              SearchMapTripScreen(),
+                                        ));
+                                    print("12221${result.split("/")[0]}");
+                                    setState(() {
+                                      arrivalPointString = result.split("/")[1];
+                                    });
                                   }
                                 },
                                 child: Container(
@@ -1780,8 +1803,10 @@ class _SearchScreenState extends State<SearchScreen> {
                                         startAt: GeoPoint(
                                             locationData.lnt, locationData.lng),
                                       );
-                                      FirebaseService().addOrder(
-                                          firebaseAuth.currentUser, order);
+                                      FirebaseService().updateOrders(
+                                          firebaseAuth.currentUser,
+                                          order,
+                                          result.split('/')[0]);
                                     }
                                   }),
                               SizedBox(height: 10),
@@ -2045,13 +2070,10 @@ class _SearchMapTripScreenState extends State<SearchMapTripScreen> {
                                     ? locationData.lng
                                     : arrivedLocationLng));
 
-                        FirebaseService()
+                        var id = await FirebaseService()
                             .addOrder(firebaseAuth.currentUser, order);
-                        Navigator.pop(
-                            context,
-                            p2 != null
-                                ? p2.description
-                                : arriveTripLocationString);
+                        Navigator.pop(context,
+                            "$id/${p2 != null ? p2.description : arriveTripLocationString}");
                       }),
                 ),
               )
