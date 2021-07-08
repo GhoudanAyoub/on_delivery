@@ -407,9 +407,8 @@ class _AgentsDetailsState extends State<AgentsDetails> {
                                         }*/
                                         for (DocumentSnapshot document
                                             in snapshot.data.docs) {
-                                          if (document.data()["agentData"]
-                                                  ['id'] ==
-                                              widget.id)
+                                          if (document.data()["clientId"] ==
+                                              firebaseAuth.currentUser.uid)
                                             return Align(
                                               alignment: Alignment.bottomCenter,
                                               child: RaisedGradientButton(

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:on_delivery/SetUpProfile/ChooseSide.dart';
 import 'package:on_delivery/components/RaisedGradientButton.dart';
 import 'package:on_delivery/components/form_error.dart';
 import 'package:on_delivery/components/text_form_builder.dart';
@@ -112,10 +113,17 @@ class _SignFormState extends State<SignForm> {
                         password: _passwordController.text,
                       );
                       if (success == firebaseAuth.currentUser.uid) {
-                        Navigator.pushNamed(context, Base.routeName);
-                        Navigator.pop(context);
-                        Scaffold.of(context).showSnackBar(
-                            SnackBar(content: Text('Welcome Back')));
+                        final data = await usersRef.doc(success).get();
+                        if (data.exists) {
+                          Navigator.pushNamed(context, Base.routeName);
+                          Scaffold.of(context).showSnackBar(
+                              SnackBar(content: Text('Welcome Back')));
+                        } else {
+                          Navigator.pushNamed(context, ChooseSide.routeName);
+                          Scaffold.of(context).showSnackBar(SnackBar(
+                              content: Text(
+                                  'You have To Finish uploading your data')));
+                        }
                       } else {
                         addError(error: success);
                         submitted = false;

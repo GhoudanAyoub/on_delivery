@@ -6,8 +6,11 @@ import 'package:flutter_facebook_login/flutter_facebook_login.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:http/http.dart' as http;
+import 'package:on_delivery/SetUpProfile/ChooseSide.dart';
 import 'package:on_delivery/SignUp/sign_up_screen.dart';
 import 'package:on_delivery/components/indicators.dart';
+import 'package:on_delivery/home/base.dart';
+import 'package:on_delivery/models/User.dart';
 import 'package:on_delivery/services/auth_service.dart';
 import 'package:on_delivery/utils/SizeConfig.dart';
 import 'package:on_delivery/utils/firebase.dart';
@@ -52,16 +55,30 @@ class _BodyState extends State<Body> {
               child: Column(
                 children: [
                   Align(
-                    alignment: Alignment.topLeft,
-                    child: Text(
-                      "Welcome \nBack 👋",
-                      style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          letterSpacing: 3,
-                          fontSize: 32,
-                          color: Colors.black),
-                    ),
-                  ),
+                      alignment: Alignment.topLeft,
+                      child: SizedBox(
+                        height: 80,
+                        child: Stack(
+                          fit: StackFit.expand,
+                          overflow: Overflow.visible,
+                          children: [
+                            Text(
+                              "Welcome \nBack",
+                              style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  letterSpacing: 3,
+                                  fontSize: 32,
+                                  color: Colors.black),
+                            ),
+                            Positioned(
+                              top: 40,
+                              left: 100,
+                              child:
+                                  Image.asset('assets/images/welcome back.png'),
+                            )
+                          ],
+                        ),
+                      )),
                   Expanded(
                     child: ListView(
                       children: [
@@ -130,11 +147,30 @@ class _BodyState extends State<Body> {
                                       setState(() {
                                         isSignIn = false;
                                       });
-                                      /*
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => Base()));*/
+
+                                      if (u == firebaseAuth.currentUser.uid) {
+                                        final data =
+                                            await usersRef.doc(u).get();
+                                        UserModel userModel =
+                                            UserModel.fromJson(data.data());
+                                        if (data.exists &&
+                                            (userModel.type
+                                                    .toLowerCase()
+                                                    .contains("client") ||
+                                                userModel.type
+                                                    .toLowerCase()
+                                                    .contains("agent"))) {
+                                          Navigator.pushNamed(
+                                              context, Base.routeName);
+                                          Scaffold.of(context).showSnackBar(
+                                              SnackBar(
+                                                  content:
+                                                      Text('Welcome Back')));
+                                        } else {
+                                          Navigator.pushNamed(
+                                              context, ChooseSide.routeName);
+                                        }
+                                      }
                                     });
                                   },
                                   child: Container(
@@ -180,11 +216,29 @@ class _BodyState extends State<Body> {
                                       setState(() {
                                         isSignIn = false;
                                       });
-                                      /*
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => Base()));*/
+                                      if (u == firebaseAuth.currentUser.uid) {
+                                        final data =
+                                            await usersRef.doc(u).get();
+                                        UserModel userModel =
+                                            UserModel.fromJson(data.data());
+                                        if (data.exists &&
+                                            (userModel.type
+                                                    .toLowerCase()
+                                                    .contains("client") ||
+                                                userModel.type
+                                                    .toLowerCase()
+                                                    .contains("agent"))) {
+                                          Navigator.pushNamed(
+                                              context, Base.routeName);
+                                          Scaffold.of(context).showSnackBar(
+                                              SnackBar(
+                                                  content:
+                                                      Text('Welcome Back')));
+                                        } else {
+                                          Navigator.pushNamed(
+                                              context, ChooseSide.routeName);
+                                        }
+                                      }
                                     });
                                   },
                                   child: Container(

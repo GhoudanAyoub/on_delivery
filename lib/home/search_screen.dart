@@ -2374,9 +2374,10 @@ class _SearchMapAgentScreenState extends State<SearchMapAgentScreen> {
             Align(
               alignment: Alignment.topCenter,
               child: GoogleMap(
-                initialCameraPosition: CameraPosition(target: currentLocation),
+                initialCameraPosition:
+                    CameraPosition(target: currentLocation, zoom: 14),
                 zoomControlsEnabled: false,
-                minMaxZoomPreference: MinMaxZoomPreference(1.5, 15.8),
+                minMaxZoomPreference: MinMaxZoomPreference(6.5, 15.8),
                 myLocationEnabled: false,
                 myLocationButtonEnabled: false,
                 mapType: MapType.normal,
@@ -2386,13 +2387,6 @@ class _SearchMapAgentScreenState extends State<SearchMapAgentScreen> {
                   locationData.onCameraMove(positon);
                 },
                 onMapCreated: onCreate,
-                onCameraIdle: () {
-                  /* locationData.getMoveCamera().then((value) => setState(() {
-                        start
-                            ? startingTripLocationString = value
-                            : arriveTripLocationString = value;
-                      }));*/
-                },
               ),
             ),
             Align(
@@ -2774,19 +2768,28 @@ class _SearchMapAgentScreenState extends State<SearchMapAgentScreen> {
               },
             ),
             Align(
-              alignment: Alignment.bottomCenter,
-              child: Container(
-                margin: EdgeInsets.only(bottom: 25),
-                child: Text("Show All",
-                    style: TextStyle(
-                      decoration: TextDecoration.underline,
-                      fontSize: 14,
-                      letterSpacing: 1,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.black,
-                    )),
-              ),
-            ),
+                alignment: Alignment.bottomCenter,
+                child: GestureDetector(
+                  child: Container(
+                    margin: EdgeInsets.only(bottom: 25),
+                    child: Text("Show All",
+                        style: TextStyle(
+                          decoration: TextDecoration.underline,
+                          fontSize: 14,
+                          letterSpacing: 1,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.black,
+                        )),
+                  ),
+                  onTap: () {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => AllAgent(
+                                  userList: userList,
+                                )));
+                  },
+                )),
             Align(
               alignment: Alignment.bottomCenter,
               child: Container(
@@ -2845,5 +2848,324 @@ class _SearchMapAgentScreenState extends State<SearchMapAgentScreen> {
     await locationData.getCurrentPosition();
     final GoogleMapController controller = await c;
     controller.animateCamera(CameraUpdate.newCameraPosition(_myPosition));
+  }
+}
+
+class AllAgent extends StatefulWidget {
+  static String routeName = '/AllAgent';
+  final List<UserModel> userList;
+
+  const AllAgent({Key key, this.userList}) : super(key: key);
+  @override
+  _AllAgentState createState() => _AllAgentState();
+}
+
+class _AllAgentState extends State<AllAgent> {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+        backgroundColor: Colors.white,
+        body: SafeArea(
+          child: Container(
+            decoration: BoxDecoration(
+              image: DecorationImage(
+                image: ExactAssetImage('assets/images/pg.png'),
+                fit: BoxFit.cover,
+              ),
+            ),
+            child: Column(
+              children: [
+                Align(
+                    alignment: Alignment.topLeft,
+                    child: GestureDetector(
+                      child: Container(
+                        margin: EdgeInsets.only(bottom: 25),
+                        child: Container(
+                          margin: EdgeInsets.fromLTRB(20, 40, 20, 5),
+                          child: Image.asset(
+                            "assets/images/Back Arrow.png",
+                          ),
+                        ),
+                      ),
+                      onTap: () => Navigator.pop(context),
+                    )),
+                Align(
+                  alignment: Alignment.topLeft,
+                  child: Container(
+                    margin: EdgeInsets.only(bottom: 25, top: 20, left: 20),
+                    child: Text("All Agents",
+                        style: TextStyle(
+                          decoration: TextDecoration.underline,
+                          fontSize: 14,
+                          letterSpacing: 1,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.black,
+                        )),
+                  ),
+                ),
+                Expanded(
+                  child: ListView.builder(
+                    itemCount: widget.userList.length,
+                    scrollDirection: Axis.vertical,
+                    shrinkWrap: true,
+                    padding: EdgeInsets.only(
+                        left: 20, right: 20, top: 10, bottom: 50),
+                    itemBuilder: (BuildContext context, int index) {
+                      return Align(
+                        alignment: Alignment.bottomCenter,
+                        child: GestureDetector(
+                          child: Card(
+                              elevation: 1,
+                              shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(10)),
+                              child: Container(
+                                padding: EdgeInsets.only(left: 10, right: 10),
+                                height: 150,
+                                decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  border: Border.all(
+                                      width: 1,
+                                      color: Color.fromRGBO(231, 231, 231, 1)),
+                                  borderRadius: BorderRadius.circular(10),
+                                ),
+                                child: Column(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceAround,
+                                  children: [
+                                    Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Container(
+                                          decoration: BoxDecoration(
+                                            borderRadius:
+                                                BorderRadius.circular(20),
+                                            border: Border.all(
+                                              color: Colors.transparent,
+                                            ),
+                                            image: DecorationImage(
+                                              image: NetworkImage(widget
+                                                          .userList[index]
+                                                          .photoUrl !=
+                                                      null
+                                                  ? widget
+                                                      .userList[index].photoUrl
+                                                  : FirebaseService
+                                                      .getProfileImage()),
+                                              fit: BoxFit.cover,
+                                            ),
+                                            boxShadow: [
+                                              BoxShadow(
+                                                color: Colors.grey
+                                                    .withOpacity(0.3),
+                                                offset: new Offset(0.0, 0.0),
+                                                blurRadius: 2.0,
+                                                spreadRadius: 0.0,
+                                              ),
+                                            ],
+                                          ),
+                                          height: 70,
+                                          width: 70,
+                                        ),
+                                        Container(
+                                          width: 280,
+                                          child: Column(
+                                            children: [
+                                              Row(
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment
+                                                        .spaceBetween,
+                                                children: [
+                                                  Row(
+                                                    children: [
+                                                      Text(
+                                                          "${widget.userList[index].firstName} ${widget.userList[index].lastname.toUpperCase()}",
+                                                          style: TextStyle(
+                                                            fontSize: 12,
+                                                            letterSpacing: 1,
+                                                            fontWeight:
+                                                                FontWeight.w500,
+                                                            color: Colors.black,
+                                                          )),
+                                                      widget.userList[index]
+                                                                  .verified ==
+                                                              "true"
+                                                          ? Image.asset(
+                                                              "assets/images/ver_agent.png")
+                                                          : SizedBox(height: 0)
+                                                    ],
+                                                  ),
+                                                  Row(
+                                                    children: [
+                                                      Image.asset(
+                                                          'assets/images/agent rate.png'),
+                                                      Text("5.0",
+                                                          style: TextStyle(
+                                                            fontSize: 12,
+                                                            letterSpacing: 1,
+                                                            fontWeight:
+                                                                FontWeight.w500,
+                                                            color: Colors.black,
+                                                          )),
+                                                    ],
+                                                  ),
+                                                ],
+                                              ),
+                                              SizedBox(
+                                                height: 3,
+                                              ),
+                                              Text(
+                                                  "${widget.userList[index].city}",
+                                                  style: TextStyle(
+                                                    fontSize: 12,
+                                                    letterSpacing: 1,
+                                                    fontWeight:
+                                                        FontWeight.normal,
+                                                    color: Colors.grey,
+                                                  )),
+                                              SizedBox(
+                                                height: 3,
+                                              ),
+                                              Row(
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment
+                                                        .spaceBetween,
+                                                children: [
+                                                  Text(
+                                                      "${widget.userList[index].activities.toLowerCase()}",
+                                                      style: TextStyle(
+                                                        fontSize: 14,
+                                                        letterSpacing: 1,
+                                                        fontWeight:
+                                                            FontWeight.normal,
+                                                        color: Colors.grey,
+                                                      )),
+                                                  Text(
+                                                      "${widget.userList[index].price}/${widget.userList[index].unity.toLowerCase()}",
+                                                      style: TextStyle(
+                                                        fontSize: 12,
+                                                        letterSpacing: 1,
+                                                        fontWeight:
+                                                            FontWeight.normal,
+                                                        color: Colors.grey,
+                                                      ))
+                                                ],
+                                              ),
+                                            ],
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                          ),
+                                        )
+                                      ],
+                                    ),
+                                    Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Container(
+                                          decoration: BoxDecoration(
+                                            color: Colors.white,
+                                            border: Border.all(
+                                                width: 1,
+                                                color: Color.fromRGBO(
+                                                    231, 231, 231, 1)),
+                                            borderRadius:
+                                                BorderRadius.circular(10),
+                                          ),
+                                          height: 30,
+                                          width: 197,
+                                          margin: EdgeInsets.only(
+                                              right: 20, bottom: 10),
+                                          child: Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.spaceAround,
+                                            children: [
+                                              Text("Orders delivered",
+                                                  style: TextStyle(
+                                                    fontSize: 12,
+                                                    fontWeight: FontWeight.w600,
+                                                    color: Colors.grey,
+                                                  )),
+                                              Text("15/19",
+                                                  style: TextStyle(
+                                                    fontSize: 12,
+                                                    fontWeight: FontWeight.bold,
+                                                    color: Colors.black,
+                                                  )),
+                                            ],
+                                          ),
+                                        ),
+                                        Container(
+                                          decoration: BoxDecoration(
+                                            color: Colors.white,
+                                            border: Border.all(
+                                                width: 1,
+                                                color: Color.fromRGBO(
+                                                    238, 71, 0, 1)),
+                                            borderRadius:
+                                                BorderRadius.circular(10),
+                                          ),
+                                          height: 30,
+                                          width: 95,
+                                          margin: EdgeInsets.only(
+                                              left: 20, bottom: 10),
+                                          child: Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.spaceAround,
+                                            children: [
+                                              Text("calculating ...",
+                                                  style: TextStyle(
+                                                    fontSize: 12,
+                                                    fontWeight: FontWeight.w600,
+                                                    color: Color.fromRGBO(
+                                                        238, 71, 0, 1),
+                                                  )),
+                                            ],
+                                          ),
+                                        )
+                                      ],
+                                    )
+                                  ],
+                                ),
+                              )),
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => AgentsDetails(
+                                        id: widget.userList[index].id,
+                                        time: "qsd",
+                                      )),
+                            );
+                          },
+                        ),
+                      );
+                    },
+                  ),
+                ),
+                Align(
+                  alignment: Alignment.bottomCenter,
+                  child: Container(
+                    margin: EdgeInsets.only(bottom: 8, top: 10),
+                    width: 135,
+                    height: 5,
+                    decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          colors: <Color>[Colors.grey, Colors.grey],
+                        ),
+                        borderRadius: BorderRadius.circular(10.0),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.grey[500],
+                            offset: Offset(0.0, 1.5),
+                            blurRadius: 1.5,
+                          ),
+                        ]),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ));
   }
 }

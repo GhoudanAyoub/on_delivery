@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -11,6 +13,7 @@ import 'package:on_delivery/models/favorite.dart';
 import 'package:on_delivery/utils/FirebaseService.dart';
 import 'package:on_delivery/utils/constants.dart';
 import 'package:on_delivery/utils/firebase.dart';
+import 'package:provider/provider.dart';
 
 import 'agent_details.dart';
 
@@ -107,7 +110,7 @@ class _HomeState extends State<Home> {
 
   @override
   Widget build(BuildContext context) {
-    // locationService = Provider.of<AgentLocation>(context);
+    locationService = Provider.of<AgentLocation>(context);
     return SafeArea(
         child: Scaffold(
             body: Container(
@@ -542,14 +545,16 @@ class _HomeState extends State<Home> {
           itemBuilder: (BuildContext context, int index) {
             DocumentSnapshot doc = filteredAgents[index];
             UserModel _user = UserModel.fromJson(doc.data());
-            /* if (firebaseAuth.currentUser != null && doc.id == currentUserId()) {
-              checkIfFollowing(user.id);
-              Timer(Duration(milliseconds: 50), () {
+            if ((firebaseAuth.currentUser != null &&
+                    doc.id == currentUserId() &&
+                    _user.type.toLowerCase().contains("agent")) ||
+                _user.type.toLowerCase().contains("client")) {
+              Timer(Duration(milliseconds: 10), () {
                 setState(() {
                   removeFromList(index);
                 });
               });
-            }*/
+            }
             return Align(
               alignment: Alignment.bottomCenter,
               child: GestureDetector(
@@ -989,9 +994,7 @@ class _HomeState extends State<Home> {
                   },
                 ),
               );
-            return SizedBox(
-              height: 0,
-            );
+            return Container();
           },
         );
       }

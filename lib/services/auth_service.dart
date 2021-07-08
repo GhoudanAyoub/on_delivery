@@ -57,7 +57,7 @@ class AuthService extends Service {
           'maxWeight': '',
           'RIB': "",
           'bankName': "",
-          'percentage': "",
+          'percentage': "0",
           'price': "",
           'verified': "",
         });
@@ -94,7 +94,7 @@ class AuthService extends Service {
         'maxWeight': '',
         'RIB': "",
         'bankName': "",
-        'percentage': "",
+        'percentage': "0",
         'price': "",
         'verified': "",
       });
@@ -254,6 +254,15 @@ class AuthService extends Service {
             'photoUrl': firebaseAuth.currentUser.photoURL
           });
       }
+    } else {
+      uploadImage(profilePic, image)
+          .then((value) => usersRef.doc(user.uid).set({
+                'firstName': fName,
+                'lastName': lName,
+                'city': city,
+                'phone': phone,
+                'photoUrl': value,
+              }));
     }
   }
 

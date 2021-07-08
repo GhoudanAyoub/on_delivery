@@ -943,9 +943,9 @@ class _UpdateProfilesState extends State<UpdateProfiles> {
                                       locationData
                                           .getMoveCamera()
                                           .then((value) => setState(() {
-                                        locationState = state;
-                                        startingPointString = value;
-                                      }));
+                                                locationState = state;
+                                                startingPointString = value;
+                                              }));
                                     },
                                   ),
 
@@ -1240,14 +1240,23 @@ class _UpdateProfilesState extends State<UpdateProfiles> {
                                       context, MapTripScreen.routeName);
                                 }
                               },
-                              child: Text("Add another trip",
-                                  textAlign: TextAlign.center,
-                                  style: TextStyle(
-                                    fontSize: 14,
-                                    letterSpacing: 1,
-                                    fontWeight: FontWeight.normal,
-                                    color: Color.fromRGBO(5, 151, 0, 1),
-                                  )),
+                              child: Row(
+                                children: [
+                                  Image.asset(
+                                      'assets/images/add another one.png'),
+                                  SizedBox(
+                                    width: 5,
+                                  ),
+                                  Text("Add another trip",
+                                      textAlign: TextAlign.center,
+                                      style: TextStyle(
+                                        fontSize: 14,
+                                        letterSpacing: 1,
+                                        fontWeight: FontWeight.normal,
+                                        color: Color.fromRGBO(5, 151, 0, 1),
+                                      )),
+                                ],
+                              ),
                             ),
                             SizedBox(
                               height: 20,
@@ -3504,7 +3513,7 @@ class _UpdateProfilesState extends State<UpdateProfiles> {
     return SafeArea(
         child: Scaffold(
             appBar: AppBar(
-              toolbarHeight: 50,
+              toolbarHeight: 80,
               leading: IconButton(
                 icon:
                     Icon(Icons.arrow_back, color: Color.fromRGBO(5, 151, 0, 1)),
@@ -3526,101 +3535,140 @@ class _UpdateProfilesState extends State<UpdateProfiles> {
                   padding: EdgeInsets.symmetric(horizontal: 15),
                   child: Container(
                     width: SizeConfig.screenWidth,
-                    padding: EdgeInsets.all(50),
-                    child: ListView(
+                    padding: EdgeInsets.only(
+                        left: 50, right: 50, bottom: 20, top: 20),
+                    child: Column(
                       children: [
-                        Center(
-                          child: GestureDetector(
-                            onTap: () => pickImage(),
-                            child: Container(
-                              decoration: BoxDecoration(
-                                color: Colors.white,
-                                shape: BoxShape.circle,
-                                border: Border.all(
-                                  color: Colors.transparent,
-                                ),
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: Colors.grey.withOpacity(0.3),
-                                    offset: new Offset(0.0, 0.0),
-                                    blurRadius: 2.0,
-                                    spreadRadius: 0.0,
-                                  ),
-                                ],
-                              ),
-                              child: userImgLink != null
-                                  ? Padding(
-                                      padding: const EdgeInsets.all(1.0),
-                                      child: CircleAvatar(
-                                        radius: 65.0,
-                                        backgroundColor:
-                                            Color.fromRGBO(239, 240, 246, 1),
-                                        backgroundImage:
-                                            NetworkImage(userImgLink),
+                        Expanded(
+                          child: ListView(
+                            children: [
+                              Center(
+                                child: GestureDetector(
+                                  onTap: () => pickImage(),
+                                  child: Container(
+                                    decoration: BoxDecoration(
+                                      color: Colors.white,
+                                      shape: BoxShape.circle,
+                                      border: Border.all(
+                                        color: Colors.transparent,
                                       ),
-                                    )
-                                  : userImage == null
-                                      ? Padding(
-                                          padding: const EdgeInsets.all(1.0),
-                                          child: CircleAvatar(
-                                            backgroundColor: Color.fromRGBO(
-                                                239, 240, 246, 1),
-                                            radius: 65.0,
-                                            backgroundImage: NetworkImage(
-                                                firebaseAuth
-                                                    .currentUser.photoURL),
-                                          ),
-                                        )
-                                      : Padding(
-                                          padding: const EdgeInsets.all(1.0),
-                                          child: CircleAvatar(
-                                            radius: 65.0,
-                                            backgroundColor: Color.fromRGBO(
-                                                239, 240, 246, 1),
-                                            backgroundImage:
-                                                FileImage(userImage),
-                                          ),
+                                      boxShadow: [
+                                        BoxShadow(
+                                          color: Colors.grey.withOpacity(0.3),
+                                          offset: new Offset(0.0, 0.0),
+                                          blurRadius: 2.0,
+                                          spreadRadius: 0.0,
                                         ),
-                            ),
+                                      ],
+                                    ),
+                                    child: userImgLink != null
+                                        ? Padding(
+                                            padding: const EdgeInsets.all(1.0),
+                                            child: CircleAvatar(
+                                              radius: 65.0,
+                                              backgroundColor: Color.fromRGBO(
+                                                  239, 240, 246, 1),
+                                              backgroundImage:
+                                                  NetworkImage(userImgLink),
+                                            ),
+                                          )
+                                        : userImage == null
+                                            ? Padding(
+                                                padding:
+                                                    const EdgeInsets.all(1.0),
+                                                child: CircleAvatar(
+                                                  backgroundColor:
+                                                      Color.fromRGBO(
+                                                          239, 240, 246, 1),
+                                                  radius: 65.0,
+                                                  backgroundImage: NetworkImage(
+                                                      firebaseAuth.currentUser !=
+                                                              null
+                                                          ? FirebaseService
+                                                              .getProfileImage()
+                                                          : ""),
+                                                ),
+                                              )
+                                            : Padding(
+                                                padding:
+                                                    const EdgeInsets.all(1.0),
+                                                child: CircleAvatar(
+                                                  radius: 65.0,
+                                                  backgroundColor:
+                                                      Color.fromRGBO(
+                                                          239, 240, 246, 1),
+                                                  backgroundImage:
+                                                      FileImage(userImage),
+                                                ),
+                                              ),
+                                  ),
+                                ),
+                              ),
+                              SizedBox(height: 40),
+                              buildFNameFormField(),
+                              SizedBox(height: 30),
+                              buildLNameFormField(),
+                              SizedBox(height: 30),
+                              buildCityFormField(),
+                              SizedBox(height: 30),
+                              buildPhoneFormField(),
+                              SizedBox(height: 50),
+                            ],
                           ),
                         ),
-                        SizedBox(height: 40),
-                        buildFNameFormField(),
-                        SizedBox(height: 30),
-                        buildLNameFormField(),
-                        SizedBox(height: 30),
-                        buildCityFormField(),
-                        SizedBox(height: 30),
-                        buildPhoneFormField(),
-                        SizedBox(height: 50),
-                        RaisedGradientButton(
-                            child: Text(
-                              'Next',
-                              style: TextStyle(
-                                fontSize: 16,
-                                color: Colors.white,
+                        Align(
+                          alignment: Alignment.bottomCenter,
+                          child: Column(
+                            children: [
+                              RaisedGradientButton(
+                                  child: Text(
+                                    'Next',
+                                    style: TextStyle(
+                                      fontSize: 16,
+                                      color: Colors.white,
+                                    ),
+                                  ),
+                                  gradient: LinearGradient(
+                                    colors: <Color>[
+                                      Color.fromRGBO(82, 238, 79, 1),
+                                      Color.fromRGBO(5, 151, 0, 1)
+                                    ],
+                                  ),
+                                  width: SizeConfig.screenWidth - 150,
+                                  onPressed: () async {
+                                    if (_clientFormKey.currentState
+                                        .validate()) {
+                                      authService.updateUserDataToFireStore(
+                                          firebaseAuth.currentUser,
+                                          _fNameController.text,
+                                          _lNameController.text,
+                                          _cityController.text,
+                                          _phoneController.text,
+                                          userImage);
+                                    }
+                                    Navigator.pushNamed(
+                                        context, Base.routeName);
+                                  }),
+                              SizedBox(height: 10),
+                              Container(
+                                width: 135,
+                                height: 5,
+                                decoration: BoxDecoration(
+                                    gradient: LinearGradient(
+                                      colors: <Color>[Colors.grey, Colors.grey],
+                                    ),
+                                    borderRadius: BorderRadius.circular(10.0),
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: Colors.grey[500],
+                                        offset: Offset(0.0, 1.5),
+                                        blurRadius: 1.5,
+                                      ),
+                                    ]),
                               ),
-                            ),
-                            gradient: LinearGradient(
-                              colors: <Color>[
-                                Color.fromRGBO(82, 238, 79, 1),
-                                Color.fromRGBO(5, 151, 0, 1)
-                              ],
-                            ),
-                            width: SizeConfig.screenWidth - 150,
-                            onPressed: () async {
-                              if (_clientFormKey.currentState.validate()) {
-                                authService.updateUserDataToFireStore(
-                                    firebaseAuth.currentUser,
-                                    _fNameController.text,
-                                    _lNameController.text,
-                                    _cityController.text,
-                                    _phoneController.text,
-                                    userImage);
-                              }
-                              /* Navigator.pushNamed(
-                                  context, UpdateProfiles.routeName);*/
-                            }),
+                            ],
+                          ),
+                        ),
                       ],
                     ),
                   ),

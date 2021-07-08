@@ -35,5 +35,6 @@ final Map<String, WidgetBuilder> routes = {
   OrderScreen.routeName: (context) => OrderScreen(),
   AgentsDetails.routeName: (context) => AgentsDetails(),
   SearchScreen.routeName: (context) => SearchScreen(),
+  AllAgent.routeName: (context) => AllAgent(),
   SearchMapTripScreen.routeName: (context) => SearchMapTripScreen(),
 };

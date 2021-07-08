@@ -77,7 +77,8 @@ class FirebaseService {
   }
 
   static getProfileImage() {
-    if (_firebaseAuth.currentUser != null) {
+    if (_firebaseAuth.currentUser != null &&
+        _firebaseAuth.currentUser.photoURL != null) {
       return _firebaseAuth.currentUser.photoURL;
     } else {
       return "https://images.unsplash.com/photo-1571741140674-8949ca7df2a7?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=60";

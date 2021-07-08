@@ -32,7 +32,7 @@ class SignUpScreen extends StatelessWidget {
         ),
       ),
       body: new WillPopScope(
-        onWillPop: () async => false,
+        onWillPop: () async => true,
         child: Body(),
       ),
     ));
