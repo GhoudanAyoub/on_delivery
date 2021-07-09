@@ -11,6 +11,7 @@ import 'package:on_delivery/models/User.dart';
 import 'package:on_delivery/models/category.dart';
 import 'package:on_delivery/models/favorite.dart';
 import 'package:on_delivery/utils/FirebaseService.dart';
+import 'package:on_delivery/utils/SizeConfig.dart';
 import 'package:on_delivery/utils/constants.dart';
 import 'package:on_delivery/utils/firebase.dart';
 import 'package:provider/provider.dart';
@@ -124,7 +125,7 @@ class _HomeState extends State<Home> {
         padding: EdgeInsets.fromLTRB(24, 24, 24, 10),
         child: Column(
           children: [
-            SizedBox(height: 20),
+            SizedBox(height: getProportionateScreenHeight(20)),
             Align(
               alignment: Alignment.topCenter,
               child: StreamBuilder(
@@ -164,9 +165,10 @@ class _HomeState extends State<Home> {
                                         : FirebaseService.getProfileImage()),
                               ),
                             ),
+                            height: getProportionateScreenHeight(80),
                           ),
                           SizedBox(
-                            width: 20,
+                            width: getProportionateScreenWidth(10),
                           ),
                           Column(
                             children: [
@@ -175,7 +177,7 @@ class _HomeState extends State<Home> {
                                   Text(
                                       "${user1.firstName} ${user1.lastname.toUpperCase()}",
                                       style: TextStyle(
-                                        fontSize: 14,
+                                        fontSize: 12,
                                         letterSpacing: 1,
                                         fontWeight: FontWeight.bold,
                                         color: Colors.black,
@@ -185,7 +187,7 @@ class _HomeState extends State<Home> {
                                   ),
                                   Text("${user1.city}",
                                       style: TextStyle(
-                                        fontSize: 12,
+                                        fontSize: 10,
                                         letterSpacing: 1,
                                         fontWeight: FontWeight.normal,
                                         color: Colors.grey,
@@ -199,7 +201,7 @@ class _HomeState extends State<Home> {
                                 children: [
                                   Text("Company :",
                                       style: TextStyle(
-                                        fontSize: 14,
+                                        fontSize: 10,
                                         letterSpacing: 1,
                                         fontWeight: FontWeight.normal,
                                         color: Colors.black,
@@ -209,7 +211,7 @@ class _HomeState extends State<Home> {
                                   ),
                                   Text("${user1.businessName}",
                                       style: TextStyle(
-                                        fontSize: 12,
+                                        fontSize: 10,
                                         letterSpacing: 1,
                                         fontWeight: FontWeight.normal,
                                         color: Colors.grey,
@@ -223,7 +225,7 @@ class _HomeState extends State<Home> {
                                 children: [
                                   Text("Tel :",
                                       style: TextStyle(
-                                        fontSize: 14,
+                                        fontSize: 10,
                                         letterSpacing: 1,
                                         fontWeight: FontWeight.normal,
                                         color: Colors.black,
@@ -233,7 +235,7 @@ class _HomeState extends State<Home> {
                                   ),
                                   Text("${user1.phone}",
                                       style: TextStyle(
-                                        fontSize: 12,
+                                        fontSize: 10,
                                         letterSpacing: 1,
                                         fontWeight: FontWeight.normal,
                                         color: Colors.grey,
@@ -308,39 +310,6 @@ class _HomeState extends State<Home> {
             SizedBox(height: 10),
             homeAgent(),
             Align(
-              alignment: Alignment.bottomRight,
-              child: FloatingActionButton(
-                elevation: 4,
-                child: Container(
-                  width: 100,
-                  height: 100,
-                  decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                        colors: <Color>[
-                          Color.fromRGBO(82, 238, 79, 1),
-                          Color.fromRGBO(5, 151, 0, 1)
-                        ],
-                      ),
-                      borderRadius: BorderRadius.circular(30.0),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.grey[500],
-                          offset: Offset(0.0, 1.5),
-                          blurRadius: 1.5,
-                        ),
-                      ]),
-                  child: Center(
-                    child: Image.asset(
-                      "assets/images/chatbutton.png",
-                      height: 100,
-                      width: 100,
-                    ),
-                  ),
-                ),
-                onPressed: () {},
-              ),
-            ),
-            Align(
               alignment: Alignment.bottomCenter,
               child: Container(
                 width: 134,
@@ -380,7 +349,7 @@ class _HomeState extends State<Home> {
         child: ListView(
       children: [
         SizedBox(
-          height: 20,
+          height: getProportionateScreenHeight(20),
         ),
         Align(
           alignment: Alignment.topCenter,
@@ -389,7 +358,7 @@ class _HomeState extends State<Home> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Container(
-                height: 50,
+                height: getProportionateScreenHeight(50),
                 child: ListView.separated(
                   shrinkWrap: true,
                   scrollDirection: Axis.horizontal,
@@ -413,7 +382,7 @@ class _HomeState extends State<Home> {
                           categories[index].name,
                           style: TextStyle(
                             letterSpacing: 1,
-                            fontSize: 16,
+                            fontSize: 14,
                             fontWeight: FontWeight.w600,
                             color: _activeTabHome == index
                                 ? Colors.black
@@ -432,7 +401,7 @@ class _HomeState extends State<Home> {
                 ),
               ),
               Container(
-                height: 50,
+                height: getProportionateScreenHeight(50),
                 child: IconButton(
                   icon: Icon(
                     CupertinoIcons.search,
@@ -450,7 +419,7 @@ class _HomeState extends State<Home> {
           ),
         ),
         SizedBox(
-          height: 10,
+          height: getProportionateScreenHeight(10),
         ),
         searchClicked
             ? Theme(
@@ -563,8 +532,10 @@ class _HomeState extends State<Home> {
                     shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(10)),
                     child: Container(
-                      padding: EdgeInsets.only(left: 10, right: 10),
-                      height: 150,
+                      padding: EdgeInsets.only(
+                          left: getProportionateScreenHeight(10),
+                          right: getProportionateScreenHeight(10)),
+                      height: getProportionateScreenHeight(150),
                       decoration: BoxDecoration(
                         color: Colors.white,
                         border: Border.all(
@@ -598,11 +569,11 @@ class _HomeState extends State<Home> {
                                     ),
                                   ],
                                 ),
-                                height: 70,
-                                width: 70,
+                                height: getProportionateScreenHeight(60),
+                                width: getProportionateScreenHeight(60),
                               ),
                               Container(
-                                width: 280,
+                                width: getProportionateScreenWidth(250),
                                 child: Column(
                                   children: [
                                     Row(
@@ -693,7 +664,7 @@ class _HomeState extends State<Home> {
                                   borderRadius: BorderRadius.circular(10),
                                 ),
                                 height: 30,
-                                width: 197,
+                                width: getProportionateScreenWidth(150),
                                 margin: EdgeInsets.only(right: 20, bottom: 10),
                                 child: Row(
                                   mainAxisAlignment:
@@ -723,7 +694,7 @@ class _HomeState extends State<Home> {
                                   borderRadius: BorderRadius.circular(10),
                                 ),
                                 height: 30,
-                                width: 95,
+                                width: getProportionateScreenWidth(90),
                                 margin: EdgeInsets.only(left: 20, bottom: 10),
                                 child: Row(
                                   mainAxisAlignment:

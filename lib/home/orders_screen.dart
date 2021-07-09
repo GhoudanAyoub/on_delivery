@@ -7,6 +7,7 @@ import 'package:on_delivery/models/User.dart';
 import 'package:on_delivery/models/category.dart';
 import 'package:on_delivery/models/order.dart';
 import 'package:on_delivery/utils/FirebaseService.dart';
+import 'package:on_delivery/utils/SizeConfig.dart';
 import 'package:on_delivery/utils/constants.dart';
 import 'package:on_delivery/utils/firebase.dart';
 
@@ -69,7 +70,7 @@ class _OrderScreenState extends State<OrderScreen> {
         padding: EdgeInsets.fromLTRB(24, 24, 24, 10),
         child: Column(
           children: [
-            SizedBox(height: 20),
+            SizedBox(height: getProportionateScreenHeight(20)),
             Align(
               alignment: Alignment.topCenter,
               child: StreamBuilder(
@@ -82,6 +83,7 @@ class _OrderScreenState extends State<OrderScreen> {
                       child: Row(
                         children: [
                           Container(
+                            height: getProportionateScreenHeight(80),
                             decoration: BoxDecoration(
                               color: Colors.white,
                               shape: BoxShape.circle,
@@ -111,7 +113,7 @@ class _OrderScreenState extends State<OrderScreen> {
                             ),
                           ),
                           SizedBox(
-                            width: 20,
+                            width: getProportionateScreenHeight(20),
                           ),
                           Column(
                             children: [
@@ -120,7 +122,7 @@ class _OrderScreenState extends State<OrderScreen> {
                                   Text(
                                       "${user1.firstName} ${user1.lastname.toUpperCase()}",
                                       style: TextStyle(
-                                        fontSize: 14,
+                                        fontSize: 12,
                                         letterSpacing: 1,
                                         fontWeight: FontWeight.bold,
                                         color: Colors.black,
@@ -130,7 +132,7 @@ class _OrderScreenState extends State<OrderScreen> {
                                   ),
                                   Text("${user1.city}",
                                       style: TextStyle(
-                                        fontSize: 12,
+                                        fontSize: 10,
                                         letterSpacing: 1,
                                         fontWeight: FontWeight.normal,
                                         color: Colors.grey,
@@ -144,7 +146,7 @@ class _OrderScreenState extends State<OrderScreen> {
                                 children: [
                                   Text("Company :",
                                       style: TextStyle(
-                                        fontSize: 14,
+                                        fontSize: 12,
                                         letterSpacing: 1,
                                         fontWeight: FontWeight.normal,
                                         color: Colors.black,
@@ -154,7 +156,7 @@ class _OrderScreenState extends State<OrderScreen> {
                                   ),
                                   Text("${user1.businessName}",
                                       style: TextStyle(
-                                        fontSize: 12,
+                                        fontSize: 10,
                                         letterSpacing: 1,
                                         fontWeight: FontWeight.normal,
                                         color: Colors.grey,
@@ -168,7 +170,7 @@ class _OrderScreenState extends State<OrderScreen> {
                                 children: [
                                   Text("Tel :",
                                       style: TextStyle(
-                                        fontSize: 14,
+                                        fontSize: 12,
                                         letterSpacing: 1,
                                         fontWeight: FontWeight.normal,
                                         color: Colors.black,
@@ -178,7 +180,7 @@ class _OrderScreenState extends State<OrderScreen> {
                                   ),
                                   Text("${user1.phone}",
                                       style: TextStyle(
-                                        fontSize: 12,
+                                        fontSize: 10,
                                         letterSpacing: 1,
                                         fontWeight: FontWeight.normal,
                                         color: Colors.grey,
@@ -199,10 +201,10 @@ class _OrderScreenState extends State<OrderScreen> {
               ),
             ),
             SizedBox(
-              height: 20,
+              height: getProportionateScreenHeight(20),
             ),
             Container(
-              height: 60.0,
+              height: getProportionateScreenHeight(60),
               decoration: BoxDecoration(
                   gradient: LinearGradient(
                     colors: <Color>[
@@ -229,10 +231,10 @@ class _OrderScreenState extends State<OrderScreen> {
                         children: [
                           Image.asset(
                             "assets/images/looking for agent white.png",
-                            height: 40,
+                            height: getProportionateScreenHeight(40),
                           ),
                           SizedBox(
-                            width: 20,
+                            width: getProportionateScreenHeight(20),
                           ),
                           Text(
                             'Looking For agent',
@@ -248,7 +250,7 @@ class _OrderScreenState extends State<OrderScreen> {
                     )),
               ),
             ),
-            SizedBox(height: 10),
+            SizedBox(height: getProportionateScreenHeight(10)),
             orderAgent(),
             Align(
               alignment: Alignment.bottomRight,
@@ -364,7 +366,7 @@ class _OrderScreenState extends State<OrderScreen> {
                                 categories[index].name,
                                 style: TextStyle(
                                   letterSpacing: 1,
-                                  fontSize: 16,
+                                  fontSize: 14,
                                   fontWeight: FontWeight.w600,
                                   color: _activeTabHome == index
                                       ? Colors.black
@@ -409,7 +411,7 @@ class _OrderScreenState extends State<OrderScreen> {
                 ),
               ),
               Container(
-                height: 50,
+                height: getProportionateScreenHeight(50),
                 child: IconButton(
                   icon: Icon(
                     CupertinoIcons.search,
@@ -542,8 +544,10 @@ class _OrderScreenState extends State<OrderScreen> {
                             shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(10)),
                             child: Container(
-                              padding: EdgeInsets.only(left: 10, right: 10),
-                              height: 150,
+                              padding: EdgeInsets.only(
+                                  left: getProportionateScreenHeight(10),
+                                  right: getProportionateScreenHeight(10)),
+                              height: getProportionateScreenHeight(150),
                               decoration: BoxDecoration(
                                 color: Colors.white,
                                 border: Border.all(
@@ -584,11 +588,12 @@ class _OrderScreenState extends State<OrderScreen> {
                                             ),
                                           ],
                                         ),
-                                        height: 70,
-                                        width: 70,
+                                        height:
+                                            getProportionateScreenHeight(60),
+                                        width: getProportionateScreenHeight(60),
                                       ),
                                       Container(
-                                        width: 280,
+                                        width: getProportionateScreenWidth(250),
                                         child: Column(
                                           children: [
                                             Row(
@@ -601,7 +606,7 @@ class _OrderScreenState extends State<OrderScreen> {
                                                     overflow:
                                                         TextOverflow.ellipsis,
                                                     style: TextStyle(
-                                                      fontSize: 14,
+                                                      fontSize: 12,
                                                       letterSpacing: 1,
                                                       fontWeight:
                                                           FontWeight.bold,
@@ -610,7 +615,7 @@ class _OrderScreenState extends State<OrderScreen> {
                                                 Text(
                                                   "${_user.city}",
                                                   style: TextStyle(
-                                                    fontSize: 12,
+                                                    fontSize: 10,
                                                     letterSpacing: 1,
                                                     fontWeight:
                                                         FontWeight.normal,
@@ -626,7 +631,7 @@ class _OrderScreenState extends State<OrderScreen> {
                                             ),
                                             Text("${_user.city}",
                                                 style: TextStyle(
-                                                  fontSize: 12,
+                                                  fontSize: 10,
                                                   letterSpacing: 1,
                                                   fontWeight: FontWeight.normal,
                                                   color: Colors.black,
@@ -642,7 +647,7 @@ class _OrderScreenState extends State<OrderScreen> {
                                                 Text(
                                                     "${_user.activities.toLowerCase()}",
                                                     style: TextStyle(
-                                                      fontSize: 14,
+                                                      fontSize: 12,
                                                       letterSpacing: 1,
                                                       fontWeight:
                                                           FontWeight.normal,
@@ -651,7 +656,7 @@ class _OrderScreenState extends State<OrderScreen> {
                                                 Text(
                                                     "${_user.price}/${_user.unity.toLowerCase()}",
                                                     style: TextStyle(
-                                                      fontSize: 12,
+                                                      fontSize: 10,
                                                       letterSpacing: 1,
                                                       fontWeight:
                                                           FontWeight.normal,
@@ -681,7 +686,7 @@ class _OrderScreenState extends State<OrderScreen> {
                                               BorderRadius.circular(10),
                                         ),
                                         height: 30,
-                                        width: 197,
+                                        width: getProportionateScreenWidth(150),
                                         margin: EdgeInsets.only(
                                             right: 20, bottom: 10),
                                         child: Row(
@@ -714,7 +719,7 @@ class _OrderScreenState extends State<OrderScreen> {
                                               BorderRadius.circular(10),
                                         ),
                                         height: 30,
-                                        width: 95,
+                                        width: getProportionateScreenWidth(90),
                                         margin: EdgeInsets.only(
                                             left: 20, bottom: 10),
                                         child: Row(
@@ -785,8 +790,10 @@ class _OrderScreenState extends State<OrderScreen> {
                               shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(10)),
                               child: Container(
-                                padding: EdgeInsets.only(left: 10, right: 10),
-                                height: 150,
+                                padding: EdgeInsets.only(
+                                    left: getProportionateScreenHeight(10),
+                                    right: getProportionateScreenHeight(10)),
+                                height: getProportionateScreenHeight(150),
                                 decoration: BoxDecoration(
                                   color: Colors.white,
                                   border: Border.all(
@@ -827,11 +834,14 @@ class _OrderScreenState extends State<OrderScreen> {
                                               ),
                                             ],
                                           ),
-                                          height: 70,
-                                          width: 70,
+                                          height:
+                                              getProportionateScreenHeight(60),
+                                          width:
+                                              getProportionateScreenHeight(60),
                                         ),
                                         Container(
-                                          width: 280,
+                                          width:
+                                              getProportionateScreenWidth(250),
                                           child: Column(
                                             children: [
                                               Row(
@@ -844,7 +854,7 @@ class _OrderScreenState extends State<OrderScreen> {
                                                       overflow:
                                                           TextOverflow.ellipsis,
                                                       style: TextStyle(
-                                                        fontSize: 14,
+                                                        fontSize: 12,
                                                         letterSpacing: 1,
                                                         fontWeight:
                                                             FontWeight.bold,
@@ -853,7 +863,7 @@ class _OrderScreenState extends State<OrderScreen> {
                                                   Text(
                                                     "${_user.city}",
                                                     style: TextStyle(
-                                                      fontSize: 12,
+                                                      fontSize: 10,
                                                       letterSpacing: 1,
                                                       fontWeight:
                                                           FontWeight.normal,
@@ -869,7 +879,7 @@ class _OrderScreenState extends State<OrderScreen> {
                                               ),
                                               Text("${_user.city}",
                                                   style: TextStyle(
-                                                    fontSize: 12,
+                                                    fontSize: 10,
                                                     letterSpacing: 1,
                                                     fontWeight:
                                                         FontWeight.normal,
@@ -886,7 +896,7 @@ class _OrderScreenState extends State<OrderScreen> {
                                                   Text(
                                                       "${_user.activities.toLowerCase()}",
                                                       style: TextStyle(
-                                                        fontSize: 14,
+                                                        fontSize: 12,
                                                         letterSpacing: 1,
                                                         fontWeight:
                                                             FontWeight.normal,
@@ -895,7 +905,7 @@ class _OrderScreenState extends State<OrderScreen> {
                                                   Text(
                                                       "${_user.price}/${_user.unity.toLowerCase()}",
                                                       style: TextStyle(
-                                                        fontSize: 12,
+                                                        fontSize: 10,
                                                         letterSpacing: 1,
                                                         fontWeight:
                                                             FontWeight.normal,
@@ -925,7 +935,8 @@ class _OrderScreenState extends State<OrderScreen> {
                                                 BorderRadius.circular(10),
                                           ),
                                           height: 30,
-                                          width: 197,
+                                          width:
+                                              getProportionateScreenWidth(150),
                                           margin: EdgeInsets.only(
                                               right: 20, bottom: 10),
                                           child: Row(
@@ -958,7 +969,8 @@ class _OrderScreenState extends State<OrderScreen> {
                                                 BorderRadius.circular(10),
                                           ),
                                           height: 30,
-                                          width: 95,
+                                          width:
+                                              getProportionateScreenWidth(90),
                                           margin: EdgeInsets.only(
                                               left: 20, bottom: 10),
                                           child: Row(
@@ -1036,8 +1048,10 @@ class _OrderScreenState extends State<OrderScreen> {
                               shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(10)),
                               child: Container(
-                                padding: EdgeInsets.only(left: 10, right: 10),
-                                height: 150,
+                                padding: EdgeInsets.only(
+                                    left: getProportionateScreenHeight(10),
+                                    right: getProportionateScreenHeight(10)),
+                                height: getProportionateScreenHeight(150),
                                 decoration: BoxDecoration(
                                   color: Colors.white,
                                   border: Border.all(
@@ -1078,11 +1092,14 @@ class _OrderScreenState extends State<OrderScreen> {
                                               ),
                                             ],
                                           ),
-                                          height: 70,
-                                          width: 70,
+                                          height:
+                                              getProportionateScreenHeight(60),
+                                          width:
+                                              getProportionateScreenHeight(60),
                                         ),
                                         Container(
-                                          width: 280,
+                                          width:
+                                              getProportionateScreenWidth(250),
                                           child: Column(
                                             children: [
                                               Row(
@@ -1095,7 +1112,7 @@ class _OrderScreenState extends State<OrderScreen> {
                                                       overflow:
                                                           TextOverflow.ellipsis,
                                                       style: TextStyle(
-                                                        fontSize: 14,
+                                                        fontSize: 12,
                                                         letterSpacing: 1,
                                                         fontWeight:
                                                             FontWeight.bold,
@@ -1104,7 +1121,7 @@ class _OrderScreenState extends State<OrderScreen> {
                                                   Text(
                                                     "${_user.city}",
                                                     style: TextStyle(
-                                                      fontSize: 12,
+                                                      fontSize: 10,
                                                       letterSpacing: 1,
                                                       fontWeight:
                                                           FontWeight.normal,
@@ -1120,7 +1137,7 @@ class _OrderScreenState extends State<OrderScreen> {
                                               ),
                                               Text("${_user.city}",
                                                   style: TextStyle(
-                                                    fontSize: 12,
+                                                    fontSize: 10,
                                                     letterSpacing: 1,
                                                     fontWeight:
                                                         FontWeight.normal,
@@ -1137,7 +1154,7 @@ class _OrderScreenState extends State<OrderScreen> {
                                                   Text(
                                                       "${_user.activities.toLowerCase()}",
                                                       style: TextStyle(
-                                                        fontSize: 14,
+                                                        fontSize: 12,
                                                         letterSpacing: 1,
                                                         fontWeight:
                                                             FontWeight.normal,
@@ -1146,7 +1163,7 @@ class _OrderScreenState extends State<OrderScreen> {
                                                   Text(
                                                       "${_user.price}/${_user.unity.toLowerCase()}",
                                                       style: TextStyle(
-                                                        fontSize: 12,
+                                                        fontSize: 10,
                                                         letterSpacing: 1,
                                                         fontWeight:
                                                             FontWeight.normal,
@@ -1176,7 +1193,8 @@ class _OrderScreenState extends State<OrderScreen> {
                                                 BorderRadius.circular(10),
                                           ),
                                           height: 30,
-                                          width: 197,
+                                          width:
+                                              getProportionateScreenWidth(150),
                                           margin: EdgeInsets.only(
                                               right: 20, bottom: 10),
                                           child: Row(
@@ -1209,7 +1227,8 @@ class _OrderScreenState extends State<OrderScreen> {
                                                 BorderRadius.circular(10),
                                           ),
                                           height: 30,
-                                          width: 95,
+                                          width:
+                                              getProportionateScreenWidth(90),
                                           margin: EdgeInsets.only(
                                               left: 20, bottom: 10),
                                           child: Row(

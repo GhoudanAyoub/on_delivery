@@ -125,7 +125,11 @@ class _SearchScreenState extends State<SearchScreen> {
                     ),
                     width: SizeConfig.screenWidth,
                     height: SizeConfig.screenHeight,
-                    padding: EdgeInsets.fromLTRB(50, 50, 50, 10),
+                    padding: EdgeInsets.fromLTRB(
+                        getProportionateScreenWidth(30),
+                        50,
+                        getProportionateScreenWidth(30),
+                        10),
                     child: Column(
                       children: [
                         Align(
@@ -167,8 +171,9 @@ class _SearchScreenState extends State<SearchScreen> {
                                             borderRadius:
                                                 BorderRadius.circular(10)),
                                         child: Container(
-                                          height: 133,
-                                          width: 133,
+                                          height: 120,
+                                          width:
+                                              getProportionateScreenWidth(120),
                                           padding: EdgeInsets.all(10),
                                           decoration: BoxDecoration(
                                               gradient: LinearGradient(
@@ -228,8 +233,9 @@ class _SearchScreenState extends State<SearchScreen> {
                                             borderRadius:
                                                 BorderRadius.circular(10)),
                                         child: Container(
-                                          height: 133,
-                                          width: 133,
+                                          height: 120,
+                                          width:
+                                              getProportionateScreenWidth(120),
                                           padding: EdgeInsets.all(10),
                                           decoration: BoxDecoration(
                                               gradient: LinearGradient(
@@ -296,8 +302,9 @@ class _SearchScreenState extends State<SearchScreen> {
                                             borderRadius:
                                                 BorderRadius.circular(10)),
                                         child: Container(
-                                          height: 133,
-                                          width: 133,
+                                          height: 120,
+                                          width:
+                                              getProportionateScreenWidth(120),
                                           padding: EdgeInsets.all(10),
                                           decoration: BoxDecoration(
                                               gradient: LinearGradient(
@@ -357,8 +364,9 @@ class _SearchScreenState extends State<SearchScreen> {
                                             borderRadius:
                                                 BorderRadius.circular(10)),
                                         child: Container(
-                                          height: 133,
-                                          width: 133,
+                                          height: 120,
+                                          width:
+                                              getProportionateScreenWidth(120),
                                           padding: EdgeInsets.all(10),
                                           decoration: BoxDecoration(
                                               gradient: LinearGradient(
@@ -516,7 +524,11 @@ class _SearchScreenState extends State<SearchScreen> {
                     ),
                     width: SizeConfig.screenWidth,
                     height: SizeConfig.screenHeight,
-                    padding: EdgeInsets.fromLTRB(50, 50, 50, 10),
+                    padding: EdgeInsets.fromLTRB(
+                        getProportionateScreenWidth(30),
+                        50,
+                        getProportionateScreenWidth(30),
+                        10),
                     child: Column(
                       children: [
                         Align(
@@ -600,7 +612,8 @@ class _SearchScreenState extends State<SearchScreen> {
                                     child: Column(
                                       children: [
                                         Container(
-                                          width: 300,
+                                          width:
+                                              getProportionateScreenWidth(250),
                                           height: 50,
                                           child: ElevatedButton(
                                             style: ElevatedButton.styleFrom(
@@ -623,7 +636,9 @@ class _SearchScreenState extends State<SearchScreen> {
                                                       .spaceBetween,
                                               children: [
                                                 Container(
-                                                  width: 220,
+                                                  width:
+                                                      getProportionateScreenWidth(
+                                                          180),
                                                   child: Text(
                                                     startingPointString,
                                                     overflow:
@@ -646,7 +661,8 @@ class _SearchScreenState extends State<SearchScreen> {
                                           color: Colors.grey[400],
                                         ),
                                         Container(
-                                          width: 300,
+                                          width:
+                                              getProportionateScreenWidth(250),
                                           height: 50,
                                           child: ElevatedButton(
                                             style: ElevatedButton.styleFrom(
@@ -671,7 +687,9 @@ class _SearchScreenState extends State<SearchScreen> {
                                                       .spaceBetween,
                                               children: [
                                                 Container(
-                                                  width: 220,
+                                                  width:
+                                                      getProportionateScreenWidth(
+                                                          150),
                                                   child: Text(
                                                     arrivalPointString,
                                                     overflow:
@@ -841,7 +859,11 @@ class _SearchScreenState extends State<SearchScreen> {
                     ),
                     width: SizeConfig.screenWidth,
                     height: SizeConfig.screenHeight,
-                    padding: EdgeInsets.fromLTRB(50, 50, 50, 10),
+                    padding: EdgeInsets.fromLTRB(
+                        getProportionateScreenWidth(30),
+                        50,
+                        getProportionateScreenWidth(30),
+                        10),
                     child: Column(
                       children: [
                         Align(
@@ -925,7 +947,8 @@ class _SearchScreenState extends State<SearchScreen> {
                                     child: Column(
                                       children: [
                                         Container(
-                                          width: 300,
+                                          width:
+                                              getProportionateScreenWidth(250),
                                           height: 50,
                                           child: ElevatedButton(
                                             style: ElevatedButton.styleFrom(
@@ -948,7 +971,9 @@ class _SearchScreenState extends State<SearchScreen> {
                                                       .spaceBetween,
                                               children: [
                                                 Container(
-                                                  width: 220,
+                                                  width:
+                                                      getProportionateScreenWidth(
+                                                          180),
                                                   child: Text(
                                                     startingPointString,
                                                     overflow:
@@ -971,7 +996,8 @@ class _SearchScreenState extends State<SearchScreen> {
                                           color: Colors.grey[400],
                                         ),
                                         Container(
-                                          width: 300,
+                                          width:
+                                              getProportionateScreenWidth(250),
                                           height: 50,
                                           child: ElevatedButton(
                                             style: ElevatedButton.styleFrom(
@@ -996,7 +1022,9 @@ class _SearchScreenState extends State<SearchScreen> {
                                                       .spaceBetween,
                                               children: [
                                                 Container(
-                                                  width: 220,
+                                                  width:
+                                                      getProportionateScreenWidth(
+                                                          150),
                                                   child: Text(
                                                     arrivalPointString,
                                                     overflow:
@@ -1154,7 +1182,11 @@ class _SearchScreenState extends State<SearchScreen> {
                     ),
                     width: SizeConfig.screenWidth,
                     height: SizeConfig.screenHeight,
-                    padding: EdgeInsets.fromLTRB(50, 50, 50, 10),
+                    padding: EdgeInsets.fromLTRB(
+                        getProportionateScreenWidth(30),
+                        50,
+                        getProportionateScreenWidth(30),
+                        10),
                     child: Column(
                       children: [
                         Align(
@@ -1269,7 +1301,8 @@ class _SearchScreenState extends State<SearchScreen> {
                                     child: Column(
                                       children: [
                                         Container(
-                                          width: 300,
+                                          width:
+                                              getProportionateScreenWidth(250),
                                           height: 50,
                                           child: ElevatedButton(
                                             style: ElevatedButton.styleFrom(
@@ -1292,7 +1325,9 @@ class _SearchScreenState extends State<SearchScreen> {
                                                       .spaceBetween,
                                               children: [
                                                 Container(
-                                                  width: 220,
+                                                  width:
+                                                      getProportionateScreenWidth(
+                                                          180),
                                                   child: Text(
                                                     startingPointString,
                                                     overflow:
@@ -1315,7 +1350,8 @@ class _SearchScreenState extends State<SearchScreen> {
                                           color: Colors.grey[400],
                                         ),
                                         Container(
-                                          width: 300,
+                                          width:
+                                              getProportionateScreenWidth(250),
                                           height: 50,
                                           child: ElevatedButton(
                                             style: ElevatedButton.styleFrom(
@@ -1340,9 +1376,11 @@ class _SearchScreenState extends State<SearchScreen> {
                                                       .spaceBetween,
                                               children: [
                                                 Container(
-                                                  width: 220,
+                                                  width:
+                                                      getProportionateScreenWidth(
+                                                          150),
                                                   child: Text(
-                                                    arrivalPointString ?? "",
+                                                    arrivalPointString,
                                                     overflow:
                                                         TextOverflow.ellipsis,
                                                     style: TextStyle(
@@ -1537,7 +1575,11 @@ class _SearchScreenState extends State<SearchScreen> {
                     ),
                     width: SizeConfig.screenWidth,
                     height: SizeConfig.screenHeight,
-                    padding: EdgeInsets.fromLTRB(50, 50, 50, 10),
+                    padding: EdgeInsets.fromLTRB(
+                        getProportionateScreenWidth(30),
+                        50,
+                        getProportionateScreenWidth(30),
+                        10),
                     child: Column(
                       children: [
                         Align(
@@ -1622,7 +1664,8 @@ class _SearchScreenState extends State<SearchScreen> {
                                     child: Column(
                                       children: [
                                         Container(
-                                          width: 300,
+                                          width:
+                                              getProportionateScreenWidth(250),
                                           height: 50,
                                           child: ElevatedButton(
                                             style: ElevatedButton.styleFrom(
@@ -1645,7 +1688,9 @@ class _SearchScreenState extends State<SearchScreen> {
                                                       .spaceBetween,
                                               children: [
                                                 Container(
-                                                  width: 220,
+                                                  width:
+                                                      getProportionateScreenWidth(
+                                                          180),
                                                   child: Text(
                                                     startingPointString,
                                                     overflow:
@@ -1668,7 +1713,8 @@ class _SearchScreenState extends State<SearchScreen> {
                                           color: Colors.grey[400],
                                         ),
                                         Container(
-                                          width: 300,
+                                          width:
+                                              getProportionateScreenWidth(250),
                                           height: 50,
                                           child: ElevatedButton(
                                             style: ElevatedButton.styleFrom(
@@ -1693,7 +1739,9 @@ class _SearchScreenState extends State<SearchScreen> {
                                                       .spaceBetween,
                                               children: [
                                                 Container(
-                                                  width: 220,
+                                                  width:
+                                                      getProportionateScreenWidth(
+                                                          150),
                                                   child: Text(
                                                     arrivalPointString,
                                                     overflow:
@@ -2273,7 +2321,9 @@ class _SearchMapAgentScreenState extends State<SearchMapAgentScreen> {
     filteredAgents = doc;
     for (DocumentSnapshot d in filteredAgents) {
       UserModel u = UserModel.fromJson(d.data());
-      if ((u.type.toLowerCase().contains("agent") && u.isOnline == true) ||
+      if ((u.type.toLowerCase().contains("agent") &&
+              u.isOnline == true &&
+              !u.id.contains(firebaseAuth.currentUser.uid)) ||
           u.id.contains(firebaseAuth.currentUser.uid)) userList.add(u);
     }
   }
@@ -2391,240 +2441,253 @@ class _SearchMapAgentScreenState extends State<SearchMapAgentScreen> {
             ),
             Align(
                 alignment: Alignment.bottomCenter,
-                child: ListView.builder(
-                  itemCount: userList.length,
-                  scrollDirection: Axis.vertical,
-                  shrinkWrap: true,
-                  padding: EdgeInsets.only(left: 20, right: 20, bottom: 50),
-                  itemBuilder: (BuildContext context, int index) {
-                    agentLocationId = userList[index].id;
-                    return Align(
-                      alignment: Alignment.bottomCenter,
-                      child: GestureDetector(
-                        child: Card(
-                            elevation: 1,
-                            shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(10)),
-                            child: Container(
-                              padding: EdgeInsets.only(left: 10, right: 10),
-                              height: 150,
-                              decoration: BoxDecoration(
-                                color: Colors.white,
-                                border: Border.all(
-                                    width: 1,
-                                    color: Color.fromRGBO(231, 231, 231, 1)),
-                                borderRadius: BorderRadius.circular(10),
-                              ),
-                              child: Column(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceAround,
-                                children: [
-                                  Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      Container(
-                                        decoration: BoxDecoration(
-                                          borderRadius:
-                                              BorderRadius.circular(20),
-                                          border: Border.all(
-                                            color: Colors.transparent,
+                child: Container(
+                  height: 200,
+                  child: ListView.builder(
+                    itemCount: userList.length,
+                    scrollDirection: Axis.horizontal,
+                    shrinkWrap: true,
+                    padding: EdgeInsets.only(left: 20, right: 20, bottom: 50),
+                    itemBuilder: (BuildContext context, int index) {
+                      Timer(Duration(milliseconds: 1), () {
+                        setState(() {
+                          agentLocationId = userList[index].id;
+                        });
+                      });
+                      return Align(
+                        alignment: Alignment.bottomCenter,
+                        child: GestureDetector(
+                          child: Card(
+                              elevation: 1,
+                              shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(10)),
+                              child: Container(
+                                padding: EdgeInsets.only(left: 10, right: 10),
+                                height: 150,
+                                decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  border: Border.all(
+                                      width: 1,
+                                      color: Color.fromRGBO(231, 231, 231, 1)),
+                                  borderRadius: BorderRadius.circular(10),
+                                ),
+                                child: Column(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceAround,
+                                  children: [
+                                    Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Container(
+                                          decoration: BoxDecoration(
+                                            borderRadius:
+                                                BorderRadius.circular(20),
+                                            border: Border.all(
+                                              color: Colors.transparent,
+                                            ),
+                                            image: DecorationImage(
+                                              image: NetworkImage(
+                                                  userList[index].photoUrl !=
+                                                          null
+                                                      ? userList[index].photoUrl
+                                                      : FirebaseService
+                                                          .getProfileImage()),
+                                              fit: BoxFit.cover,
+                                            ),
+                                            boxShadow: [
+                                              BoxShadow(
+                                                color: Colors.grey
+                                                    .withOpacity(0.3),
+                                                offset: new Offset(0.0, 0.0),
+                                                blurRadius: 2.0,
+                                                spreadRadius: 0.0,
+                                              ),
+                                            ],
                                           ),
-                                          image: DecorationImage(
-                                            image: NetworkImage(
-                                                userList[index].photoUrl != null
-                                                    ? userList[index].photoUrl
-                                                    : FirebaseService
-                                                        .getProfileImage()),
-                                            fit: BoxFit.cover,
+                                          height: 60,
+                                          width:
+                                              getProportionateScreenWidth(60),
+                                        ),
+                                        SizedBox(
+                                          width: 5,
+                                        ),
+                                        Container(
+                                          width:
+                                              getProportionateScreenWidth(200),
+                                          child: Column(
+                                            children: [
+                                              Row(
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment
+                                                        .spaceBetween,
+                                                children: [
+                                                  Row(
+                                                    children: [
+                                                      Text(
+                                                          "${userList[index].firstName} ${userList[index].lastname.toUpperCase()}",
+                                                          style: TextStyle(
+                                                            fontSize: 12,
+                                                            letterSpacing: 1,
+                                                            fontWeight:
+                                                                FontWeight.w500,
+                                                            color: Colors.black,
+                                                          )),
+                                                      userList[index]
+                                                                  .verified ==
+                                                              "true"
+                                                          ? Image.asset(
+                                                              "assets/images/ver_agent.png")
+                                                          : SizedBox(height: 0)
+                                                    ],
+                                                  ),
+                                                  Row(
+                                                    children: [
+                                                      Image.asset(
+                                                          'assets/images/agent rate.png'),
+                                                      Text("5.0",
+                                                          style: TextStyle(
+                                                            fontSize: 12,
+                                                            letterSpacing: 1,
+                                                            fontWeight:
+                                                                FontWeight.w500,
+                                                            color: Colors.black,
+                                                          )),
+                                                    ],
+                                                  ),
+                                                ],
+                                              ),
+                                              SizedBox(
+                                                height: 3,
+                                              ),
+                                              Text("${userList[index].city}",
+                                                  style: TextStyle(
+                                                    fontSize: 12,
+                                                    letterSpacing: 1,
+                                                    fontWeight:
+                                                        FontWeight.normal,
+                                                    color: Colors.grey,
+                                                  )),
+                                              SizedBox(
+                                                height: 3,
+                                              ),
+                                              Row(
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment
+                                                        .spaceBetween,
+                                                children: [
+                                                  Text(
+                                                      "${userList[index].activities.toLowerCase()}",
+                                                      style: TextStyle(
+                                                        fontSize: 14,
+                                                        letterSpacing: 1,
+                                                        fontWeight:
+                                                            FontWeight.normal,
+                                                        color: Colors.grey,
+                                                      )),
+                                                  Text(
+                                                      "${userList[index].price}/${userList[index].unity.toLowerCase()}",
+                                                      style: TextStyle(
+                                                        fontSize: 12,
+                                                        letterSpacing: 1,
+                                                        fontWeight:
+                                                            FontWeight.normal,
+                                                        color: Colors.grey,
+                                                      ))
+                                                ],
+                                              ),
+                                            ],
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
                                           ),
-                                          boxShadow: [
-                                            BoxShadow(
-                                              color:
-                                                  Colors.grey.withOpacity(0.3),
-                                              offset: new Offset(0.0, 0.0),
-                                              blurRadius: 2.0,
-                                              spreadRadius: 0.0,
-                                            ),
-                                          ],
+                                        )
+                                      ],
+                                    ),
+                                    Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Container(
+                                          decoration: BoxDecoration(
+                                            color: Colors.white,
+                                            border: Border.all(
+                                                width: 1,
+                                                color: Color.fromRGBO(
+                                                    231, 231, 231, 1)),
+                                            borderRadius:
+                                                BorderRadius.circular(10),
+                                          ),
+                                          height: 30,
+                                          width:
+                                              getProportionateScreenWidth(190),
+                                          margin: EdgeInsets.only(
+                                              right: 20, bottom: 10),
+                                          child: Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.spaceAround,
+                                            children: [
+                                              Text("Orders delivered",
+                                                  style: TextStyle(
+                                                    fontSize: 12,
+                                                    fontWeight: FontWeight.w600,
+                                                    color: Colors.grey,
+                                                  )),
+                                              Text("15/19",
+                                                  style: TextStyle(
+                                                    fontSize: 12,
+                                                    fontWeight: FontWeight.bold,
+                                                    color: Colors.black,
+                                                  )),
+                                            ],
+                                          ),
                                         ),
-                                        height: 70,
-                                        width: 70,
-                                      ),
-                                      Container(
-                                        width: 280,
-                                        child: Column(
-                                          children: [
-                                            Row(
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment
-                                                      .spaceBetween,
-                                              children: [
-                                                Row(
-                                                  children: [
-                                                    Text(
-                                                        "${userList[index].firstName} ${userList[index].lastname.toUpperCase()}",
-                                                        style: TextStyle(
-                                                          fontSize: 12,
-                                                          letterSpacing: 1,
-                                                          fontWeight:
-                                                              FontWeight.w500,
-                                                          color: Colors.black,
-                                                        )),
-                                                    userList[index].verified ==
-                                                            "true"
-                                                        ? Image.asset(
-                                                            "assets/images/ver_agent.png")
-                                                        : SizedBox(height: 0)
-                                                  ],
-                                                ),
-                                                Row(
-                                                  children: [
-                                                    Image.asset(
-                                                        'assets/images/agent rate.png'),
-                                                    Text("5.0",
-                                                        style: TextStyle(
-                                                          fontSize: 12,
-                                                          letterSpacing: 1,
-                                                          fontWeight:
-                                                              FontWeight.w500,
-                                                          color: Colors.black,
-                                                        )),
-                                                  ],
-                                                ),
-                                              ],
-                                            ),
-                                            SizedBox(
-                                              height: 3,
-                                            ),
-                                            Text("${userList[index].city}",
-                                                style: TextStyle(
-                                                  fontSize: 12,
-                                                  letterSpacing: 1,
-                                                  fontWeight: FontWeight.normal,
-                                                  color: Colors.grey,
-                                                )),
-                                            SizedBox(
-                                              height: 3,
-                                            ),
-                                            Row(
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment
-                                                      .spaceBetween,
-                                              children: [
-                                                Text(
-                                                    "${userList[index].activities.toLowerCase()}",
-                                                    style: TextStyle(
-                                                      fontSize: 14,
-                                                      letterSpacing: 1,
-                                                      fontWeight:
-                                                          FontWeight.normal,
-                                                      color: Colors.grey,
-                                                    )),
-                                                Text(
-                                                    "${userList[index].price}/${userList[index].unity.toLowerCase()}",
-                                                    style: TextStyle(
-                                                      fontSize: 12,
-                                                      letterSpacing: 1,
-                                                      fontWeight:
-                                                          FontWeight.normal,
-                                                      color: Colors.grey,
-                                                    ))
-                                              ],
-                                            ),
-                                          ],
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                        ),
-                                      )
-                                    ],
-                                  ),
-                                  Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      Container(
-                                        decoration: BoxDecoration(
-                                          color: Colors.white,
-                                          border: Border.all(
-                                              width: 1,
-                                              color: Color.fromRGBO(
-                                                  231, 231, 231, 1)),
-                                          borderRadius:
-                                              BorderRadius.circular(10),
-                                        ),
-                                        height: 30,
-                                        width: 197,
-                                        margin: EdgeInsets.only(
-                                            right: 20, bottom: 10),
-                                        child: Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.spaceAround,
-                                          children: [
-                                            Text("Orders delivered",
-                                                style: TextStyle(
-                                                  fontSize: 12,
-                                                  fontWeight: FontWeight.w600,
-                                                  color: Colors.grey,
-                                                )),
-                                            Text("15/19",
-                                                style: TextStyle(
-                                                  fontSize: 12,
-                                                  fontWeight: FontWeight.bold,
-                                                  color: Colors.black,
-                                                )),
-                                          ],
-                                        ),
-                                      ),
-                                      Container(
-                                        decoration: BoxDecoration(
-                                          color: Colors.white,
-                                          border: Border.all(
-                                              width: 1,
-                                              color: Color.fromRGBO(
-                                                  238, 71, 0, 1)),
-                                          borderRadius:
-                                              BorderRadius.circular(10),
-                                        ),
-                                        height: 30,
-                                        width: 95,
-                                        margin: EdgeInsets.only(
-                                            left: 20, bottom: 10),
-                                        child: Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.spaceAround,
-                                          children: [
-                                            Text("calculating ...",
-                                                style: TextStyle(
-                                                  fontSize: 12,
-                                                  fontWeight: FontWeight.w600,
-                                                  color: Color.fromRGBO(
-                                                      238, 71, 0, 1),
-                                                )),
-                                          ],
-                                        ),
-                                      )
-                                    ],
-                                  )
-                                ],
-                              ),
-                            )),
-                        onTap: () {
-                          // Within the `FirstRoute` widget
-                          /*   BlocProvider.of<NavigationBloc>(context)
-                      .add(NavigationEvents.AgentsDetailsPageClickedEvent);*/
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => AgentsDetails(
-                                      id: userList[index].id,
-                                      time: "qsd",
-                                    )),
-                          );
-                        },
-                      ),
-                    );
-                  },
+                                        Container(
+                                          decoration: BoxDecoration(
+                                            color: Colors.white,
+                                            border: Border.all(
+                                                width: 1,
+                                                color: Color.fromRGBO(
+                                                    238, 71, 0, 1)),
+                                            borderRadius:
+                                                BorderRadius.circular(10),
+                                          ),
+                                          height: 30,
+                                          width: 95,
+                                          margin: EdgeInsets.only(
+                                              left: 20, bottom: 10),
+                                          child: Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.spaceAround,
+                                            children: [
+                                              Text("calculating ...",
+                                                  style: TextStyle(
+                                                    fontSize: 12,
+                                                    fontWeight: FontWeight.w600,
+                                                    color: Color.fromRGBO(
+                                                        238, 71, 0, 1),
+                                                  )),
+                                            ],
+                                          ),
+                                        )
+                                      ],
+                                    )
+                                  ],
+                                ),
+                              )),
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => AgentsDetails(
+                                        id: userList[index].id,
+                                        time: "qsd",
+                                      )),
+                            );
+                          },
+                        ),
+                      );
+                    },
+                  ),
                 )),
             StreamBuilder(
               stream: orderRef.doc(widget.orders).snapshots(),
@@ -2823,9 +2886,7 @@ class _SearchMapAgentScreenState extends State<SearchMapAgentScreen> {
       draggable: false,
       icon: BitmapDescriptor.fromAsset(id == firebaseAuth.currentUser.uid
           ? "assets/images/mylocationmarker.png"
-          : agentLocationId == id
-              ? "assets/images/agentselected.png"
-              : "assets/images/agentnotselected.png"),
+          : "assets/images/agentnotselected.png"),
     );
   }
 
@@ -2892,7 +2953,7 @@ class _AllAgentState extends State<AllAgent> {
                 Align(
                   alignment: Alignment.topLeft,
                   child: Container(
-                    margin: EdgeInsets.only(bottom: 25, top: 20, left: 20),
+                    margin: EdgeInsets.only(bottom: 10, top: 10, left: 20),
                     child: Text("All Agents",
                         style: TextStyle(
                           decoration: TextDecoration.underline,
@@ -2919,8 +2980,10 @@ class _AllAgentState extends State<AllAgent> {
                               shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(10)),
                               child: Container(
-                                padding: EdgeInsets.only(left: 10, right: 10),
-                                height: 150,
+                                padding: EdgeInsets.only(
+                                    left: getProportionateScreenHeight(10),
+                                    right: getProportionateScreenHeight(10)),
+                                height: getProportionateScreenHeight(150),
                                 decoration: BoxDecoration(
                                   color: Colors.white,
                                   border: Border.all(
@@ -2964,11 +3027,14 @@ class _AllAgentState extends State<AllAgent> {
                                               ),
                                             ],
                                           ),
-                                          height: 70,
-                                          width: 70,
+                                          height:
+                                              getProportionateScreenHeight(60),
+                                          width:
+                                              getProportionateScreenHeight(60),
                                         ),
                                         Container(
-                                          width: 280,
+                                          width:
+                                              getProportionateScreenWidth(250),
                                           child: Column(
                                             children: [
                                               Row(
@@ -3073,7 +3139,8 @@ class _AllAgentState extends State<AllAgent> {
                                                 BorderRadius.circular(10),
                                           ),
                                           height: 30,
-                                          width: 197,
+                                          width:
+                                              getProportionateScreenWidth(150),
                                           margin: EdgeInsets.only(
                                               right: 20, bottom: 10),
                                           child: Row(
@@ -3106,14 +3173,15 @@ class _AllAgentState extends State<AllAgent> {
                                                 BorderRadius.circular(10),
                                           ),
                                           height: 30,
-                                          width: 95,
+                                          width:
+                                              getProportionateScreenWidth(90),
                                           margin: EdgeInsets.only(
                                               left: 20, bottom: 10),
                                           child: Row(
                                             mainAxisAlignment:
                                                 MainAxisAlignment.spaceAround,
                                             children: [
-                                              Text("calculating ...",
+                                              Text("Details",
                                                   style: TextStyle(
                                                     fontSize: 12,
                                                     fontWeight: FontWeight.w600,
@@ -3129,12 +3197,15 @@ class _AllAgentState extends State<AllAgent> {
                                 ),
                               )),
                           onTap: () {
+                            // Within the `FirstRoute` widget
+                            /*   BlocProvider.of<NavigationBloc>(context)
+                      .add(NavigationEvents.AgentsDetailsPageClickedEvent);*/
                             Navigator.push(
                               context,
                               MaterialPageRoute(
                                   builder: (context) => AgentsDetails(
                                         id: widget.userList[index].id,
-                                        time: "qsd",
+                                        time: "dfs",
                                       )),
                             );
                           },

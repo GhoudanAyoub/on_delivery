@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:on_delivery/SetUpProfile/UpdateProfile.dart';
@@ -115,7 +116,11 @@ class _ProfileState extends State<Profile> {
                     ),
                     width: SizeConfig.screenWidth,
                     height: SizeConfig.screenHeight,
-                    padding: EdgeInsets.fromLTRB(50, 50, 50, 10),
+                    padding: EdgeInsets.fromLTRB(
+                        getProportionateScreenWidth(30),
+                        50,
+                        getProportionateScreenWidth(30),
+                        10),
                     child: Column(
                       children: [
                         Align(
@@ -124,6 +129,8 @@ class _ProfileState extends State<Profile> {
                             child: GestureDetector(
                               onTap: () => pickImage(),
                               child: Container(
+                                height: 100,
+                                width: getProportionateScreenWidth(100),
                                 decoration: BoxDecoration(
                                   color: Colors.white,
                                   shape: BoxShape.circle,
@@ -247,7 +254,7 @@ class _ProfileState extends State<Profile> {
                                                 categories[index].name,
                                                 style: TextStyle(
                                                   letterSpacing: 1,
-                                                  fontSize: 16,
+                                                  fontSize: 14,
                                                   fontWeight: FontWeight.w600,
                                                   color: _activeTab == index
                                                       ? Colors.black
@@ -372,7 +379,9 @@ class _ProfileState extends State<Profile> {
                                                           10)),
                                               child: Container(
                                                 height: 64,
-                                                width: 150,
+                                                width:
+                                                    getProportionateScreenWidth(
+                                                        120),
                                                 padding: EdgeInsets.all(10),
                                                 decoration: BoxDecoration(
                                                   gradient: LinearGradient(
@@ -426,7 +435,9 @@ class _ProfileState extends State<Profile> {
                                                           10)),
                                               child: Container(
                                                 height: 64,
-                                                width: 150,
+                                                width:
+                                                    getProportionateScreenWidth(
+                                                        120),
                                                 padding: EdgeInsets.all(10),
                                                 decoration: BoxDecoration(
                                                   gradient: LinearGradient(
@@ -487,7 +498,9 @@ class _ProfileState extends State<Profile> {
                                                           10)),
                                               child: Container(
                                                 height: 64,
-                                                width: 150,
+                                                width:
+                                                    getProportionateScreenWidth(
+                                                        120),
                                                 padding: EdgeInsets.all(10),
                                                 decoration: BoxDecoration(
                                                   gradient: LinearGradient(
@@ -541,7 +554,9 @@ class _ProfileState extends State<Profile> {
                                                           10)),
                                               child: Container(
                                                 height: 64,
-                                                width: 150,
+                                                width:
+                                                    getProportionateScreenWidth(
+                                                        120),
                                                 padding: EdgeInsets.all(10),
                                                 decoration: BoxDecoration(
                                                   gradient: LinearGradient(
@@ -762,7 +777,7 @@ class _ProfileState extends State<Profile> {
                                           validateFunction:
                                               Validations.validateNumber,
                                         ),
-                                        width: 160,
+                                        width: getProportionateScreenWidth(140),
                                       ),
                                       Container(
                                         child: TextFormBuilder(
@@ -774,7 +789,7 @@ class _ProfileState extends State<Profile> {
                                           validateFunction:
                                               Validations.validateNumber2,
                                         ),
-                                        width: 160,
+                                        width: getProportionateScreenWidth(140),
                                       ),
                                     ],
                                   ),
@@ -1552,6 +1567,14 @@ class _ProfileState extends State<Profile> {
                                         showInSnackBar('Done');
                                         break;
                                     }
+                                    Fluttertoast.showToast(
+                                        msg: "Done",
+                                        toastLength: Toast.LENGTH_SHORT,
+                                        gravity: ToastGravity.CENTER,
+                                        timeInSecForIosWeb: 1,
+                                        backgroundColor: Colors.green,
+                                        textColor: Colors.white,
+                                        fontSize: 16.0);
                                     //  }
                                   }),
                               SizedBox(height: 10),

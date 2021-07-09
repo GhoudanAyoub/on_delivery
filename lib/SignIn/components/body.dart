@@ -51,7 +51,8 @@ class _BodyState extends State<Body> {
             ),
           ),
           child: Padding(
-              padding: EdgeInsets.symmetric(horizontal: 40, vertical: 80),
+              padding:
+                  EdgeInsets.only(left: 40, right: 40, top: 60, bottom: 20),
               child: Column(
                 children: [
                   Align(
@@ -82,9 +83,9 @@ class _BodyState extends State<Body> {
                   Expanded(
                     child: ListView(
                       children: [
-                        SizedBox(height: 100),
-                        SignForm(),
                         SizedBox(height: 40),
+                        SignForm(),
+                        SizedBox(height: 20),
                       ],
                     ),
                   ),
@@ -96,7 +97,7 @@ class _BodyState extends State<Body> {
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             SizedBox(
-                              width: 150,
+                              width: 100,
                               height: 1,
                               child: Container(
                                 color: Color.fromRGBO(0, 0, 0, 0.23),
@@ -119,7 +120,7 @@ class _BodyState extends State<Body> {
                               endIndent: 5,
                             ),
                             SizedBox(
-                              width: 150,
+                              width: 100,
                               height: 1,
                               child: Container(
                                 color: Color.fromRGBO(0, 0, 0, 0.23),

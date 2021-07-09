@@ -316,7 +316,11 @@ class _UpdateProfilesState extends State<UpdateProfiles> {
                     ),
                     width: SizeConfig.screenWidth,
                     height: SizeConfig.screenHeight,
-                    padding: EdgeInsets.fromLTRB(50, 50, 50, 10),
+                    padding: EdgeInsets.fromLTRB(
+                        getProportionateScreenWidth(50),
+                        50,
+                        getProportionateScreenWidth(50),
+                        10),
                     child: Column(
                       children: [
                         Expanded(
@@ -386,7 +390,7 @@ class _UpdateProfilesState extends State<UpdateProfiles> {
                                   width: 10,
                                 ),
                                 Container(
-                                  width: 200,
+                                  width: getProportionateScreenWidth(150),
                                   child: Text(
                                       "Add your profile picture.\nMake sure it doesn't pass the\nsize of 1mo.",
                                       textAlign: TextAlign.start,
@@ -638,7 +642,11 @@ class _UpdateProfilesState extends State<UpdateProfiles> {
                     ),
                     width: SizeConfig.screenWidth,
                     height: SizeConfig.screenHeight,
-                    padding: EdgeInsets.fromLTRB(50, 50, 50, 10),
+                    padding: EdgeInsets.fromLTRB(
+                        getProportionateScreenWidth(30),
+                        50,
+                        getProportionateScreenWidth(30),
+                        10),
                     child: Column(
                       children: [
                         Align(
@@ -898,7 +906,11 @@ class _UpdateProfilesState extends State<UpdateProfiles> {
                     ),
                     width: SizeConfig.screenWidth,
                     height: SizeConfig.screenHeight,
-                    padding: EdgeInsets.fromLTRB(50, 50, 50, 10),
+                    padding: EdgeInsets.fromLTRB(
+                        getProportionateScreenWidth(30),
+                        50,
+                        getProportionateScreenWidth(30),
+                        10),
                     child: Column(
                       children: [
                         Align(
@@ -933,7 +945,7 @@ class _UpdateProfilesState extends State<UpdateProfiles> {
                                 ),
                                 Container(
                                   height: 30,
-                                  width: 70,
+                                  width: getProportionateScreenWidth(70),
                                   child: CustomSwitch(
                                     value: locationState,
                                     activeColor: Colors.green,
@@ -1001,7 +1013,9 @@ class _UpdateProfilesState extends State<UpdateProfiles> {
                                           child: Column(
                                             children: [
                                               Container(
-                                                width: 300,
+                                                width:
+                                                    getProportionateScreenWidth(
+                                                        250),
                                                 height: 50,
                                                 child: ElevatedButton(
                                                   style:
@@ -1029,7 +1043,9 @@ class _UpdateProfilesState extends State<UpdateProfiles> {
                                                             .spaceBetween,
                                                     children: [
                                                       Container(
-                                                        width: 220,
+                                                        width:
+                                                            getProportionateScreenWidth(
+                                                                200),
                                                         child: Text(
                                                           userModel.agentTripsLocationList[
                                                                   e][
@@ -1056,7 +1072,9 @@ class _UpdateProfilesState extends State<UpdateProfiles> {
                                                 color: Colors.grey[400],
                                               ),
                                               Container(
-                                                width: 300,
+                                                width:
+                                                    getProportionateScreenWidth(
+                                                        250),
                                                 height: 50,
                                                 child: ElevatedButton(
                                                   style:
@@ -1084,7 +1102,9 @@ class _UpdateProfilesState extends State<UpdateProfiles> {
                                                             .spaceBetween,
                                                     children: [
                                                       Container(
-                                                        width: 220,
+                                                        width:
+                                                            getProportionateScreenWidth(
+                                                                200),
                                                         child: Text(
                                                           userModel.agentTripsLocationList[
                                                                   e][
@@ -1501,7 +1521,11 @@ class _UpdateProfilesState extends State<UpdateProfiles> {
                     ),
                     width: SizeConfig.screenWidth,
                     height: SizeConfig.screenHeight,
-                    padding: EdgeInsets.fromLTRB(50, 50, 50, 10),
+                    padding: EdgeInsets.fromLTRB(
+                        getProportionateScreenWidth(30),
+                        50,
+                        getProportionateScreenWidth(30),
+                        10),
                     child: Column(
                       children: [
                         Align(
@@ -1553,8 +1577,9 @@ class _UpdateProfilesState extends State<UpdateProfiles> {
                                             borderRadius:
                                                 BorderRadius.circular(10)),
                                         child: Container(
-                                          height: 133,
-                                          width: 133,
+                                          height: 120,
+                                          width:
+                                              getProportionateScreenWidth(120),
                                           padding: EdgeInsets.all(10),
                                           decoration: BoxDecoration(
                                               gradient: LinearGradient(
@@ -1611,8 +1636,9 @@ class _UpdateProfilesState extends State<UpdateProfiles> {
                                             borderRadius:
                                                 BorderRadius.circular(10)),
                                         child: Container(
-                                          height: 133,
-                                          width: 133,
+                                          height: 120,
+                                          width:
+                                              getProportionateScreenWidth(120),
                                           padding: EdgeInsets.all(10),
                                           decoration: BoxDecoration(
                                               gradient: LinearGradient(
@@ -1676,8 +1702,9 @@ class _UpdateProfilesState extends State<UpdateProfiles> {
                                             borderRadius:
                                                 BorderRadius.circular(10)),
                                         child: Container(
-                                          height: 133,
-                                          width: 133,
+                                          height: 120,
+                                          width:
+                                              getProportionateScreenWidth(120),
                                           padding: EdgeInsets.all(10),
                                           decoration: BoxDecoration(
                                               gradient: LinearGradient(
@@ -1734,8 +1761,9 @@ class _UpdateProfilesState extends State<UpdateProfiles> {
                                             borderRadius:
                                                 BorderRadius.circular(10)),
                                         child: Container(
-                                          height: 133,
-                                          width: 133,
+                                          height: 120,
+                                          width:
+                                              getProportionateScreenWidth(120),
                                           padding: EdgeInsets.all(10),
                                           decoration: BoxDecoration(
                                               gradient: LinearGradient(
@@ -2009,7 +2037,11 @@ class _UpdateProfilesState extends State<UpdateProfiles> {
                     ),
                     width: SizeConfig.screenWidth,
                     height: SizeConfig.screenHeight,
-                    padding: EdgeInsets.fromLTRB(50, 50, 50, 10),
+                    padding: EdgeInsets.fromLTRB(
+                        getProportionateScreenWidth(30),
+                        50,
+                        getProportionateScreenWidth(30),
+                        10),
                     child: Column(
                       children: [
                         Align(
@@ -2816,7 +2848,8 @@ class _UpdateProfilesState extends State<UpdateProfiles> {
                     onPressed: () => Navigator.of(context).pop(),
                   )),
               title: Padding(
-                padding: EdgeInsets.only(right: 30, top: 40),
+                padding: EdgeInsets.only(
+                    right: getProportionateScreenWidth(30), top: 40),
                 child: Align(
                   alignment: Alignment.topRight,
                   child: Text("Setup profile",
@@ -2841,7 +2874,11 @@ class _UpdateProfilesState extends State<UpdateProfiles> {
                     ),
                     width: SizeConfig.screenWidth,
                     height: SizeConfig.screenHeight,
-                    padding: EdgeInsets.fromLTRB(50, 50, 50, 10),
+                    padding: EdgeInsets.fromLTRB(
+                        getProportionateScreenWidth(20),
+                        50,
+                        getProportionateScreenWidth(20),
+                        10),
                     child: Column(
                       children: [
                         Expanded(
@@ -2860,7 +2897,11 @@ class _UpdateProfilesState extends State<UpdateProfiles> {
                             ),
                             SizedBox(height: 40),
                             Container(
-                              padding: EdgeInsets.all(15),
+                              padding: EdgeInsets.only(
+                                  left: getProportionateScreenWidth(10),
+                                  right: getProportionateScreenWidth(10),
+                                  top: 15,
+                                  bottom: 15),
                               decoration: BoxDecoration(
                                   color: Color.fromRGBO(239, 240, 246, 1),
                                   border:
@@ -2877,7 +2918,9 @@ class _UpdateProfilesState extends State<UpdateProfiles> {
                                         child: DropdownButton<String>(
                                           isDense: true,
                                           hint: new Text(
-                                              "Choose your verification methode"),
+                                            "Choose your verification methode",
+                                            overflow: TextOverflow.ellipsis,
+                                          ),
                                           value: _verificationSelected,
                                           onChanged: (String newValue) {
                                             if (newValue
@@ -3393,8 +3436,8 @@ class _UpdateProfilesState extends State<UpdateProfiles> {
                             fieldsCount: 6,
                             textStyle: const TextStyle(
                                 fontSize: 25.0, color: Colors.black),
-                            eachFieldWidth: 60.0,
-                            eachFieldHeight: 60.0,
+                            eachFieldWidth: getProportionateScreenWidth(50),
+                            eachFieldHeight: getProportionateScreenHeight(50),
                             focusNode: _pinPutFocusNode,
                             controller: _pinPutController,
                             submittedFieldDecoration: pinPutDecoration,
@@ -3530,7 +3573,7 @@ class _UpdateProfilesState extends State<UpdateProfiles> {
               ),
             ),
             body: Form(
-                key: _clientFormKey,
+                key: _formKey,
                 child: Padding(
                   padding: EdgeInsets.symmetric(horizontal: 15),
                   child: Container(
@@ -3636,8 +3679,7 @@ class _UpdateProfilesState extends State<UpdateProfiles> {
                                   ),
                                   width: SizeConfig.screenWidth - 150,
                                   onPressed: () async {
-                                    if (_clientFormKey.currentState
-                                        .validate()) {
+                                    if (_formKey.currentState.validate()) {
                                       authService.updateUserDataToFireStore(
                                           firebaseAuth.currentUser,
                                           _fNameController.text,

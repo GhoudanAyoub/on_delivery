@@ -120,9 +120,6 @@ class _SideBarState extends State<SideBar>
                       Expanded(
                           child: ListView(
                         children: [
-                          SizedBox(
-                            height: 10,
-                          ),
                           MenuItem(
                             title: "Home",
                             onTap: () {
@@ -140,6 +137,17 @@ class _SideBarState extends State<SideBar>
                               onIconPressed();
                               BlocProvider.of<NavigationBloc>(context)
                                   .add(NavigationEvents.OrderPageClickedEvent);
+                            },
+                          ),
+                          SizedBox(
+                            height: 10,
+                          ),
+                          MenuItem(
+                            title: "Ibox",
+                            onTap: () {
+                              onIconPressed();
+                              BlocProvider.of<NavigationBloc>(context)
+                                  .add(NavigationEvents.ChatPageClickedEvent);
                             },
                           ),
                           SizedBox(

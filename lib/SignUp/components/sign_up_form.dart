@@ -64,7 +64,7 @@ class _SignUpFormState extends State<SignUpForm> {
           Expanded(
               child: ListView(
             children: [
-              SizedBox(height: 80),
+              SizedBox(height: 60),
               buildEmailFormField(),
               SizedBox(height: 20),
               buildPasswordFormField(),
@@ -123,7 +123,7 @@ class _SignUpFormState extends State<SignUpForm> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     SizedBox(
-                      width: 150,
+                      width: 100,
                       height: 1,
                       child: Container(
                         color: Color.fromRGBO(0, 0, 0, 0.23),
@@ -146,7 +146,7 @@ class _SignUpFormState extends State<SignUpForm> {
                       endIndent: 5,
                     ),
                     SizedBox(
-                      width: 150,
+                      width: 100,
                       height: 1,
                       child: Container(
                         color: Color.fromRGBO(0, 0, 0, 0.23),

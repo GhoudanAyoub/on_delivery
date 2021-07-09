@@ -41,10 +41,12 @@ class ChatService {
 
   setUserTyping(String chatId, User user, bool userTyping) async {
     DocumentSnapshot snap = await chatRef.doc(chatId).get();
-    Map typing = snap.data()['typing'] ?? {};
-    typing[user?.uid] = userTyping;
-    await chatRef.doc(chatId).update({
-      'typing': typing,
-    });
+    if (snap.exists) {
+      Map typing = snap.data()['typing'] ?? {};
+      typing[user?.uid] = userTyping;
+      await chatRef.doc(chatId).update({
+        'typing': typing,
+      });
+    }
   }
 }

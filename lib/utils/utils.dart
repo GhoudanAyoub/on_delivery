@@ -26,9 +26,7 @@ class Utils {
     return date.toUtc();
   }
 
-  static DateTime getCurrentDate() {
-    DateTime now = new DateTime.now();
-    DateTime date = new DateTime(now.year, now.month, now.day);
-    return date;
+  static Timestamp getCurrentDate() {
+    return Timestamp.now();
   }
 }

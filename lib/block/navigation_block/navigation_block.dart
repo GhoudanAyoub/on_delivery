@@ -1,5 +1,6 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:on_delivery/Condition & rules/C&R.dart';
+import 'package:on_delivery/Inbox/notification.dart';
 import 'package:on_delivery/home/Home.dart';
 import 'package:on_delivery/home/agent_details.dart';
 import 'package:on_delivery/home/orders_screen.dart';
@@ -12,7 +13,8 @@ enum NavigationEvents {
   ConditionRulesPageClickedEvent,
   PlansPageClickedEvent,
   OrderPageClickedEvent,
-  AgentsDetailsPageClickedEvent
+  AgentsDetailsPageClickedEvent,
+  ChatPageClickedEvent
 }
 
 abstract class NavigationStates {}
@@ -41,6 +43,9 @@ class NavigationBloc extends Bloc<NavigationEvents, NavigationStates> {
 
       case NavigationEvents.AgentsDetailsPageClickedEvent:
         yield AgentsDetails();
+        break;
+      case NavigationEvents.ChatPageClickedEvent:
+        yield Activities();
         break;
     }
   }

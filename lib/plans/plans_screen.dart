@@ -50,12 +50,12 @@ class _PlansState extends State<Plans> {
                     if (snapshot.hasData && snapshot.data.exists) {
                       PlansModel plans =
                           PlansModel.fromJson(snapshot.data.data());
-                      if (Utils.getCurrentDate()
-                          .isBefore(DateTime.parse(plans.endAt))) {
+                      if (Utils.toDateTime(Utils.getCurrentDate())
+                          .isBefore(Utils.toDateTime(plans.endAt))) {
                         return Align(
                           alignment: Alignment.topCenter,
                           child: Text(
-                              "You have ${Utils.getCurrentDate().difference(DateTime.parse(plans.endAt))} days left before your finish your free plan. Please try to chose a plan before that.",
+                              "You have ${Utils.toDateTime(Utils.getCurrentDate()).difference(Utils.toDateTime(plans.endAt))} days left before your finish your free plan. Please try to chose a plan before that.",
                               textAlign: TextAlign.center,
                               style: TextStyle(
                                 letterSpacing: 1,
@@ -68,7 +68,7 @@ class _PlansState extends State<Plans> {
                       return Align(
                         alignment: Alignment.topCenter,
                         child: Text(
-                            "Your plan Ends ${Utils.getCurrentDate().difference(DateTime.parse(plans.endAt))} days ago. You are welcomed to replan again.",
+                            "Your plan Ends ${Utils.toDateTime(Utils.getCurrentDate()).difference(Utils.toDateTime(plans.endAt))} days ago. You are welcomed to replan again.",
                             textAlign: TextAlign.center,
                             style: TextStyle(
                               letterSpacing: 1,

@@ -1,6 +1,8 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+
 class PlansModel {
-  String startAt;
-  String endAt;
+  Timestamp startAt;
+  Timestamp endAt;
   String userId;
   String planType;
 

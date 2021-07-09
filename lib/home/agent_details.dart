@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:on_delivery/Inbox/components/conversation.dart';
 import 'package:on_delivery/block/navigation_block/navigation_block.dart';
 import 'package:on_delivery/components/RaisedGradientButton.dart';
 import 'package:on_delivery/models/User.dart';
@@ -20,6 +21,7 @@ class AgentsDetails extends StatefulWidget with NavigationStates {
 
 class _AgentsDetailsState extends State<AgentsDetails> {
   UserModel _user;
+  bool show = true;
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -31,7 +33,9 @@ class _AgentsDetailsState extends State<AgentsDetails> {
         ),
       ),
       body: Container(
-          padding: EdgeInsets.only(left: 20, right: 20),
+          padding: EdgeInsets.only(
+              left: getProportionateScreenWidth(20),
+              right: getProportionateScreenWidth(20)),
           decoration: BoxDecoration(
             image: DecorationImage(
               image: ExactAssetImage('assets/images/pg.png'),
@@ -40,7 +44,7 @@ class _AgentsDetailsState extends State<AgentsDetails> {
           ),
           child: Column(
             children: [
-              SizedBox(height: 40),
+              SizedBox(height: 20),
               Align(
                 alignment: Alignment.topLeft,
                 child: Text("Agents",
@@ -50,10 +54,12 @@ class _AgentsDetailsState extends State<AgentsDetails> {
                       color: Colors.black,
                     )),
               ),
-              SizedBox(height: 40),
+              SizedBox(height: 10),
               Expanded(
                   child: ListView(
-                padding: EdgeInsets.only(left: 20, right: 20),
+                padding: EdgeInsets.only(
+                    left: getProportionateScreenWidth(20),
+                    right: getProportionateScreenWidth(20)),
                 children: [
                   StreamBuilder(
                     stream: usersRef.doc(widget.id).snapshots(),
@@ -97,13 +103,14 @@ class _AgentsDetailsState extends State<AgentsDetails> {
                                               fontWeight: FontWeight.bold,
                                               color: Colors.green,
                                             )),
-                                        width: 60,
+                                        width: getProportionateScreenWidth(60),
                                       ),
                                       Column(
                                         children: [
                                           SizedBox(
                                             height: 80,
-                                            width: 82,
+                                            width:
+                                                getProportionateScreenWidth(80),
                                             child: Stack(
                                               fit: StackFit.expand,
                                               overflow: Overflow.visible,
@@ -217,7 +224,9 @@ class _AgentsDetailsState extends State<AgentsDetails> {
                                                             10),
                                                   ),
                                                   height: 30,
-                                                  width: 95,
+                                                  width:
+                                                      getProportionateScreenWidth(
+                                                          90),
                                                   margin: EdgeInsets.only(
                                                       left: 20, bottom: 10),
                                                   child: Row(
@@ -472,7 +481,7 @@ class _AgentsDetailsState extends State<AgentsDetails> {
                                   SizedBox(
                                     height: 20,
                                   ),
-                                  widget.time != null
+                                  widget.time != null && show
                                       ? Align(
                                           alignment: Alignment.bottomCenter,
                                           child: RaisedGradientButton(
@@ -492,7 +501,25 @@ class _AgentsDetailsState extends State<AgentsDetails> {
                                               ),
                                               width:
                                                   SizeConfig.screenWidth - 150,
-                                              onPressed: () async {}),
+                                              onPressed: () async {
+                                                setState(() {
+                                                  show = false;
+                                                });
+                                                Navigator.of(context,
+                                                        rootNavigator: true)
+                                                    .push(
+                                                  MaterialPageRoute(
+                                                    builder:
+                                                        (BuildContext context) {
+                                                      return Conversation(
+                                                        userId: _user.id,
+                                                        chatId: "newChat",
+                                                        isAgent: false,
+                                                      );
+                                                    },
+                                                  ),
+                                                );
+                                              }),
                                         )
                                       : SizedBox(
                                           height: 0,
@@ -512,9 +539,9 @@ class _AgentsDetailsState extends State<AgentsDetails> {
                 alignment: Alignment.bottomCenter,
                 child: Column(
                   children: [
-                    SizedBox(height: 20),
+                    SizedBox(height: 10),
                     Container(
-                      width: 134,
+                      width: getProportionateScreenWidth(120),
                       height: 5,
                       decoration: BoxDecoration(
                           gradient: LinearGradient(
@@ -529,7 +556,7 @@ class _AgentsDetailsState extends State<AgentsDetails> {
                             ),
                           ]),
                     ),
-                    SizedBox(height: 10),
+                    SizedBox(height: 5),
                   ],
                 ),
               ),

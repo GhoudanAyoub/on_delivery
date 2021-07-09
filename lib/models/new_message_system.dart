@@ -6,9 +6,10 @@ class Message {
   String content;
   String senderUid;
   MessageType type;
+  int stages = 1;
   Timestamp time;
 
-  Message({this.content, this.senderUid, this.type, this.time});
+  Message({this.content, this.senderUid, this.type, this.time, this.stages});
 
   Message.fromJson(Map<String, dynamic> json) {
     content = json['content'];
@@ -19,6 +20,7 @@ class Message {
       type = MessageType.IMAGE;
     }
     time = json['time'];
+    stages = json['stages'];
   }
 
   Map<String, dynamic> toJson() {
@@ -31,6 +33,7 @@ class Message {
       data['type'] = 'image';
     }
     data['time'] = this.time;
+    data['stages'] = this.stages;
     return data;
   }
 }
