@@ -7,6 +7,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_google_places/flutter_google_places.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:google_api_headers/google_api_headers.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:google_maps_webservice/places.dart';
@@ -14,10 +15,11 @@ import 'package:on_delivery/SetUpProfile/UpdateProfile.dart';
 import 'package:on_delivery/components/RaisedGradientButton.dart';
 import 'package:on_delivery/components/custom_dropdown.dart';
 import 'package:on_delivery/components/text_form_builder.dart';
+import 'package:on_delivery/helpers/direction_repo.dart';
 import 'package:on_delivery/helpers/location_provider.dart';
 import 'package:on_delivery/helpers/map_model.dart';
-import 'package:on_delivery/models/AgentLocation.dart';
 import 'package:on_delivery/models/User.dart';
+import 'package:on_delivery/models/direction_model.dart';
 import 'package:on_delivery/models/order.dart';
 import 'package:on_delivery/services/auth_service.dart';
 import 'package:on_delivery/utils/FirebaseService.dart';
@@ -2303,7 +2305,7 @@ class _SearchMapAgentScreenState extends State<SearchMapAgentScreen> {
   double startingLocationLnt, startingLocationLng;
   double arrivedLocationLnt, arrivedLocationLng;
   bool start = true;
-  AgentLocation locationService;
+  UserModel locationService;
   BitmapDescriptor myIcon;
   BitmapDescriptor agentSelected;
   BitmapDescriptor agentNotSelected;
@@ -2314,35 +2316,148 @@ class _SearchMapAgentScreenState extends State<SearchMapAgentScreen> {
   List<DocumentSnapshot> filteredAgents = [];
   List<DocumentSnapshot> filteredAgentsLocation = [];
   String agentLocationId;
+  Directions _info;
+  Marker _origin;
+  Marker _destination;
 
   getAgents() async {
     QuerySnapshot snap = await usersRef.get();
     List<DocumentSnapshot> doc = snap.docs;
     filteredAgents = doc;
     for (DocumentSnapshot d in filteredAgents) {
-      UserModel u = UserModel.fromJson(d.data());
-      if ((u.type.toLowerCase().contains("agent") &&
-              u.isOnline == true &&
-              !u.id.contains(firebaseAuth.currentUser.uid)) ||
-          u.id.contains(firebaseAuth.currentUser.uid)) userList.add(u);
+      UserModel user1 = UserModel.fromJson(d.data());
+      if ((user1.type.toLowerCase().contains("agent") &&
+              user1.isOnline == true ||
+          user1.id.contains(firebaseAuth.currentUser.uid))) {
+        setState(() {
+          customMarkers.add(_createMarker(user1.Lnt, user1.Lng, d.id));
+        });
+        if (!user1.id.contains(firebaseAuth.currentUser.uid))
+          userList.add(user1);
+
+        if (d.id.contains(firebaseAuth.currentUser.uid))
+          setState(() {
+            _origin = Marker(
+              markerId: MarkerId('origin'),
+              infoWindow: const InfoWindow(title: 'Origin'),
+              icon: BitmapDescriptor.defaultMarkerWithHue(
+                  BitmapDescriptor.hueGreen),
+              position: LatLng(user1.Lnt, user1.Lng),
+            );
+            _destination = null;
+            _info = null;
+          });
+        else
+          setState(() {
+            _destination = Marker(
+              markerId: MarkerId('destination'),
+              infoWindow: const InfoWindow(title: 'Destination'),
+              icon: BitmapDescriptor.defaultMarkerWithHue(
+                  BitmapDescriptor.hueBlue),
+              position: LatLng(user1.Lnt, user1.Lng),
+            );
+            getInfoTime();
+          });
+      }
     }
+    if (userList.length == 0)
+      Fluttertoast.showToast(
+          msg: "No Agents Online",
+          toastLength: Toast.LENGTH_SHORT,
+          gravity: ToastGravity.BOTTOM,
+          timeInSecForIosWeb: 1,
+          backgroundColor: Colors.green,
+          textColor: Colors.white,
+          fontSize: 16.0);
   }
 
-  getAgentsLocation() async {
-    QuerySnapshot snap = await userLocationRef.get();
-    List<DocumentSnapshot> doc = snap.docs;
-    filteredAgentsLocation = doc;
-    for (DocumentSnapshot d in filteredAgentsLocation) {
-      AgentLocation user1 = AgentLocation.fromJson(d.data());
-      setState(() {
-        customMarkers.add(_createMarker(user1.Lnt, user1.Lng, d.id));
-      });
-    }
+  getInfoTime() async {
+    final directions = await DirectionsRepository().getDirections(
+        origin: _origin.position, destination: _destination.position);
+    setState(() => _info = directions);
+    print(_info == null ? "calculating ..." : " **${_info.totalDuration}");
+  }
+
+  buildmaps(onCreate) {
+    return StreamBuilder<QuerySnapshot>(
+      stream: usersRef.snapshots(),
+      builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
+        if (snapshot.data != null) {
+          for (DocumentSnapshot d in snapshot.data.docs) {
+            UserModel user1 = UserModel.fromJson(d.data());
+            if ((user1.type.toLowerCase().contains("agent") &&
+                    user1.isOnline == true ||
+                user1.id.contains(firebaseAuth.currentUser.uid))) {
+              customMarkers.add(_createMarker(user1.Lnt, user1.Lng, d.id));
+
+              if (!user1.id.contains(firebaseAuth.currentUser.uid))
+                userList.add(user1);
+
+              if (d.id.contains(firebaseAuth.currentUser.uid)) {
+                _origin = Marker(
+                  markerId: MarkerId('origin'),
+                  infoWindow: const InfoWindow(title: 'Origin'),
+                  icon: BitmapDescriptor.defaultMarkerWithHue(
+                      BitmapDescriptor.hueGreen),
+                  position: LatLng(user1.Lnt, user1.Lng),
+                );
+                _destination = null;
+                _info = null;
+              } else {
+                _destination = Marker(
+                  markerId: MarkerId('destination'),
+                  infoWindow: const InfoWindow(title: 'Destination'),
+                  icon: BitmapDescriptor.defaultMarkerWithHue(
+                      BitmapDescriptor.hueBlue),
+                  position: LatLng(user1.Lnt, user1.Lng),
+                );
+                getInfoTime();
+              }
+            }
+          }
+          return GoogleMap(
+            initialCameraPosition:
+                CameraPosition(target: currentLocation, zoom: 14),
+            zoomControlsEnabled: false,
+            minMaxZoomPreference: MinMaxZoomPreference(6.5, 20.8),
+            myLocationEnabled: false,
+            myLocationButtonEnabled: false,
+            mapType: MapType.normal,
+            markers: customMarkers,
+            mapToolbarEnabled: true,
+            onCameraMove: (CameraPosition positon) {
+              locationData.onCameraMove(positon);
+            },
+            onMapCreated: onCreate,
+          );
+        }
+        return GoogleMap(
+          initialCameraPosition:
+              CameraPosition(target: currentLocation, zoom: 14),
+          zoomControlsEnabled: false,
+          minMaxZoomPreference: MinMaxZoomPreference(6.5, 20.8),
+          myLocationEnabled: false,
+          myLocationButtonEnabled: false,
+          mapType: MapType.normal,
+          markers: customMarkers,
+          mapToolbarEnabled: true,
+          onCameraMove: (CameraPosition positon) {
+            locationData.onCameraMove(positon);
+          },
+          onMapCreated: onCreate,
+        );
+      },
+    );
+  }
+
+  @override
+  void dispose() {
+    _mapController.dispose();
+    super.dispose();
   }
 
   @override
   void initState() {
-    getAgentsLocation();
     getAgents();
     super.initState();
   }
@@ -2398,10 +2513,11 @@ class _SearchMapAgentScreenState extends State<SearchMapAgentScreen> {
         });
   }
 
+  bool clicked = false;
   @override
   Widget build(BuildContext context) {
     locationData = Provider.of<LocationProvider>(context);
-    locationService = Provider.of<AgentLocation>(context);
+    locationService = Provider.of<UserModel>(context);
     myModel = Provider.of<MyModel>(context);
     setState(() {
       currentLocation = LatLng(locationService.Lnt, locationService.Lng);
@@ -2413,7 +2529,7 @@ class _SearchMapAgentScreenState extends State<SearchMapAgentScreen> {
         initPosition = CameraPosition(
             target: LatLng(locationService.Lnt, locationService.Lng));
       });
-      //notificationInto(context);
+      notificationInto(context);
     }
 
     return Scaffold(
@@ -2423,20 +2539,75 @@ class _SearchMapAgentScreenState extends State<SearchMapAgentScreen> {
           children: [
             Align(
               alignment: Alignment.topCenter,
-              child: GoogleMap(
-                initialCameraPosition:
-                    CameraPosition(target: currentLocation, zoom: 14),
-                zoomControlsEnabled: false,
-                minMaxZoomPreference: MinMaxZoomPreference(6.5, 15.8),
-                myLocationEnabled: false,
-                myLocationButtonEnabled: false,
-                mapType: MapType.normal,
-                markers: customMarkers,
-                mapToolbarEnabled: true,
-                onCameraMove: (CameraPosition positon) {
-                  locationData.onCameraMove(positon);
+              child: StreamBuilder<QuerySnapshot>(
+                stream: usersRef.snapshots(),
+                builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
+                  if (snapshot.data != null) {
+                    for (DocumentSnapshot d in snapshot.data.docs) {
+                      UserModel user1 = UserModel.fromJson(d.data());
+                      if ((user1.type.toLowerCase().contains("agent") &&
+                              user1.isOnline == true ||
+                          user1.id.contains(firebaseAuth.currentUser.uid))) {
+                        customMarkers
+                            .add(_createMarker(user1.Lnt, user1.Lng, d.id));
+
+                        if (!user1.id.contains(firebaseAuth.currentUser.uid))
+                          userList.add(user1);
+
+                        if (d.id.contains(firebaseAuth.currentUser.uid)) {
+                          _origin = Marker(
+                            markerId: MarkerId('origin'),
+                            infoWindow: const InfoWindow(title: 'Origin'),
+                            icon: BitmapDescriptor.defaultMarkerWithHue(
+                                BitmapDescriptor.hueGreen),
+                            position: LatLng(user1.Lnt, user1.Lng),
+                          );
+                          _destination = null;
+                          _info = null;
+                        } else {
+                          _destination = Marker(
+                            markerId: MarkerId('destination'),
+                            infoWindow: const InfoWindow(title: 'Destination'),
+                            icon: BitmapDescriptor.defaultMarkerWithHue(
+                                BitmapDescriptor.hueBlue),
+                            position: LatLng(user1.Lnt, user1.Lng),
+                          );
+                          getInfoTime();
+                        }
+                      }
+                    }
+                    return GoogleMap(
+                      initialCameraPosition:
+                          CameraPosition(target: currentLocation, zoom: 14),
+                      zoomControlsEnabled: false,
+                      minMaxZoomPreference: MinMaxZoomPreference(6.5, 20.8),
+                      myLocationEnabled: false,
+                      myLocationButtonEnabled: false,
+                      mapType: MapType.normal,
+                      markers: customMarkers,
+                      mapToolbarEnabled: true,
+                      onCameraMove: (CameraPosition positon) {
+                        locationData.onCameraMove(positon);
+                      },
+                      onMapCreated: onCreate,
+                    );
+                  }
+                  return GoogleMap(
+                    initialCameraPosition:
+                        CameraPosition(target: currentLocation, zoom: 14),
+                    zoomControlsEnabled: false,
+                    minMaxZoomPreference: MinMaxZoomPreference(6.5, 20.8),
+                    myLocationEnabled: false,
+                    myLocationButtonEnabled: false,
+                    mapType: MapType.normal,
+                    markers: customMarkers,
+                    mapToolbarEnabled: true,
+                    onCameraMove: (CameraPosition positon) {
+                      locationData.onCameraMove(positon);
+                    },
+                    onMapCreated: onCreate,
+                  );
                 },
-                onMapCreated: onCreate,
               ),
             ),
             Align(
@@ -2652,14 +2823,16 @@ class _SearchMapAgentScreenState extends State<SearchMapAgentScreen> {
                                                 BorderRadius.circular(10),
                                           ),
                                           height: 30,
-                                          width: 95,
                                           margin: EdgeInsets.only(
                                               left: 20, bottom: 10),
                                           child: Row(
                                             mainAxisAlignment:
                                                 MainAxisAlignment.spaceAround,
                                             children: [
-                                              Text("calculating ...",
+                                              Text(
+                                                  _info == null
+                                                      ? "calculating ..."
+                                                      : " ${_info.totalDuration}",
                                                   style: TextStyle(
                                                     fontSize: 12,
                                                     fontWeight: FontWeight.w600,
@@ -2680,7 +2853,9 @@ class _SearchMapAgentScreenState extends State<SearchMapAgentScreen> {
                               MaterialPageRoute(
                                   builder: (context) => AgentsDetails(
                                         id: userList[index].id,
-                                        time: "qsd",
+                                        time: _info == null
+                                            ? "calculating ..."
+                                            : " ${_info.totalDuration}",
                                       )),
                             );
                           },
@@ -2830,29 +3005,37 @@ class _SearchMapAgentScreenState extends State<SearchMapAgentScreen> {
                 );
               },
             ),
-            Align(
-                alignment: Alignment.bottomCenter,
-                child: GestureDetector(
-                  child: Container(
-                    margin: EdgeInsets.only(bottom: 25),
-                    child: Text("Show All",
-                        style: TextStyle(
-                          decoration: TextDecoration.underline,
-                          fontSize: 14,
-                          letterSpacing: 1,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.black,
-                        )),
+            userList.length != 0
+                ? Align(
+                    alignment: Alignment.bottomCenter,
+                    child: GestureDetector(
+                      child: Container(
+                        margin: EdgeInsets.only(bottom: 25),
+                        child: Text("Show All",
+                            style: TextStyle(
+                              decoration: TextDecoration.underline,
+                              fontSize: 14,
+                              letterSpacing: 1,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.black,
+                            )),
+                      ),
+                      onTap: () {
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => AllAgent(
+                                      userList: userList,
+                                      time: _info == null
+                                          ? "calculating ..."
+                                          : " ${_info.totalDuration}",
+                                    )));
+                      },
+                    ))
+                : SizedBox(
+                    height: 0,
+                    width: 0,
                   ),
-                  onTap: () {
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => AllAgent(
-                                  userList: userList,
-                                )));
-                  },
-                )),
             Align(
               alignment: Alignment.bottomCenter,
               child: Container(
@@ -2884,9 +3067,14 @@ class _SearchMapAgentScreenState extends State<SearchMapAgentScreen> {
       markerId: MarkerId("Id"),
       position: LatLng(lat, lon),
       draggable: false,
-      icon: BitmapDescriptor.fromAsset(id == firebaseAuth.currentUser.uid
-          ? "assets/images/mylocationmarker.png"
-          : "assets/images/agentnotselected.png"),
+      onTap: () {
+        setState(() {
+          clicked = true;
+        });
+      },
+      icon: id == firebaseAuth.currentUser.uid
+          ? BitmapDescriptor.fromAsset("assets/images/mylocationmarker.png")
+          : BitmapDescriptor.fromAsset("assets/images/agentselected.png"),
     );
   }
 
@@ -2915,8 +3103,9 @@ class _SearchMapAgentScreenState extends State<SearchMapAgentScreen> {
 class AllAgent extends StatefulWidget {
   static String routeName = '/AllAgent';
   final List<UserModel> userList;
+  final String time;
 
-  const AllAgent({Key key, this.userList}) : super(key: key);
+  const AllAgent({Key key, this.userList, this.time}) : super(key: key);
   @override
   _AllAgentState createState() => _AllAgentState();
 }
@@ -3181,7 +3370,7 @@ class _AllAgentState extends State<AllAgent> {
                                             mainAxisAlignment:
                                                 MainAxisAlignment.spaceAround,
                                             children: [
-                                              Text("Details",
+                                              Text(" ${widget.time}",
                                                   style: TextStyle(
                                                     fontSize: 12,
                                                     fontWeight: FontWeight.w600,
@@ -3197,15 +3386,12 @@ class _AllAgentState extends State<AllAgent> {
                                 ),
                               )),
                           onTap: () {
-                            // Within the `FirstRoute` widget
-                            /*   BlocProvider.of<NavigationBloc>(context)
-                      .add(NavigationEvents.AgentsDetailsPageClickedEvent);*/
                             Navigator.push(
                               context,
                               MaterialPageRoute(
                                   builder: (context) => AgentsDetails(
                                         id: widget.userList[index].id,
-                                        time: "dfs",
+                                        time: widget.time,
                                       )),
                             );
                           },

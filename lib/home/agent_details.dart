@@ -224,30 +224,21 @@ class _AgentsDetailsState extends State<AgentsDetails> {
                                                             10),
                                                   ),
                                                   height: 30,
-                                                  width:
-                                                      getProportionateScreenWidth(
-                                                          90),
+                                                  padding: EdgeInsets.all(8),
                                                   margin: EdgeInsets.only(
                                                       left: 20, bottom: 10),
-                                                  child: Row(
-                                                    mainAxisAlignment:
-                                                        MainAxisAlignment
-                                                            .spaceAround,
-                                                    children: [
-                                                      Text(
-                                                          "${widget.time}min away",
-                                                          style: TextStyle(
-                                                            fontSize: 12,
-                                                            fontWeight:
-                                                                FontWeight.w500,
-                                                            color:
-                                                                Color.fromRGBO(
-                                                                    238,
-                                                                    71,
-                                                                    0,
-                                                                    1),
-                                                          )),
-                                                    ],
+                                                  child: Center(
+                                                    child: Text(
+                                                        "${widget.time} away",
+                                                        overflow: TextOverflow
+                                                            .ellipsis,
+                                                        style: TextStyle(
+                                                          fontSize: 12,
+                                                          fontWeight:
+                                                              FontWeight.w500,
+                                                          color: Color.fromRGBO(
+                                                              238, 71, 0, 1),
+                                                        )),
                                                   ),
                                                 )
                                               : SizedBox(

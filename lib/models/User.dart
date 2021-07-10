@@ -34,6 +34,9 @@ class UserModel {
   Timestamp lastSeen;
   bool isOnline;
 
+  double Lnt;
+  double Lng;
+
   UserModel(
       {this.id,
       this.email,
@@ -61,7 +64,9 @@ class UserModel {
       this.bankName,
       this.signedUpAt,
       this.lastSeen,
-      this.isOnline});
+      this.isOnline,
+      this.Lnt,
+      this.Lng});
 
   UserModel.fromJson(Map<String, dynamic> json) {
     id = json['id'];
@@ -94,6 +99,8 @@ class UserModel {
     signedUpAt = json['signedUpAt'];
     lastSeen = json['lastSeen'];
     isOnline = json['isOnline'];
+    Lnt = json['Lnt'];
+    Lng = json['Lng'];
   }
 
   Map<String, dynamic> toJson() {

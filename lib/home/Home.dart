@@ -6,7 +6,6 @@ import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
 import 'package:on_delivery/block/navigation_block/navigation_block.dart';
 import 'package:on_delivery/home/search_screen.dart';
-import 'package:on_delivery/models/AgentLocation.dart';
 import 'package:on_delivery/models/User.dart';
 import 'package:on_delivery/models/category.dart';
 import 'package:on_delivery/models/favorite.dart';
@@ -38,7 +37,7 @@ class _HomeState extends State<Home> {
   bool loadingFavoriteAgents = true;
   bool fav = false;
   TextEditingController _searchedController = TextEditingController();
-  AgentLocation locationService;
+  UserModel locationService;
   getFavoritesAgents() async {
     QuerySnapshot snap = await favoriteRef.get();
     List<DocumentSnapshot> doc = snap.docs;
@@ -111,212 +110,162 @@ class _HomeState extends State<Home> {
 
   @override
   Widget build(BuildContext context) {
-    locationService = Provider.of<AgentLocation>(context);
+    locationService = Provider.of<UserModel>(context);
     return SafeArea(
         child: Scaffold(
-            body: Container(
-      decoration: BoxDecoration(
-        image: DecorationImage(
-          image: ExactAssetImage('assets/images/pg.png'),
-          fit: BoxFit.cover,
+      body: Container(
+        decoration: BoxDecoration(
+          image: DecorationImage(
+            image: ExactAssetImage('assets/images/pg.png'),
+            fit: BoxFit.cover,
+          ),
         ),
-      ),
-      child: Container(
-        padding: EdgeInsets.fromLTRB(24, 24, 24, 10),
-        child: Column(
-          children: [
-            SizedBox(height: getProportionateScreenHeight(20)),
-            Align(
-              alignment: Alignment.topCenter,
-              child: StreamBuilder(
-                stream: usersRef.doc(firebaseAuth.currentUser.uid).snapshots(),
-                builder: (context, AsyncSnapshot<DocumentSnapshot> snapshot) {
-                  if (snapshot.hasData) {
-                    user1 = UserModel.fromJson(snapshot.data.data());
-                    return Align(
-                      alignment: Alignment.center,
-                      child: Row(
-                        children: [
-                          Container(
-                            decoration: BoxDecoration(
-                              color: Colors.white,
-                              shape: BoxShape.circle,
-                              border: Border.all(
-                                color: Colors.transparent,
+        child: Container(
+          padding: EdgeInsets.fromLTRB(24, 24, 24, 10),
+          child: Column(
+            children: [
+              SizedBox(height: getProportionateScreenHeight(20)),
+              Align(
+                alignment: Alignment.topCenter,
+                child: StreamBuilder(
+                  stream:
+                      usersRef.doc(firebaseAuth.currentUser.uid).snapshots(),
+                  builder: (context, AsyncSnapshot<DocumentSnapshot> snapshot) {
+                    if (snapshot.hasData) {
+                      user1 = UserModel.fromJson(snapshot.data.data());
+                      return Align(
+                        alignment: Alignment.center,
+                        child: Row(
+                          children: [
+                            Container(
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                shape: BoxShape.circle,
+                                border: Border.all(
+                                  color: Colors.transparent,
+                                ),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.grey.withOpacity(0.3),
+                                    offset: new Offset(0.0, 0.0),
+                                    blurRadius: 2.0,
+                                    spreadRadius: 0.0,
+                                  ),
+                                ],
                               ),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: Colors.grey.withOpacity(0.3),
-                                  offset: new Offset(0.0, 0.0),
-                                  blurRadius: 2.0,
-                                  spreadRadius: 0.0,
+                              child: Padding(
+                                padding: const EdgeInsets.all(1.0),
+                                child: CircleAvatar(
+                                  backgroundColor:
+                                      Color.fromRGBO(239, 240, 246, 1),
+                                  radius: 40.0,
+                                  backgroundImage: NetworkImage(
+                                      user1.photoUrl != null
+                                          ? user1.photoUrl
+                                          : FirebaseService.getProfileImage()),
+                                ),
+                              ),
+                              height: getProportionateScreenHeight(80),
+                            ),
+                            SizedBox(
+                              width: getProportionateScreenWidth(10),
+                            ),
+                            Column(
+                              children: [
+                                Row(
+                                  children: [
+                                    Text(
+                                        "${user1.firstName} ${user1.lastname.toUpperCase()}",
+                                        style: TextStyle(
+                                          fontSize: 12,
+                                          letterSpacing: 1,
+                                          fontWeight: FontWeight.bold,
+                                          color: Colors.black,
+                                        )),
+                                    SizedBox(
+                                      width: 5,
+                                    ),
+                                    Text("${user1.city}",
+                                        style: TextStyle(
+                                          fontSize: 10,
+                                          letterSpacing: 1,
+                                          fontWeight: FontWeight.normal,
+                                          color: Colors.grey,
+                                        ))
+                                  ],
+                                ),
+                                SizedBox(
+                                  height: 3,
+                                ),
+                                Row(
+                                  children: [
+                                    Text("Company :",
+                                        style: TextStyle(
+                                          fontSize: 10,
+                                          letterSpacing: 1,
+                                          fontWeight: FontWeight.normal,
+                                          color: Colors.black,
+                                        )),
+                                    SizedBox(
+                                      width: 5,
+                                    ),
+                                    Text("${user1.businessName}",
+                                        style: TextStyle(
+                                          fontSize: 10,
+                                          letterSpacing: 1,
+                                          fontWeight: FontWeight.normal,
+                                          color: Colors.grey,
+                                        ))
+                                  ],
+                                ),
+                                SizedBox(
+                                  height: 3,
+                                ),
+                                Row(
+                                  children: [
+                                    Text("Tel :",
+                                        style: TextStyle(
+                                          fontSize: 10,
+                                          letterSpacing: 1,
+                                          fontWeight: FontWeight.normal,
+                                          color: Colors.black,
+                                        )),
+                                    SizedBox(
+                                      width: 5,
+                                    ),
+                                    Text("${user1.phone}",
+                                        style: TextStyle(
+                                          fontSize: 10,
+                                          letterSpacing: 1,
+                                          fontWeight: FontWeight.normal,
+                                          color: Colors.grey,
+                                        ))
+                                  ],
                                 ),
                               ],
-                            ),
-                            child: Padding(
-                              padding: const EdgeInsets.all(1.0),
-                              child: CircleAvatar(
-                                backgroundColor:
-                                    Color.fromRGBO(239, 240, 246, 1),
-                                radius: 40.0,
-                                backgroundImage: NetworkImage(
-                                    user1.photoUrl != null
-                                        ? user1.photoUrl
-                                        : FirebaseService.getProfileImage()),
-                              ),
-                            ),
-                            height: getProportionateScreenHeight(80),
-                          ),
-                          SizedBox(
-                            width: getProportionateScreenWidth(10),
-                          ),
-                          Column(
-                            children: [
-                              Row(
-                                children: [
-                                  Text(
-                                      "${user1.firstName} ${user1.lastname.toUpperCase()}",
-                                      style: TextStyle(
-                                        fontSize: 12,
-                                        letterSpacing: 1,
-                                        fontWeight: FontWeight.bold,
-                                        color: Colors.black,
-                                      )),
-                                  SizedBox(
-                                    width: 5,
-                                  ),
-                                  Text("${user1.city}",
-                                      style: TextStyle(
-                                        fontSize: 10,
-                                        letterSpacing: 1,
-                                        fontWeight: FontWeight.normal,
-                                        color: Colors.grey,
-                                      ))
-                                ],
-                              ),
-                              SizedBox(
-                                height: 3,
-                              ),
-                              Row(
-                                children: [
-                                  Text("Company :",
-                                      style: TextStyle(
-                                        fontSize: 10,
-                                        letterSpacing: 1,
-                                        fontWeight: FontWeight.normal,
-                                        color: Colors.black,
-                                      )),
-                                  SizedBox(
-                                    width: 5,
-                                  ),
-                                  Text("${user1.businessName}",
-                                      style: TextStyle(
-                                        fontSize: 10,
-                                        letterSpacing: 1,
-                                        fontWeight: FontWeight.normal,
-                                        color: Colors.grey,
-                                      ))
-                                ],
-                              ),
-                              SizedBox(
-                                height: 3,
-                              ),
-                              Row(
-                                children: [
-                                  Text("Tel :",
-                                      style: TextStyle(
-                                        fontSize: 10,
-                                        letterSpacing: 1,
-                                        fontWeight: FontWeight.normal,
-                                        color: Colors.black,
-                                      )),
-                                  SizedBox(
-                                    width: 5,
-                                  ),
-                                  Text("${user1.phone}",
-                                      style: TextStyle(
-                                        fontSize: 10,
-                                        letterSpacing: 1,
-                                        fontWeight: FontWeight.normal,
-                                        color: Colors.grey,
-                                      ))
-                                ],
-                              ),
-                            ],
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                          )
-                        ],
-                      ),
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                            )
+                          ],
+                        ),
+                      );
+                    }
+                    return Container(
+                      height: 0,
                     );
-                  }
-                  return Container(
-                    height: 0,
-                  );
-                },
+                  },
+                ),
               ),
-            ),
-            SizedBox(
-              height: 20,
-            ),
-            Container(
-              height: 60.0,
-              decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    colors: <Color>[
-                      Color.fromRGBO(82, 238, 79, 1),
-                      Color.fromRGBO(5, 151, 0, 1)
-                    ],
-                  ),
-                  borderRadius: BorderRadius.circular(10.0),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.grey[500],
-                      offset: Offset(0.0, 1.5),
-                      blurRadius: 1.5,
-                    ),
-                  ]),
-              child: Material(
-                color: Colors.transparent,
-                child: InkWell(
-                    onTap: () async {
-                      Navigator.pushNamed(context, SearchScreen.routeName);
-                    },
-                    child: Center(
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          Image.asset(
-                            "assets/images/looking for agent white.png",
-                            height: 40,
-                          ),
-                          SizedBox(
-                            width: 20,
-                          ),
-                          Text(
-                            'Looking For agent',
-                            style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.w600,
-                              letterSpacing: 1,
-                              color: Colors.white,
-                            ),
-                          ),
-                        ],
-                      ),
-                    )),
+              SizedBox(
+                height: 20,
               ),
-            ),
-            SizedBox(height: 10),
-            homeAgent(),
-            Align(
-              alignment: Alignment.bottomCenter,
-              child: Container(
-                width: 134,
-                height: 5,
+              Container(
+                height: 60.0,
                 decoration: BoxDecoration(
                     gradient: LinearGradient(
-                      colors: <Color>[Colors.grey[300], Colors.grey[300]],
+                      colors: <Color>[
+                        Color.fromRGBO(82, 238, 79, 1),
+                        Color.fromRGBO(5, 151, 0, 1)
+                      ],
                     ),
                     borderRadius: BorderRadius.circular(10.0),
                     boxShadow: [
@@ -326,12 +275,77 @@ class _HomeState extends State<Home> {
                         blurRadius: 1.5,
                       ),
                     ]),
+                child: Material(
+                  color: Colors.transparent,
+                  child: InkWell(
+                      onTap: () async {
+                        Navigator.pushNamed(context, SearchScreen.routeName);
+                      },
+                      child: Center(
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            Image.asset(
+                              "assets/images/looking for agent white.png",
+                              height: 40,
+                            ),
+                            SizedBox(
+                              width: 20,
+                            ),
+                            Text(
+                              'Looking For agent',
+                              style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w600,
+                                letterSpacing: 1,
+                                color: Colors.white,
+                              ),
+                            ),
+                          ],
+                        ),
+                      )),
+                ),
               ),
-            ),
-          ],
+              SizedBox(height: 10),
+              homeAgent(),
+              Align(
+                alignment: Alignment.bottomCenter,
+                child: Container(
+                  width: 134,
+                  height: 5,
+                  decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        colors: <Color>[Colors.grey[300], Colors.grey[300]],
+                      ),
+                      borderRadius: BorderRadius.circular(10.0),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.grey[500],
+                          offset: Offset(0.0, 1.5),
+                          blurRadius: 1.5,
+                        ),
+                      ]),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
-    )));
+      floatingActionButton: Container(
+        padding: EdgeInsets.fromLTRB(24, 24, 24, 10),
+        child: FloatingActionButton(
+          backgroundColor: Colors.green,
+          onPressed: () {},
+          child: Expanded(
+            child: Image.asset(
+              'assets/images/chatbutton.png',
+              fit: BoxFit.fill,
+            ),
+          ),
+        ),
+      ),
+    ));
   }
 
   homeAgent() {

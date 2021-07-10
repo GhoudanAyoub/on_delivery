@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:flutter/cupertino.dart';
 import 'package:geocoder/geocoder.dart';
 import 'package:location/location.dart';
-import 'package:on_delivery/models/AgentLocation.dart';
+import 'package:on_delivery/models/User.dart';
 import 'package:on_delivery/utils/firebase.dart';
 
 class LocationService with ChangeNotifier {
@@ -17,9 +17,9 @@ class LocationService with ChangeNotifier {
   double lng;
   Location location = new Location();
 
-  AgentLocation agentLocation;
-  StreamController<AgentLocation> _streamController =
-      StreamController<AgentLocation>.broadcast();
+  UserModel agentLocation;
+  StreamController<UserModel> _streamController =
+      StreamController<UserModel>.broadcast();
 
   LocationService() {
     location.requestPermission().then((value) => {
@@ -28,7 +28,7 @@ class LocationService with ChangeNotifier {
               location.onLocationChanged.listen((event) {
                 if (event != null) {
                   _streamController.add(
-                      AgentLocation(Lnt: event.latitude, Lng: event.longitude));
+                      UserModel(Lnt: event.latitude, Lng: event.longitude));
                   updateLocationToFirebase(event.latitude, event.longitude);
                 }
               })
@@ -46,31 +46,30 @@ class LocationService with ChangeNotifier {
 
   updateLocationToFirebase(latitude, longitude) async {
     if (firebaseAuth.currentUser != null) {
-      final snapShot =
-          await userLocationRef.doc(firebaseAuth.currentUser.uid).get();
+      final snapShot = await usersRef.doc(firebaseAuth.currentUser.uid).get();
       if (snapShot.exists) {
-        userLocationRef.doc(firebaseAuth.currentUser.uid).update({
+        usersRef.doc(firebaseAuth.currentUser.uid).update({
           'Lnt': latitude,
           'Lng': longitude,
         });
       } else
-        userLocationRef.doc(firebaseAuth.currentUser.uid).set({
+        usersRef.doc(firebaseAuth.currentUser.uid).set({
           'Lnt': latitude,
           'Lng': longitude,
         });
     }
   }
 
-  Stream<AgentLocation> get locationStream => _streamController.stream;
+  Stream<UserModel> get locationStream => _streamController.stream;
 
-  Future<AgentLocation> getCurrentPosition() async {
+  Future<UserModel> getCurrentPosition() async {
     var position = await location.getLocation();
 
     if (position != null) {
       this.lnt = position.latitude;
       this.lng = position.longitude;
       this.permissionGranted = true;
-      agentLocation = AgentLocation(Lng: lng, Lnt: lnt);
+      agentLocation = UserModel(Lng: lng, Lnt: lnt);
       notifyListeners();
     } else {
       debugPrint("Permission not allowed");

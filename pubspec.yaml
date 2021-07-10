@@ -10,6 +10,7 @@ dependencies:
   flutter:
     sdk: flutter
 
+  flutter_polyline_points:
   lottie:
   firebase_messaging:
   flutter_local_notifications:
