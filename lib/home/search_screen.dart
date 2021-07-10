@@ -1962,9 +1962,9 @@ class _SearchMapTripScreenState extends State<SearchMapTripScreen> {
       currentLocation = LatLng(locationData.lnt, locationData.lng);
     });
     void onCreate(GoogleMapController controller) {
-      setState(() async {
-        _controller.complete(controller);
-        _mapController = controller;
+      _controller.complete(controller);
+      _mapController = controller;
+      setState(() {
         initPosition =
             CameraPosition(target: LatLng(locationData.lnt, locationData.lng));
       });
@@ -2523,9 +2523,9 @@ class _SearchMapAgentScreenState extends State<SearchMapAgentScreen> {
       currentLocation = LatLng(locationService.Lnt, locationService.Lng);
     });
     void onCreate(GoogleMapController controller) {
-      setState(() async {
-        _controller.complete(controller);
-        _mapController = controller;
+      _controller.complete(controller);
+      _mapController = controller;
+      setState(() {
         initPosition = CameraPosition(
             target: LatLng(locationService.Lnt, locationService.Lng));
       });

@@ -3789,9 +3789,9 @@ class _MapScreenState extends State<MapScreen> {
       currentLocation = LatLng(locationData.lnt, locationData.lng);
     });
     void onCreate(GoogleMapController controller) {
-      setState(() async {
-        _controller.complete(controller);
-        _mapController = controller;
+      _controller.complete(controller);
+      _mapController = controller;
+      setState(() {
         initPosition =
             CameraPosition(target: LatLng(locationData.lnt, locationData.lng));
       });
@@ -4038,9 +4038,9 @@ class _MapTripScreenState extends State<MapTripScreen> {
       currentLocation = LatLng(locationData.lnt, locationData.lng);
     });
     void onCreate(GoogleMapController controller) {
-      setState(() async {
-        _controller.complete(controller);
-        _mapController = controller;
+      _controller.complete(controller);
+      _mapController = controller;
+      setState(() {
         initPosition =
             CameraPosition(target: LatLng(locationData.lnt, locationData.lng));
       });
