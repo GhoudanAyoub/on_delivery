@@ -729,9 +729,6 @@ class _HomeState extends State<Home> {
                       ),
                     )),
                 onTap: () {
-                  // Within the `FirstRoute` widget
-                  /*   BlocProvider.of<NavigationBloc>(context)
-                      .add(NavigationEvents.AgentsDetailsPageClickedEvent);*/
                   Navigator.push(
                     context,
                     MaterialPageRoute(
