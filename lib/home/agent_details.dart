@@ -7,6 +7,7 @@ import 'package:on_delivery/components/RaisedGradientButton.dart';
 import 'package:on_delivery/models/User.dart';
 import 'package:on_delivery/utils/FirebaseService.dart';
 import 'package:on_delivery/utils/SizeConfig.dart';
+import 'package:on_delivery/utils/constants.dart';
 import 'package:on_delivery/utils/firebase.dart';
 
 class AgentsDetails extends StatefulWidget with NavigationStates {
@@ -101,7 +102,8 @@ class _AgentsDetailsState extends State<AgentsDetails> {
                                                   TextDecoration.underline,
                                               letterSpacing: 1,
                                               fontWeight: FontWeight.bold,
-                                              color: Colors.green,
+                                              foreground: Paint()
+                                                ..shader = greenLinearGradient,
                                             )),
                                         width: getProportionateScreenWidth(60),
                                       ),
@@ -236,8 +238,9 @@ class _AgentsDetailsState extends State<AgentsDetails> {
                                                           fontSize: 12,
                                                           fontWeight:
                                                               FontWeight.w500,
-                                                          color: Color.fromRGBO(
-                                                              238, 71, 0, 1),
+                                                          foreground: Paint()
+                                                            ..shader =
+                                                                orangeLinearGradient,
                                                         )),
                                                   ),
                                                 )

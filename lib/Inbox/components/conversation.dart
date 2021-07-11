@@ -9,6 +9,7 @@ import 'package:on_delivery/models/User.dart';
 import 'package:on_delivery/models/enum/message_type.dart';
 import 'package:on_delivery/models/new_message_system.dart';
 import 'package:on_delivery/utils/FirebaseService.dart';
+import 'package:on_delivery/utils/SizeConfig.dart';
 import 'package:on_delivery/utils/constants.dart';
 import 'package:on_delivery/utils/firebase.dart';
 import 'package:on_delivery/viewModel/user_view_model.dart';
@@ -68,6 +69,65 @@ class _ConversationState extends State<Conversation> {
         .setUserTyping(widget.chatId, user, typing);
   }
 
+  notificationInto() {
+    return showDialog(
+        context: context,
+        builder: (context) {
+          return SimpleDialog(
+            contentPadding: EdgeInsets.only(left: 30, right: 30, bottom: 20),
+            backgroundColor: Colors.white,
+            shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(5.0)),
+            children: [
+              Container(
+                padding:
+                    EdgeInsets.only(left: 10, right: 10, bottom: 20, top: 40),
+                width: 150,
+                child: Center(
+                  child: Column(
+                    children: [
+                      Image.asset("assets/images/informative popups icon.png"),
+                      SizedBox(
+                        height: 5,
+                      ),
+                      Text(
+                        'You can’t write real time message to the agent until he accepts your offer and you provide the details of delivery that he asks',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          fontSize: 14,
+                          letterSpacing: 1,
+                          fontFamily: "Poppins",
+                          color: Colors.grey[600],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              SizedBox(
+                height: 20,
+              ),
+              RaisedGradientButton(
+                  child: Text(
+                    'Close',
+                    style: TextStyle(
+                      fontSize: 16,
+                      color: Colors.grey[600],
+                    ),
+                  ),
+                  border: true,
+                  gradient: LinearGradient(
+                    colors: <Color>[Colors.white, Colors.white],
+                  ),
+                  width: SizeConfig.screenWidth - 150,
+                  onPressed: () async {
+                    Navigator.pop(context);
+                  })
+            ],
+          );
+        });
+  }
+
   @override
   Widget build(BuildContext context) {
     UserViewModel viewModel = Provider.of<UserViewModel>(context);
@@ -122,8 +182,12 @@ class _ConversationState extends State<Conversation> {
                                     viewModel.setReadCount(
                                         widget.chatId, user, messages.length);
                                   }
-                                  if (messages.length == 0 && stages == 1)
+                                  if (messages.length == 0 && stages == 1) {
                                     sendFirstMessageBot();
+                                    Timer(Duration(milliseconds: 1), () {
+                                      notificationInto();
+                                    });
+                                  }
                                   return ListView.builder(
                                     controller: scrollController,
                                     padding: EdgeInsets.symmetric(
@@ -136,12 +200,6 @@ class _ConversationState extends State<Conversation> {
                                           messages.reversed
                                               .toList()[index]
                                               .data());
-
-                                      /*Timer(Duration(milliseconds: 1), () {
-                                        setState(() {
-                                          stages = message.stages;
-                                        });
-                                      });*/
                                       return ChatBubble(
                                           message: '${message.content}',
                                           time: message?.time,

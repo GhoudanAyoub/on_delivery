@@ -22,6 +22,7 @@ import 'package:on_delivery/models/User.dart';
 import 'package:on_delivery/services/auth_service.dart';
 import 'package:on_delivery/utils/FirebaseService.dart';
 import 'package:on_delivery/utils/SizeConfig.dart';
+import 'package:on_delivery/utils/constants.dart';
 import 'package:on_delivery/utils/firebase.dart';
 import 'package:on_delivery/utils/validation.dart';
 import 'package:pinput/pin_put/pin_put.dart';
@@ -1273,7 +1274,8 @@ class _UpdateProfilesState extends State<UpdateProfiles> {
                                         fontSize: 14,
                                         letterSpacing: 1,
                                         fontWeight: FontWeight.normal,
-                                        color: Color.fromRGBO(5, 151, 0, 1),
+                                        foreground: Paint()
+                                          ..shader = greenLinearGradient,
                                       )),
                                 ],
                               ),
@@ -3519,6 +3521,8 @@ class _UpdateProfilesState extends State<UpdateProfiles> {
                                         fontWeight: FontWeight.bold,
                                         decoration: TextDecoration.underline,
                                         letterSpacing: 1,
+                                        foreground: Paint()
+                                          ..shader = greenLinearGradient,
                                         color: Color.fromRGBO(82, 238, 79, 1)),
                                   ),
                                 ),

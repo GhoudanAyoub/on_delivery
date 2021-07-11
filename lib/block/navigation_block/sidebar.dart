@@ -4,11 +4,11 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:on_delivery/SetUpProfile/ChooseSide.dart';
 import 'package:on_delivery/SignIn/sign_in_screen.dart';
 import 'package:on_delivery/block/navigation_block/navigation_block.dart';
 import 'package:on_delivery/components/RaisedGradientButton.dart';
 import 'package:on_delivery/components/text_form_builder.dart';
+import 'package:on_delivery/home/SetUpProfile/ChooseSide.dart';
 import 'package:on_delivery/models/User.dart';
 import 'package:on_delivery/utils/FirebaseService.dart';
 import 'package:on_delivery/utils/SizeConfig.dart';
@@ -137,17 +137,6 @@ class _SideBarState extends State<SideBar>
                               onIconPressed();
                               BlocProvider.of<NavigationBloc>(context)
                                   .add(NavigationEvents.OrderPageClickedEvent);
-                            },
-                          ),
-                          SizedBox(
-                            height: 10,
-                          ),
-                          MenuItem(
-                            title: "Ibox",
-                            onTap: () {
-                              onIconPressed();
-                              BlocProvider.of<NavigationBloc>(context)
-                                  .add(NavigationEvents.ChatPageClickedEvent);
                             },
                           ),
                           SizedBox(

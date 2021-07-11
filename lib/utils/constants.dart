@@ -2,6 +2,15 @@ import 'package:flutter/material.dart';
 
 import 'SizeConfig.dart';
 
+final Shader greenLinearGradient = LinearGradient(
+  colors: <Color>[Color.fromRGBO(82, 238, 79, 1), Color.fromRGBO(5, 151, 0, 1)],
+).createShader(Rect.fromLTWH(0.0, 0.0, 200.0, 70.0));
+final Shader orangeLinearGradient = LinearGradient(
+  colors: <Color>[
+    Color.fromRGBO(255, 182, 40, 1),
+    Color.fromRGBO(238, 71, 0, 1)
+  ],
+).createShader(Rect.fromLTWH(0.0, 0.0, 200.0, 70.0));
 const appBgColor = Color(0xFF000000);
 const primary = Color(0xFFFC2D55);
 const secondary = Color(0xFF19D5F1);

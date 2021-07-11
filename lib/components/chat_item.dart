@@ -39,86 +39,98 @@ class ChatItem extends StatelessWidget {
           DocumentSnapshot documentSnapshot = snapshot.data;
           UserModel user = UserModel.fromJson(documentSnapshot.data());
 
-          return ListTile(
-            contentPadding:
-                EdgeInsets.symmetric(horizontal: 20.0, vertical: 5.0),
-            leading: Stack(
-              children: <Widget>[
-                CircleAvatar(
-                  backgroundImage: CachedNetworkImageProvider(
-                    '${user?.photoUrl}',
-                  ),
-                  radius: 25.0,
+          return Container(
+            decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  colors: <Color>[Colors.white, Colors.white],
                 ),
-                Positioned(
-                  bottom: 0.0,
-                  right: 0.0,
-                  child: Container(
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(6.0),
+                borderRadius: BorderRadius.circular(10.0),
+                border: Border.all(color: Color.fromRGBO(231, 231, 231, 1))),
+            child: ListTile(
+              contentPadding:
+                  EdgeInsets.symmetric(horizontal: 20.0, vertical: 10.0),
+              leading: Stack(
+                children: <Widget>[
+                  CircleAvatar(
+                    backgroundImage: CachedNetworkImageProvider(
+                      '${user?.photoUrl}',
                     ),
-                    height: 15,
-                    width: 15,
-                    child: Center(
-                      child: Container(
-                        decoration: BoxDecoration(
-                          color: user?.isOnline ?? false
-                              ? Color(0xff00d72f)
-                              : Colors.grey,
-                          borderRadius: BorderRadius.circular(6),
+                    radius: 25.0,
+                  ),
+                  Positioned(
+                    bottom: 0.0,
+                    right: 0.0,
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(6.0),
+                      ),
+                      height: 15,
+                      width: 15,
+                      child: Center(
+                        child: Container(
+                          decoration: BoxDecoration(
+                            color: user?.isOnline ?? false
+                                ? Color(0xff00d72f)
+                                : Colors.red,
+                            borderRadius: BorderRadius.circular(6),
+                          ),
+                          height: 11,
+                          width: 11,
                         ),
-                        height: 11,
-                        width: 11,
                       ),
                     ),
                   ),
-                ),
-              ],
-            ),
-            title: Text(
-              '${user.firstName}',
-              maxLines: 1,
-              style:
-                  TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
-            ),
-            subtitle: Text(
-              type == MessageType.IMAGE ? "IMAGE" : "$msg",
-              overflow: TextOverflow.ellipsis,
-              maxLines: 2,
-              style:
-                  TextStyle(fontWeight: FontWeight.normal, color: Colors.white),
-            ),
-            trailing: Column(
-              crossAxisAlignment: CrossAxisAlignment.end,
-              children: <Widget>[
-                SizedBox(height: 10),
-                TextTime(
-                  child: Text(
-                    "${timeago.format(time.toDate())}",
-                    style: TextStyle(
-                        fontWeight: FontWeight.w300,
-                        fontSize: 11,
-                        color: Colors.white),
+                ],
+              ),
+              title: Text(
+                '${user.firstName} ${user.lastname.toUpperCase()}',
+                maxLines: 1,
+                style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 12,
+                    color: Colors.black),
+              ),
+              subtitle: Text(
+                type == MessageType.IMAGE ? "IMAGE" : "$msg",
+                overflow: TextOverflow.ellipsis,
+                maxLines: 2,
+                style: TextStyle(
+                    fontWeight: FontWeight.normal,
+                    fontSize: 10,
+                    color: Colors.grey),
+              ),
+              trailing: Column(
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: <Widget>[
+                  SizedBox(height: 10),
+                  TextTime(
+                    child: Text(
+                      "${timeago.format(time.toDate())}",
+                      style: TextStyle(
+                          fontWeight: FontWeight.w300,
+                          fontSize: 10,
+                          color: Colors.grey),
+                    ),
                   ),
-                ),
-                SizedBox(height: 5),
-                buildCounter(context),
-              ],
+                  SizedBox(height: 5),
+                  buildCounter(context),
+                ],
+              ),
+              onTap: () {
+                Navigator.of(context, rootNavigator: true).push(
+                  MaterialPageRoute(
+                    builder: (BuildContext context) {
+                      return Conversation(
+                        userId: userId,
+                        chatId: chatId,
+                        isAgent: isAgent,
+                      );
+                    },
+                  ),
+                );
+              },
             ),
-            onTap: () {
-              Navigator.of(context, rootNavigator: true).push(
-                MaterialPageRoute(
-                  builder: (BuildContext context) {
-                    return Conversation(
-                      userId: userId,
-                      chatId: chatId,
-                      isAgent: isAgent,
-                    );
-                  },
-                ),
-              );
-            },
           );
         } else {
           return SizedBox();

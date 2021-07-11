@@ -4,8 +4,8 @@ import 'package:on_delivery/Inbox/notification.dart';
 import 'package:on_delivery/home/Home.dart';
 import 'package:on_delivery/home/agent_details.dart';
 import 'package:on_delivery/home/orders_screen.dart';
-import 'package:on_delivery/plans/plans_screen.dart';
-import 'package:on_delivery/profiles/profile.dart';
+import 'package:on_delivery/home/plans_screen.dart';
+import 'package:on_delivery/home/profile.dart';
 
 enum NavigationEvents {
   HomePageClickedEvent,

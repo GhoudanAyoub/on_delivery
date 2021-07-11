@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lottie/lottie.dart';
 import 'package:on_delivery/block/navigation_block/navigation_block.dart';
 import 'package:on_delivery/home/search_screen.dart';
@@ -336,7 +337,10 @@ class _HomeState extends State<Home> {
         padding: EdgeInsets.fromLTRB(24, 24, 24, 10),
         child: FloatingActionButton(
           backgroundColor: Colors.green,
-          onPressed: () {},
+          onPressed: () {
+            BlocProvider.of<NavigationBloc>(context)
+                .add(NavigationEvents.ChatPageClickedEvent);
+          },
           child: Expanded(
             child: Image.asset(
               'assets/images/chatbutton.png',
@@ -718,7 +722,8 @@ class _HomeState extends State<Home> {
                                         style: TextStyle(
                                           fontSize: 12,
                                           fontWeight: FontWeight.w600,
-                                          color: Color.fromRGBO(238, 71, 0, 1),
+                                          foreground: Paint()
+                                            ..shader = orangeLinearGradient,
                                         )),
                                   ],
                                 ),
@@ -955,8 +960,8 @@ class _HomeState extends State<Home> {
                                           style: TextStyle(
                                             fontSize: 12,
                                             fontWeight: FontWeight.w600,
-                                            color:
-                                                Color.fromRGBO(238, 71, 0, 1),
+                                            foreground: Paint()
+                                              ..shader = orangeLinearGradient,
                                           )),
                                     ],
                                   ),

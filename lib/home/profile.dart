@@ -6,17 +6,18 @@ import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:on_delivery/SetUpProfile/UpdateProfile.dart';
 import 'package:on_delivery/components/RaisedGradientButton.dart';
 import 'package:on_delivery/components/custom_dropdown.dart';
 import 'package:on_delivery/components/profile_pic.dart';
 import 'package:on_delivery/components/text_form_builder.dart';
 import 'package:on_delivery/helpers/location_provider.dart';
+import 'package:on_delivery/home/SetUpProfile/UpdateProfile.dart';
 import 'package:on_delivery/models/User.dart';
 import 'package:on_delivery/models/category.dart';
 import 'package:on_delivery/services/auth_service.dart';
 import 'package:on_delivery/utils/FirebaseService.dart';
 import 'package:on_delivery/utils/SizeConfig.dart';
+import 'package:on_delivery/utils/constants.dart';
 import 'package:on_delivery/utils/firebase.dart';
 import 'package:on_delivery/utils/validation.dart';
 import 'package:provider/provider.dart';
@@ -1168,8 +1169,9 @@ class _ProfileState extends State<Profile> {
                                                 fontSize: 14,
                                                 letterSpacing: 1,
                                                 fontWeight: FontWeight.normal,
-                                                color: Color.fromRGBO(
-                                                    5, 151, 0, 1),
+                                                foreground: Paint()
+                                                  ..shader =
+                                                      greenLinearGradient,
                                               )),
                                         ),
                                       ],
@@ -1467,8 +1469,9 @@ class _ProfileState extends State<Profile> {
                                                 fontSize: 14,
                                                 letterSpacing: 1,
                                                 fontWeight: FontWeight.normal,
-                                                color: Color.fromRGBO(
-                                                    5, 151, 0, 1),
+                                                foreground: Paint()
+                                                  ..shader =
+                                                      greenLinearGradient,
                                               )),
                                         ),
                                       ],

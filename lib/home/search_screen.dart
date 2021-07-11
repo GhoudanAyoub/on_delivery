@@ -11,19 +11,20 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:google_api_headers/google_api_headers.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:google_maps_webservice/places.dart';
-import 'package:on_delivery/SetUpProfile/UpdateProfile.dart';
 import 'package:on_delivery/components/RaisedGradientButton.dart';
 import 'package:on_delivery/components/custom_dropdown.dart';
 import 'package:on_delivery/components/text_form_builder.dart';
 import 'package:on_delivery/helpers/direction_repo.dart';
 import 'package:on_delivery/helpers/location_provider.dart';
 import 'package:on_delivery/helpers/map_model.dart';
+import 'package:on_delivery/home/SetUpProfile/UpdateProfile.dart';
 import 'package:on_delivery/models/User.dart';
 import 'package:on_delivery/models/direction_model.dart';
 import 'package:on_delivery/models/order.dart';
 import 'package:on_delivery/services/auth_service.dart';
 import 'package:on_delivery/utils/FirebaseService.dart';
 import 'package:on_delivery/utils/SizeConfig.dart';
+import 'package:on_delivery/utils/constants.dart';
 import 'package:on_delivery/utils/firebase.dart';
 import 'package:on_delivery/utils/validation.dart';
 import 'package:provider/provider.dart';
@@ -2747,8 +2748,9 @@ class _SearchMapAgentScreenState extends State<SearchMapAgentScreen> {
                                                         fontSize: 12,
                                                         fontWeight:
                                                             FontWeight.w600,
-                                                        color: Color.fromRGBO(
-                                                            238, 71, 0, 1),
+                                                        foreground: Paint()
+                                                          ..shader =
+                                                              orangeLinearGradient,
                                                       )),
                                                 ],
                                               ),
@@ -3036,8 +3038,9 @@ class _SearchMapAgentScreenState extends State<SearchMapAgentScreen> {
                                                           fontSize: 12,
                                                           fontWeight:
                                                               FontWeight.w600,
-                                                          color: Color.fromRGBO(
-                                                              238, 71, 0, 1),
+                                                          foreground: Paint()
+                                                            ..shader =
+                                                                orangeLinearGradient,
                                                         )),
                                                   ],
                                                 ),
@@ -4069,8 +4072,9 @@ class _AllAgentState extends State<AllAgent> {
                                                   style: TextStyle(
                                                     fontSize: 12,
                                                     fontWeight: FontWeight.w600,
-                                                    color: Color.fromRGBO(
-                                                        238, 71, 0, 1),
+                                                    foreground: Paint()
+                                                      ..shader =
+                                                          orangeLinearGradient,
                                                   )),
                                             ],
                                           ),
