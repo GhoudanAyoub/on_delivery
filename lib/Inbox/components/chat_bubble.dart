@@ -10,12 +10,14 @@ class ChatBubble extends StatefulWidget {
   final MessageType type;
   final Timestamp time;
   final bool isMe;
+  final bool accepted;
 
   ChatBubble({
     @required this.message,
     @required this.time,
     @required this.isMe,
     @required this.type,
+    this.accepted,
   });
 
   @override
@@ -74,13 +76,29 @@ class _ChatBubbleState extends State<ChatBubble> {
                 padding:
                     EdgeInsets.all(widget.type == MessageType.TEXT ? 10 : 0),
                 child: widget.type == MessageType.TEXT
-                    ? Text(
-                        widget.message,
-                        style: TextStyle(
-                          fontSize: 14,
-                          letterSpacing: 0.8,
-                          color: Color.fromRGBO(10, 22, 41, 1),
-                        ),
+                    ? Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            widget.message,
+                            style: TextStyle(
+                              fontSize: 14,
+                              letterSpacing: 0.8,
+                              color: Color.fromRGBO(10, 22, 41, 1),
+                            ),
+                          ),
+                          SizedBox(
+                            height: 3,
+                          ),
+                          Text(
+                            widget.accepted == true ? "Order declined" : "",
+                            style: TextStyle(
+                              fontSize: 14,
+                              letterSpacing: 0.8,
+                              color: Color.fromRGBO(238, 71, 0, 1),
+                            ),
+                          ),
+                        ],
                       )
                     : CachedNetworkImage(
                         imageUrl: "${widget.message}",

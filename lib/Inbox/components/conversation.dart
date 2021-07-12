@@ -40,10 +40,14 @@ class _ConversationState extends State<Conversation> {
   bool isFirst = false;
   String chatId;
   int stages = 1;
+  Orders initOrder;
+  bool agentRole = false;
 
   @override
   void initState() {
     super.initState();
+    getChatOrder();
+    getMyRole();
     FirebaseService.changeStatus("Online");
     scrollController.addListener(() {
       focusNode.unfocus();
@@ -69,6 +73,28 @@ class _ConversationState extends State<Conversation> {
     var user = Provider.of<UserViewModel>(context, listen: true).user;
     Provider.of<ConversationViewModel>(context, listen: false)
         .setUserTyping(widget.chatId, user, typing);
+  }
+
+  getChatOrder() async {
+    Orders orders;
+    DocumentSnapshot snap = await chatRef.doc(widget.chatId).get();
+    if (snap.exists) {
+      orders = Orders.fromJson(snap.data()['orders']);
+      setState(() {
+        initOrder = orders;
+      });
+    }
+  }
+
+  getMyRole() async {
+    DocumentSnapshot snap = await chatRef.doc(widget.chatId).get();
+    if (snap.exists) {
+      List users = snap.data()['users'] ?? [];
+      if (users[0].toString().contains(firebaseAuth.currentUser.uid))
+        setState(() {
+          agentRole = true;
+        });
+    }
   }
 
   notificationInto() {
@@ -125,6 +151,181 @@ class _ConversationState extends State<Conversation> {
                   onPressed: () async {
                     Navigator.pop(context);
                   })
+            ],
+          );
+        });
+  }
+
+  declineNotificationInto() {
+    return showDialog(
+        context: context,
+        builder: (context) {
+          return SimpleDialog(
+            contentPadding: EdgeInsets.only(left: 30, right: 30, bottom: 20),
+            backgroundColor: Colors.white,
+            shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(5.0)),
+            children: [
+              Container(
+                padding:
+                    EdgeInsets.only(left: 10, right: 10, bottom: 20, top: 40),
+                width: 150,
+                child: Center(
+                  child: Column(
+                    children: [
+                      SizedBox(
+                        height: 5,
+                      ),
+                      Text(
+                        'Are you sure you want to cancel your order ?',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          fontSize: 14,
+                          letterSpacing: 1,
+                          fontFamily: "Poppins",
+                          color: Colors.grey[600],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              SizedBox(
+                height: 20,
+              ),
+              Column(
+                children: [
+                  RaisedGradientButton(
+                      child: Text(
+                        'Yes,sure',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                          letterSpacing: 1,
+                          color: Colors.white,
+                        ),
+                      ),
+                      border: false,
+                      gradient: LinearGradient(
+                        colors: <Color>[
+                          Color.fromRGBO(82, 238, 79, 1),
+                          Color.fromRGBO(5, 151, 0, 1)
+                        ],
+                      ),
+                      width: SizeConfig.screenWidth - 150,
+                      onPressed: () async {
+                        sendBotMessage(
+                            "Thank you for reaching out with me but I’m sorry I am busy.",
+                            firebaseAuth.currentUser);
+                        Navigator.pop(context);
+                      }),
+                  SizedBox(
+                    height: 20,
+                  ),
+                  RaisedGradientButton(
+                      child: Text(
+                        'Cancel',
+                        style: TextStyle(
+                          fontSize: 16,
+                          color: Colors.grey[600],
+                          letterSpacing: 1,
+                        ),
+                      ),
+                      border: true,
+                      gradient: LinearGradient(
+                        colors: <Color>[Colors.white, Colors.white],
+                      ),
+                      width: SizeConfig.screenWidth - 150,
+                      onPressed: () async {
+                        Navigator.pop(context);
+                      }),
+                ],
+              )
+            ],
+          );
+        });
+  }
+
+  acceptNotificationInto() {
+    return showDialog(
+        context: context,
+        builder: (context) {
+          return SimpleDialog(
+            contentPadding: EdgeInsets.only(left: 30, right: 30, bottom: 20),
+            backgroundColor: Colors.white,
+            shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(5.0)),
+            children: [
+              Container(
+                padding:
+                    EdgeInsets.only(left: 10, right: 10, bottom: 20, top: 40),
+                width: 150,
+                child: Center(
+                  child: Column(
+                    children: [
+                      SizedBox(
+                        height: 5,
+                      ),
+                      Text(
+                        'Are you sure you want to Confirm your order ?',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          fontSize: 14,
+                          letterSpacing: 1,
+                          fontFamily: "Poppins",
+                          color: Colors.grey[600],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              SizedBox(
+                height: 20,
+              ),
+              Column(
+                children: [
+                  RaisedGradientButton(
+                      child: Text(
+                        'Yes,sure',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                          letterSpacing: 1,
+                          color: Colors.white,
+                        ),
+                      ),
+                      border: false,
+                      gradient: LinearGradient(
+                        colors: <Color>[
+                          Color.fromRGBO(82, 238, 79, 1),
+                          Color.fromRGBO(5, 151, 0, 1)
+                        ],
+                      ),
+                      width: SizeConfig.screenWidth - 150,
+                      onPressed: () async {}),
+                  SizedBox(
+                    height: 20,
+                  ),
+                  RaisedGradientButton(
+                      child: Text(
+                        'Cancel',
+                        style: TextStyle(
+                          fontSize: 16,
+                          color: Colors.grey[600],
+                          letterSpacing: 1,
+                        ),
+                      ),
+                      border: true,
+                      gradient: LinearGradient(
+                        colors: <Color>[Colors.white, Colors.white],
+                      ),
+                      width: SizeConfig.screenWidth - 150,
+                      onPressed: () async {
+                        Navigator.pop(context);
+                      }),
+                ],
+              )
             ],
           );
         });
@@ -195,7 +396,7 @@ class _ConversationState extends State<Conversation> {
                                     padding: EdgeInsets.symmetric(
                                         horizontal: 4.0, vertical: 5),
                                     itemCount: messages.length,
-                                    reverse: false,
+                                    reverse: true,
                                     itemBuilder:
                                         (BuildContext context, int index) {
                                       Message message = Message.fromJson(
@@ -203,10 +404,16 @@ class _ConversationState extends State<Conversation> {
                                               .toList()[index]
                                               .data());
                                       return ChatBubble(
-                                          message: '${message.content}',
-                                          time: message?.time,
-                                          isMe: message?.senderUid == user?.uid,
-                                          type: message?.type);
+                                        message: '${message.content}',
+                                        time: message?.time,
+                                        isMe: message?.senderUid == user?.uid,
+                                        type: message?.type,
+                                        accepted: message.content
+                                            .toLowerCase()
+                                            .contains(
+                                                "Thank you for reaching out with me but I’m sorry I am busy."
+                                                    .toLowerCase()),
+                                      );
                                     },
                                   );
                                 } else {
@@ -298,14 +505,14 @@ class _ConversationState extends State<Conversation> {
                         ],
                       ),
                     )),
-                    widget.isAgent
+                    widget.isAgent && agentRole && initOrder.lunchStatus == true
                         ? Align(
                             alignment: Alignment.bottomCenter,
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
                                 InkWell(
-                                  onTap: () {},
+                                  onTap: declineNotificationInto,
                                   child: Container(
                                     decoration: BoxDecoration(
                                       color: Colors.white,
@@ -352,7 +559,7 @@ class _ConversationState extends State<Conversation> {
                                       ],
                                     ),
                                     width: 150,
-                                    onPressed: () async {}),
+                                    onPressed: acceptNotificationInto),
                               ],
                             ),
                           )
@@ -608,6 +815,24 @@ class _ConversationState extends State<Conversation> {
         );
       }
     }
+  }
+
+  sendBotMessage(String msg, var user) async {
+    Message message = Message(
+        content: '$msg',
+        senderUid: user?.uid,
+        type: MessageType.TEXT,
+        time: Timestamp.now(),
+        stages: 4);
+
+    if (msg.isNotEmpty) {
+      send(message, widget.chatId);
+    }
+  }
+
+  send(Message message, String chatId) async {
+    await chatRef.doc("$chatId").collection("messages").add(message.toJson());
+    await chatRef.doc("$chatId").update({"lastTextTime": Timestamp.now()});
   }
 
   sendFirstMessageBot() async {
