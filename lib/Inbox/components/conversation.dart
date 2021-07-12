@@ -303,7 +303,13 @@ class _ConversationState extends State<Conversation> {
                         ],
                       ),
                       width: SizeConfig.screenWidth - 150,
-                      onPressed: () async {}),
+                      onPressed: () async {
+                        sendBotMessage("Yes,Sure", firebaseAuth.currentUser);
+                        sendBotMessage("please confirm you position",
+                            firebaseAuth.currentUser);
+
+                        Navigator.pop(context);
+                      }),
                   SizedBox(
                     height: 20,
                   ),

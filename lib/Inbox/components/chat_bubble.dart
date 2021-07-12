@@ -82,22 +82,35 @@ class _ChatBubbleState extends State<ChatBubble> {
                           Text(
                             widget.message,
                             style: TextStyle(
-                              fontSize: 14,
-                              letterSpacing: 0.8,
-                              color: Color.fromRGBO(10, 22, 41, 1),
-                            ),
+                                fontSize: 14,
+                                letterSpacing: 0.8,
+                                color: widget.message
+                                        .toLowerCase()
+                                        .contains("please confirm you position")
+                                    ? Color.fromRGBO(45, 111, 214, 1)
+                                    : Color.fromRGBO(10, 22, 41, 1),
+                                decoration: widget.message
+                                        .toLowerCase()
+                                        .contains("please confirm you position")
+                                    ? TextDecoration.underline
+                                    : TextDecoration.none),
                           ),
                           SizedBox(
-                            height: 3,
+                            height: 2,
                           ),
-                          Text(
-                            widget.accepted == true ? "Order declined" : "",
-                            style: TextStyle(
-                              fontSize: 14,
-                              letterSpacing: 0.8,
-                              color: Color.fromRGBO(238, 71, 0, 1),
-                            ),
-                          ),
+                          widget.accepted == true
+                              ? Text(
+                                  "Order declined",
+                                  style: TextStyle(
+                                    fontSize: 14,
+                                    letterSpacing: 0.8,
+                                    color: Color.fromRGBO(238, 71, 0, 1),
+                                  ),
+                                )
+                              : SizedBox(
+                                  height: 0,
+                                  width: 0,
+                                ),
                         ],
                       )
                     : CachedNetworkImage(
