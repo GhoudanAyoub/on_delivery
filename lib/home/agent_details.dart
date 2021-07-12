@@ -5,6 +5,7 @@ import 'package:on_delivery/Inbox/components/conversation.dart';
 import 'package:on_delivery/block/navigation_block/navigation_block.dart';
 import 'package:on_delivery/components/RaisedGradientButton.dart';
 import 'package:on_delivery/models/User.dart';
+import 'package:on_delivery/models/order.dart';
 import 'package:on_delivery/utils/FirebaseService.dart';
 import 'package:on_delivery/utils/SizeConfig.dart';
 import 'package:on_delivery/utils/constants.dart';
@@ -14,8 +15,10 @@ class AgentsDetails extends StatefulWidget with NavigationStates {
   static String routeName = "/AgentsDetails";
   final String id;
   final String time;
+  final Orders order;
 
-  const AgentsDetails({Key key, this.id, this.time}) : super(key: key);
+  const AgentsDetails({Key key, this.id, this.time, this.order})
+      : super(key: key);
   @override
   _AgentsDetailsState createState() => _AgentsDetailsState();
 }
@@ -509,6 +512,7 @@ class _AgentsDetailsState extends State<AgentsDetails> {
                                                         userId: _user.id,
                                                         chatId: "newChat",
                                                         isAgent: false,
+                                                        order: widget.order,
                                                       );
                                                     },
                                                   ),

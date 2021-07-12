@@ -4,6 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:on_delivery/models/new_message_system.dart';
+import 'package:on_delivery/models/order.dart';
 import 'package:on_delivery/utils/firebase.dart';
 
 class ChatService {
@@ -14,10 +15,12 @@ class ChatService {
     await chatRef.doc("$chatId").update({"lastTextTime": Timestamp.now()});
   }
 
-  Future<String> sendFirstMessage(Message message, String recipient) async {
+  Future<String> sendFirstMessage(
+      Message message, String recipient, Orders order) async {
     User user = firebaseAuth.currentUser;
     DocumentReference ref = await chatRef.add({
       'users': [recipient, user.uid],
+      'orders': order.toJson()
     });
     await sendMessage(message, ref.id);
     return ref.id;

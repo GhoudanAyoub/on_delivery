@@ -3517,13 +3517,13 @@ class _UpdateProfilesState extends State<UpdateProfiles> {
                                   child: Text(
                                     "Resend the code",
                                     style: TextStyle(
-                                        fontSize: 12,
-                                        fontWeight: FontWeight.bold,
-                                        decoration: TextDecoration.underline,
-                                        letterSpacing: 1,
-                                        foreground: Paint()
-                                          ..shader = greenLinearGradient,
-                                        color: Color.fromRGBO(82, 238, 79, 1)),
+                                      fontSize: 12,
+                                      fontWeight: FontWeight.bold,
+                                      decoration: TextDecoration.underline,
+                                      letterSpacing: 1,
+                                      foreground: Paint()
+                                        ..shader = greenLinearGradient,
+                                    ),
                                   ),
                                 ),
                               ),

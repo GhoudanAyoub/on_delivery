@@ -259,54 +259,67 @@ class _HomeState extends State<Home> {
               SizedBox(
                 height: 20,
               ),
-              Container(
-                height: 60.0,
-                decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      colors: <Color>[
-                        Color.fromRGBO(82, 238, 79, 1),
-                        Color.fromRGBO(5, 151, 0, 1)
-                      ],
-                    ),
-                    borderRadius: BorderRadius.circular(10.0),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.grey[500],
-                        offset: Offset(0.0, 1.5),
-                        blurRadius: 1.5,
-                      ),
-                    ]),
-                child: Material(
-                  color: Colors.transparent,
-                  child: InkWell(
-                      onTap: () async {
-                        Navigator.pushNamed(context, SearchScreen.routeName);
-                      },
-                      child: Center(
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            Image.asset(
-                              "assets/images/looking for agent white.png",
-                              height: 40,
+              StreamBuilder(
+                stream: usersRef.doc(firebaseAuth.currentUser.uid).snapshots(),
+                builder: (context, AsyncSnapshot<DocumentSnapshot> snapshot) {
+                  if (snapshot.hasData) {
+                    user1 = UserModel.fromJson(snapshot.data.data());
+                    if (user1.type.toLowerCase().contains("client"))
+                      return Container(
+                        height: 60.0,
+                        decoration: BoxDecoration(
+                            gradient: LinearGradient(
+                              colors: <Color>[
+                                Color.fromRGBO(82, 238, 79, 1),
+                                Color.fromRGBO(5, 151, 0, 1)
+                              ],
                             ),
-                            SizedBox(
-                              width: 20,
-                            ),
-                            Text(
-                              'Looking For agent',
-                              style: TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.w600,
-                                letterSpacing: 1,
-                                color: Colors.white,
+                            borderRadius: BorderRadius.circular(10.0),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.grey[500],
+                                offset: Offset(0.0, 1.5),
+                                blurRadius: 1.5,
                               ),
-                            ),
-                          ],
+                            ]),
+                        child: Material(
+                          color: Colors.transparent,
+                          child: InkWell(
+                              onTap: () async {
+                                Navigator.pushNamed(
+                                    context, SearchScreen.routeName);
+                              },
+                              child: Center(
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  children: [
+                                    Image.asset(
+                                      "assets/images/looking for agent white.png",
+                                      height: 40,
+                                    ),
+                                    SizedBox(
+                                      width: 20,
+                                    ),
+                                    Text(
+                                      'Looking For agent',
+                                      style: TextStyle(
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.w600,
+                                        letterSpacing: 1,
+                                        color: Colors.white,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              )),
                         ),
-                      )),
-                ),
+                      );
+                  }
+                  return Container(
+                    height: 0,
+                  );
+                },
               ),
               SizedBox(height: 10),
               homeAgent(),
@@ -535,7 +548,9 @@ class _HomeState extends State<Home> {
             if ((firebaseAuth.currentUser != null &&
                     doc.id == currentUserId() &&
                     _user.type.toLowerCase().contains("agent")) ||
-                _user.type.toLowerCase().contains("client")) {
+                _user.type.toLowerCase().contains("client") ||
+                _user.isOnline != true ||
+                !_user.city.toLowerCase().contains(user1.city)) {
               Timer(Duration(milliseconds: 10), () {
                 setState(() {
                   removeFromList(index);

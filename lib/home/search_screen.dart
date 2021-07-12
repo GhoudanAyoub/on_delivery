@@ -2324,6 +2324,7 @@ class _SearchMapAgentScreenState extends State<SearchMapAgentScreen> {
   List agentTime = [];
   double pinPillPosition = PIN_VISIBLE_POSITION;
   double soloPinPillPosition = PIN_INVISIBLE_POSITION;
+  Orders order;
 
   getAgents() async {
     QuerySnapshot snap = await usersRef.get();
@@ -2340,6 +2341,7 @@ class _SearchMapAgentScreenState extends State<SearchMapAgentScreen> {
             agentTime.add(value);
           });
         });
+        print("855${agentTime.length}");
         if (!user1.id.contains(firebaseAuth.currentUser.uid))
           userList.add(user1);
 
@@ -2377,6 +2379,15 @@ class _SearchMapAgentScreenState extends State<SearchMapAgentScreen> {
     return directions.totalDuration;
   }
 
+  getOrders() async {
+    final snapShot = await orderRef.doc(widget.orders).get();
+    if (snapShot.exists) {
+      setState(() {
+        order = Orders.fromJson(snapShot.data());
+      });
+    }
+  }
+
   @override
   void dispose() {
     _mapController.dispose();
@@ -2386,6 +2397,8 @@ class _SearchMapAgentScreenState extends State<SearchMapAgentScreen> {
   @override
   void initState() {
     myIcon = BitmapDescriptor.fromAsset("assets/images/mylocationmarker.png");
+
+    getOrders();
     super.initState();
   }
 
@@ -2739,9 +2752,11 @@ class _SearchMapAgentScreenState extends State<SearchMapAgentScreen> {
                                                         .spaceAround,
                                                 children: [
                                                   Text(
-                                                      agentTime == null &&
-                                                              userList
-                                                                  .isNotEmpty
+                                                      agentTime == null ||
+                                                              agentTime
+                                                                      .length ==
+                                                                  0 ||
+                                                              userList == null
                                                           ? "calculating ..."
                                                           : " ${agentTime[index]}",
                                                       style: TextStyle(
@@ -2766,10 +2781,12 @@ class _SearchMapAgentScreenState extends State<SearchMapAgentScreen> {
                                   MaterialPageRoute(
                                       builder: (context) => AgentsDetails(
                                             id: userList[index].id,
-                                            time: agentTime == null &&
-                                                    userList.isNotEmpty
-                                                ? "calculating ..."
+                                            time: agentTime == null ||
+                                                    agentTime.length == 0 ||
+                                                    userList == null
+                                                ? ""
                                                 : " ${agentTime[index]}",
+                                            order: order,
                                           )),
                                 );
                               },
@@ -3029,9 +3046,11 @@ class _SearchMapAgentScreenState extends State<SearchMapAgentScreen> {
                                                           .spaceAround,
                                                   children: [
                                                     Text(
-                                                        agentTime == null &&
-                                                                userList
-                                                                    .isNotEmpty
+                                                        agentTime == null ||
+                                                                agentTime
+                                                                        .length ==
+                                                                    0 ||
+                                                                userList == null
                                                             ? "calculating ..."
                                                             : " ${agentTime[index]}",
                                                         style: TextStyle(
@@ -3056,10 +3075,12 @@ class _SearchMapAgentScreenState extends State<SearchMapAgentScreen> {
                                     MaterialPageRoute(
                                         builder: (context) => AgentsDetails(
                                               id: userList[index].id,
-                                              time: agentTime == null &&
-                                                      userList.isNotEmpty
-                                                  ? "calculating ..."
+                                              time: agentTime == null ||
+                                                      agentTime.length == 0 ||
+                                                      userList == null
+                                                  ? ""
                                                   : " ${agentTime[index]}",
+                                              order: order,
                                             )),
                                   );
                                 },
@@ -3241,6 +3262,7 @@ class _SearchMapAgentScreenState extends State<SearchMapAgentScreen> {
                                           time: _info == null
                                               ? "calculating ..."
                                               : " ${_info.totalDuration}",
+                                          order: order,
                                         )));
                           },
                         ))
@@ -3277,7 +3299,7 @@ class _SearchMapAgentScreenState extends State<SearchMapAgentScreen> {
                 alignment: Alignment.topCenter,
                 child: GoogleMap(
                   initialCameraPosition:
-                      CameraPosition(target: currentLocation, zoom: 14),
+                      CameraPosition(target: currentLocation, zoom: 1),
                   zoomControlsEnabled: false,
                   minMaxZoomPreference: MinMaxZoomPreference(6.5, 20.8),
                   myLocationEnabled: false,
@@ -3802,8 +3824,10 @@ class AllAgent extends StatefulWidget {
   static String routeName = '/AllAgent';
   final List<UserModel> userList;
   final String time;
+  final Orders order;
 
-  const AllAgent({Key key, this.userList, this.time}) : super(key: key);
+  const AllAgent({Key key, this.userList, this.time, this.order})
+      : super(key: key);
   @override
   _AllAgentState createState() => _AllAgentState();
 }
@@ -4091,6 +4115,7 @@ class _AllAgentState extends State<AllAgent> {
                                   builder: (context) => AgentsDetails(
                                         id: widget.userList[index].id,
                                         time: widget.time,
+                                        order: widget.order,
                                       )),
                             );
                           },

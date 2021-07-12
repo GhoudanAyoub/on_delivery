@@ -8,6 +8,7 @@ import 'package:on_delivery/components/indicators.dart';
 import 'package:on_delivery/models/User.dart';
 import 'package:on_delivery/models/enum/message_type.dart';
 import 'package:on_delivery/models/new_message_system.dart';
+import 'package:on_delivery/models/order.dart';
 import 'package:on_delivery/utils/FirebaseService.dart';
 import 'package:on_delivery/utils/SizeConfig.dart';
 import 'package:on_delivery/utils/constants.dart';
@@ -23,9 +24,10 @@ class Conversation extends StatefulWidget {
   final String userId;
   final String chatId;
   final bool isAgent;
+  final Orders order;
 
   const Conversation(
-      {@required this.userId, @required this.chatId, this.isAgent});
+      {@required this.userId, @required this.chatId, this.isAgent, this.order});
 
   @override
   _ConversationState createState() => _ConversationState();
@@ -593,7 +595,8 @@ class _ConversationState extends State<Conversation> {
 
     if (msg.isNotEmpty) {
       if (isFirst) {
-        String id = await viewModel.sendFirstMessage(widget.userId, message);
+        String id = await viewModel.sendFirstMessage(
+            widget.userId, message, widget.order);
         setState(() {
           isFirst = false;
           chatId = id;
@@ -617,7 +620,8 @@ class _ConversationState extends State<Conversation> {
         type: MessageType.TEXT,
         time: Timestamp.now(),
         stages: 2);
-    String id = await viewModel.sendFirstMessage(widget.userId, message);
+    String id =
+        await viewModel.sendFirstMessage(widget.userId, message, widget.order);
     setState(() {
       isFirst = false;
       chatId = id;

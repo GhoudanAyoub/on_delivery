@@ -21,6 +21,7 @@ class _ChatsState extends State<Chats> {
     UserViewModel viewModel =
         Provider.of<UserViewModel>(context, listen: false);
     viewModel.setUser();
+    viewModel.setType();
     return Scaffold(
         body: Container(
             decoration: BoxDecoration(
@@ -34,19 +35,6 @@ class _ChatsState extends State<Chats> {
                   left: 20, right: 20, top: 80, bottom: 5),
               child: Column(
                 children: [
-                  Align(
-                      alignment: Alignment.topLeft,
-                      child: Text(
-                        'Agents',
-                        style: new TextStyle(
-                            fontSize: 16.0,
-                            letterSpacing: 1,
-                            fontWeight: FontWeight.w500,
-                            color: Colors.black),
-                      )),
-                  SizedBox(
-                    height: 10,
-                  ),
                   StreamBuilder(
                       stream:
                           userChatsStream('${firebaseAuth.currentUser.uid}'),
@@ -54,12 +42,96 @@ class _ChatsState extends State<Chats> {
                         if (snapshot.hasData) {
                           List chatList = snapshot.data.documents;
                           if (chatList.isNotEmpty) {
-                            return Container(
-                                height: 60,
-                                child: ListView.builder(
+                            return Expanded(
+                                child: Column(
+                              children: [
+                                Align(
+                                    alignment: Alignment.topLeft,
+                                    child: Text(
+                                      'Agents',
+                                      style: new TextStyle(
+                                          fontSize: 16.0,
+                                          letterSpacing: 1,
+                                          fontWeight: FontWeight.w500,
+                                          color: Colors.black),
+                                    )),
+                                SizedBox(
+                                  height: 10,
+                                ),
+                                Container(
+                                    height: 60,
+                                    child: ListView.builder(
+                                      itemCount: chatList.length,
+                                      scrollDirection: Axis.horizontal,
+                                      padding:
+                                          EdgeInsets.only(left: 20, right: 20),
+                                      itemBuilder:
+                                          (BuildContext context, int index) {
+                                        DocumentSnapshot chatListSnapshot =
+                                            chatList[index];
+                                        return StreamBuilder(
+                                          stream: messageListStream(
+                                              chatListSnapshot.id),
+                                          builder: (context, snapshot) {
+                                            if (snapshot.hasData) {
+                                              List messages =
+                                                  snapshot.data.documents;
+                                              Message message =
+                                                  Message.fromJson(
+                                                      messages.first.data());
+                                              List users = chatListSnapshot
+                                                  .data()['users'];
+                                              users.remove(
+                                                  '${viewModel.user?.uid ?? ""}');
+                                              String recipient = users[0];
+                                              return Container(
+                                                margin: EdgeInsets.symmetric(
+                                                    horizontal: 5.0,
+                                                    vertical: 5.0),
+                                                child: ChatItem2(
+                                                  userId: recipient,
+                                                  messageCount:
+                                                      messages?.length,
+                                                  msg: message?.content,
+                                                  time: message?.time,
+                                                  chatId: chatListSnapshot.id,
+                                                  type: message?.type,
+                                                  currentUserId:
+                                                      viewModel.user?.uid ?? "",
+                                                  isAgent: viewModel.type
+                                                          .toLowerCase()
+                                                          .contains("agent")
+                                                      ? true
+                                                      : false,
+                                                ),
+                                              );
+                                            } else {
+                                              return SizedBox();
+                                            }
+                                          },
+                                        );
+                                      },
+                                    )),
+                                SizedBox(
+                                  height: 10,
+                                ),
+                                Align(
+                                    alignment: Alignment.topLeft,
+                                    child: Text(
+                                      'Conversations',
+                                      style: new TextStyle(
+                                          fontSize: 16.0,
+                                          fontWeight: FontWeight.w700,
+                                          letterSpacing: 1,
+                                          foreground: Paint()
+                                            ..shader = greenLinearGradient),
+                                    )),
+                                SizedBox(
+                                  height: 20,
+                                ),
+                                Expanded(
+                                    child: ListView.builder(
                                   itemCount: chatList.length,
-                                  scrollDirection: Axis.horizontal,
-                                  padding: EdgeInsets.only(left: 20, right: 20),
                                   itemBuilder:
                                       (BuildContext context, int index) {
                                     DocumentSnapshot chatListSnapshot =
@@ -78,7 +150,7 @@ class _ChatsState extends State<Chats> {
                                           users.remove(
                                               '${viewModel.user?.uid ?? ""}');
                                           String recipient = users[0];
-                                          return ChatItem2(
+                                          return ChatItem(
                                             userId: recipient,
                                             messageCount: messages?.length,
                                             msg: message?.content,
@@ -87,7 +159,11 @@ class _ChatsState extends State<Chats> {
                                             type: message?.type,
                                             currentUserId:
                                                 viewModel.user?.uid ?? "",
-                                            isAgent: false,
+                                            isAgent: viewModel.type
+                                                    .toLowerCase()
+                                                    .contains("agent")
+                                                ? true
+                                                : false,
                                           );
                                         } else {
                                           return SizedBox();
@@ -95,84 +171,18 @@ class _ChatsState extends State<Chats> {
                                       },
                                     );
                                   },
-                                ));
-                          } else {
-                            return Center(
-                                child: Text(
-                                    'The Chat Still Under Development See you Soon'));
-                          }
-                        } else {
-                          return Container(
-                            child: Center(
-                                child: Lottie.asset(
-                                    'assets/lotties/loading-animation.json')),
-                          );
-                        }
-                      }),
-                  SizedBox(
-                    height: 10,
-                  ),
-                  Align(
-                      alignment: Alignment.topLeft,
-                      child: Text(
-                        'Conversations',
-                        style: new TextStyle(
-                            fontSize: 16.0,
-                            fontWeight: FontWeight.w700,
-                            letterSpacing: 1,
-                            foreground: Paint()..shader = greenLinearGradient),
-                      )),
-                  SizedBox(
-                    height: 20,
-                  ),
-                  StreamBuilder(
-                      stream:
-                          userChatsStream('${firebaseAuth.currentUser.uid}'),
-                      builder: (context, snapshot) {
-                        if (snapshot.hasData) {
-                          List chatList = snapshot.data.documents;
-                          if (chatList.isNotEmpty) {
-                            return Expanded(
-                                child: ListView.builder(
-                              itemCount: chatList.length,
-                              itemBuilder: (BuildContext context, int index) {
-                                DocumentSnapshot chatListSnapshot =
-                                    chatList[index];
-                                return StreamBuilder(
-                                  stream:
-                                      messageListStream(chatListSnapshot.id),
-                                  builder: (context, snapshot) {
-                                    if (snapshot.hasData) {
-                                      List messages = snapshot.data.documents;
-                                      Message message = Message.fromJson(
-                                          messages.first.data());
-                                      List users =
-                                          chatListSnapshot.data()['users'];
-                                      users.remove(
-                                          '${viewModel.user?.uid ?? ""}');
-                                      String recipient = users[0];
-                                      return ChatItem(
-                                        userId: recipient,
-                                        messageCount: messages?.length,
-                                        msg: message?.content,
-                                        time: message?.time,
-                                        chatId: chatListSnapshot.id,
-                                        type: message?.type,
-                                        currentUserId:
-                                            viewModel.user?.uid ?? "",
-                                        isAgent: false,
-                                      );
-                                    } else {
-                                      return SizedBox();
-                                    }
-                                  },
-                                );
-                              },
+                                )),
+                                SizedBox(
+                                  height: 10,
+                                ),
+                              ],
                             ));
                           } else {
-                            return Center(
-                                child: Text(
-                                    'The Chat Still Under Development See you Soon'));
+                            return Expanded(
+                                child: Center(
+                              child: Text(
+                                  'You Chat Will Appears here When Its Ready'),
+                            ));
                           }
                         } else {
                           return Container(
@@ -182,9 +192,6 @@ class _ChatsState extends State<Chats> {
                           );
                         }
                       }),
-                  SizedBox(
-                    height: 10,
-                  ),
                   Align(
                     alignment: Alignment.bottomCenter,
                     child: Container(

@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:on_delivery/models/new_message_system.dart';
+import 'package:on_delivery/models/order.dart';
 import 'package:on_delivery/services/chat_service.dart';
 
 class ConversationViewModel extends ChangeNotifier {
@@ -21,11 +22,10 @@ class ConversationViewModel extends ChangeNotifier {
     );
   }
 
-  Future<String> sendFirstMessage(String recipient, Message message) async {
-    String newChatId = await chatService.sendFirstMessage(
-      message,
-      recipient,
-    );
+  Future<String> sendFirstMessage(
+      String recipient, Message message, Orders orders) async {
+    String newChatId =
+        await chatService.sendFirstMessage(message, recipient, orders);
 
     return newChatId;
   }

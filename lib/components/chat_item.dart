@@ -40,6 +40,7 @@ class ChatItem extends StatelessWidget {
           UserModel user = UserModel.fromJson(documentSnapshot.data());
 
           return Container(
+            margin: EdgeInsets.symmetric(horizontal: 8.0, vertical: 8.0),
             decoration: BoxDecoration(
                 gradient: LinearGradient(
                   colors: <Color>[Colors.white, Colors.white],
