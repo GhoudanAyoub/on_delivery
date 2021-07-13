@@ -3,21 +3,26 @@ import 'package:expand_widget/expand_widget.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:on_delivery/components/RaisedGradientButton.dart';
 import 'package:on_delivery/helpers/location_provider.dart';
+import 'package:on_delivery/home/trackingmap.dart';
 import 'package:on_delivery/models/User.dart';
 import 'package:on_delivery/models/order.dart';
 import 'package:on_delivery/utils/FirebaseService.dart';
 import 'package:on_delivery/utils/SizeConfig.dart';
+import 'package:on_delivery/utils/constants.dart';
 import 'package:on_delivery/utils/utils.dart';
 import 'package:provider/provider.dart';
-
-import 'RaisedGradientButton.dart';
 
 class OrderLayout extends StatefulWidget {
   final Orders order;
   final UserModel user;
+  final bool track;
+  final String Time;
 
-  const OrderLayout({Key key, this.order, this.user}) : super(key: key);
+  const OrderLayout(
+      {Key key, this.order, this.user, this.track = true, this.Time})
+      : super(key: key);
   @override
   _OrderLayoutState createState() => _OrderLayoutState();
 }
@@ -270,13 +275,39 @@ class _OrderLayoutState extends State<OrderLayout> {
                           ],
                         ),
                       ),
-                      GestureDetector(
-                        onTap: locationNotificationInto,
-                        child: Image.asset(
-                          'assets/images/delete order.png',
-                          height: 50,
-                        ),
-                      )
+                      widget.track
+                          ? GestureDetector(
+                              onTap: locationNotificationInto,
+                              child: Image.asset(
+                                'assets/images/delete order.png',
+                                height: 50,
+                              ),
+                            )
+                          : Container(
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                border: Border.all(
+                                    width: 1,
+                                    color: Color.fromRGBO(238, 71, 0, 1)),
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                              height: 30,
+                              width: getProportionateScreenWidth(90),
+                              margin: EdgeInsets.only(left: 20, bottom: 10),
+                              child: Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceAround,
+                                children: [
+                                  Text("${widget.Time ?? "Calculating"}",
+                                      style: TextStyle(
+                                        fontSize: 12,
+                                        fontWeight: FontWeight.w600,
+                                        foreground: Paint()
+                                          ..shader = orangeLinearGradient,
+                                      )),
+                                ],
+                              ),
+                            )
                     ],
                   ),
                   Divider(
@@ -284,35 +315,46 @@ class _OrderLayoutState extends State<OrderLayout> {
                   SizedBox(
                     height: 5,
                   ),
-                  ExpandChild(
-                    child: Column(
-                      children: <Widget>[
-                        Align(
-                          alignment: Alignment.bottomCenter,
-                          child: RaisedGradientButton(
-                              child: Text(
-                                'Track Item',
-                                style: TextStyle(
-                                  fontSize: 14,
-                                  letterSpacing: 1,
-                                  color: Colors.white,
-                                ),
+                  widget.track
+                      ? ExpandChild(
+                          child: Column(
+                            children: <Widget>[
+                              Align(
+                                alignment: Alignment.bottomCenter,
+                                child: RaisedGradientButton(
+                                    child: Text(
+                                      'Track Item',
+                                      style: TextStyle(
+                                        fontSize: 14,
+                                        letterSpacing: 1,
+                                        color: Colors.white,
+                                      ),
+                                    ),
+                                    gradient: LinearGradient(
+                                      colors: <Color>[
+                                        Color.fromRGBO(82, 238, 79, 1),
+                                        Color.fromRGBO(5, 151, 0, 1)
+                                      ],
+                                    ),
+                                    width: getProportionateScreenWidth(200),
+                                    onPressed: () {
+                                      Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder: (context) => TrackingMap(
+                                              orders: widget.order,
+                                              userModel: widget.user,
+                                            ),
+                                          ));
+                                    }),
                               ),
-                              gradient: LinearGradient(
-                                colors: <Color>[
-                                  Color.fromRGBO(82, 238, 79, 1),
-                                  Color.fromRGBO(5, 151, 0, 1)
-                                ],
-                              ),
-                              width: getProportionateScreenWidth(200),
-                              onPressed: () {}),
-                        ),
-                        SizedBox(
-                          height: 5,
+                              SizedBox(
+                                height: 5,
+                              )
+                            ],
+                          ),
                         )
-                      ],
-                    ),
-                  ),
+                      : Container()
                 ],
               ),
             )),

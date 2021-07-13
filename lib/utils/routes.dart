@@ -12,6 +12,7 @@ import 'package:on_delivery/home/orders_screen.dart';
 import 'package:on_delivery/home/plans_screen.dart';
 import 'package:on_delivery/home/profile.dart';
 import 'package:on_delivery/home/search_screen.dart';
+import 'package:on_delivery/home/trackingmap.dart';
 
 import 'firebase.dart';
 
@@ -33,6 +34,7 @@ final Map<String, WidgetBuilder> routes = {
   Profile.routeName: (context) => Profile(),
   Plans.routeName: (context) => Plans(),
   OrderScreen.routeName: (context) => OrderScreen(),
+  TrackingMap.routeName: (context) => TrackingMap(),
   AgentsDetails.routeName: (context) => AgentsDetails(),
   SearchScreen.routeName: (context) => SearchScreen(),
   AllAgent.routeName: (context) => AllAgent(),

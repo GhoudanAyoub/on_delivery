@@ -2,7 +2,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:geocoder/geocoder.dart';
 import 'package:lottie/lottie.dart';
 import 'package:on_delivery/block/navigation_block/navigation_block.dart';
 import 'package:on_delivery/components/RaisedGradientButton.dart';
@@ -566,13 +565,6 @@ class _OrderScreenState extends State<OrderScreen> {
         child: Center(child: Lottie.asset('assets/lotties/comp_loading.json')),
       );
     }
-  }
-
-  Future<String> getCurrentCoordinatesName(lnts, lngs) async {
-    final coordinates = new Coordinates(lnts, lngs);
-    final addresses =
-        await Geocoder.local.findAddressesFromCoordinates(coordinates);
-    return addresses.first.addressLine;
   }
 
   locationNotificationInto() {
