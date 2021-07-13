@@ -231,14 +231,18 @@ class _HomeState extends State<Home> {
                         ),
                       );
                     }
+
                     return Container(
-                      height: 0,
+                      height: 100,
+                      child: Center(
+                          child: Lottie.asset(
+                              'assets/lotties/loading-animation.json')),
                     );
                   },
                 ),
               ),
               SizedBox(
-                height: 20,
+                height: 15,
               ),
               StreamBuilder(
                 stream: usersRef.doc(firebaseAuth.currentUser.uid).snapshots(),
@@ -427,9 +431,6 @@ class _HomeState extends State<Home> {
                   : SizedBox(
                       height: 0,
                     ),
-              SizedBox(
-                height: 5,
-              ),
               homeAgent(),
               Align(
                 alignment: Alignment.bottomCenter,
@@ -568,7 +569,7 @@ class _HomeState extends State<Home> {
                                 width: getProportionateScreenHeight(60),
                               ),
                               Container(
-                                width: getProportionateScreenWidth(250),
+                                width: getProportionateScreenWidth(230),
                                 child: Column(
                                   children: [
                                     Row(
@@ -726,8 +727,7 @@ class _HomeState extends State<Home> {
       }
     } else {
       return Container(
-        child: Center(
-            child: Lottie.asset('assets/lotties/loading-animation.json')),
+        child: Center(child: Lottie.asset('assets/lotties/comp_loading.json')),
       );
     }
   }

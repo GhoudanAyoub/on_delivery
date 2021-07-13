@@ -21,7 +21,7 @@ dependencies:
   cloud_firestore: ^0.14.2
   firebase_storage:
   http_auth: ^0.3.2
-
+  expand_widget:
   pinput: ^0.2.6
   rxdart: ^0.25.0
   google_maps_flutter: ^1.2.0
