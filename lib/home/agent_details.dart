@@ -58,7 +58,7 @@ class _AgentsDetailsState extends State<AgentsDetails> {
                       color: Colors.black,
                     )),
               ),
-              SizedBox(height: 10),
+              SizedBox(height: 40),
               Expanded(
                   child: ListView(
                 padding: EdgeInsets.only(
@@ -380,41 +380,19 @@ class _AgentsDetailsState extends State<AgentsDetails> {
                                     ),
                                   ),
                                   StreamBuilder(
-                                    stream: favoriteRef.snapshots(),
+                                    stream: favoritzListStream(
+                                        firebaseAuth.currentUser.uid),
                                     builder: (context,
                                         AsyncSnapshot<QuerySnapshot> snapshot) {
                                       if (snapshot.hasData) {
-                                        /*FavoriteModel user1 =
-                                            FavoriteModel.fromJson(
-                                                snapshot.data.data());
-                                        if (user1.agentData["id"] ==
-                                            widget.id) {
-                                          return Align(
-                                            alignment: Alignment.bottomCenter,
-                                            child: RaisedGradientButton(
-                                                child: Text(
-                                                  'Delete from favorite',
-                                                  style: TextStyle(
-                                                    fontSize: 16,
-                                                    color: Colors.grey[600],
-                                                  ),
-                                                ),
-                                                border: true,
-                                                gradient: LinearGradient(
-                                                  colors: <Color>[
-                                                    Colors.white,
-                                                    Colors.white
-                                                  ],
-                                                ),
-                                                width: SizeConfig.screenWidth -
-                                                    150,
-                                                onPressed: () async {}),
-                                          );
-                                        }*/
+                                        List favorites =
+                                            snapshot.data.documents;
                                         for (DocumentSnapshot document
-                                            in snapshot.data.docs) {
-                                          if (document.data()["clientId"] ==
-                                              firebaseAuth.currentUser.uid)
+                                            in favorites) {
+                                          UserModel agents = UserModel.fromJson(
+                                              document.data());
+
+                                          if (agents.id.contains(widget.id))
                                             return Align(
                                               alignment: Alignment.bottomCenter,
                                               child: RaisedGradientButton(
@@ -443,35 +421,58 @@ class _AgentsDetailsState extends State<AgentsDetails> {
                                                             document.id);
                                                   }),
                                             );
-                                        }
-                                        return Align(
-                                          alignment: Alignment.bottomCenter,
-                                          child: RaisedGradientButton(
-                                              child: Text(
-                                                'Add to favorite',
-                                                style: TextStyle(
-                                                  fontSize: 16,
-                                                  color: Colors.grey[600],
+                                          return Align(
+                                            alignment: Alignment.bottomCenter,
+                                            child: RaisedGradientButton(
+                                                child: Text(
+                                                  'Add to favorite',
+                                                  style: TextStyle(
+                                                    fontSize: 16,
+                                                    color: Colors.grey[600],
+                                                  ),
                                                 ),
-                                              ),
-                                              border: true,
-                                              gradient: LinearGradient(
-                                                colors: <Color>[
-                                                  Colors.white,
-                                                  Colors.white
-                                                ],
-                                              ),
-                                              width:
-                                                  SizeConfig.screenWidth - 150,
-                                              onPressed: () async {
-                                                FirebaseService().addToFavorite(
-                                                    firebaseAuth.currentUser,
-                                                    _user);
-                                              }),
-                                        );
+                                                border: true,
+                                                gradient: LinearGradient(
+                                                  colors: <Color>[
+                                                    Colors.white,
+                                                    Colors.white
+                                                  ],
+                                                ),
+                                                width: SizeConfig.screenWidth -
+                                                    150,
+                                                onPressed: () async {
+                                                  FirebaseService()
+                                                      .addToFavorite(
+                                                          firebaseAuth
+                                                              .currentUser,
+                                                          _user);
+                                                }),
+                                          );
+                                        }
                                       }
-                                      return Container(
-                                        height: 0,
+                                      return Align(
+                                        alignment: Alignment.bottomCenter,
+                                        child: RaisedGradientButton(
+                                            child: Text(
+                                              'Add to favorite',
+                                              style: TextStyle(
+                                                fontSize: 16,
+                                                color: Colors.grey[600],
+                                              ),
+                                            ),
+                                            border: true,
+                                            gradient: LinearGradient(
+                                              colors: <Color>[
+                                                Colors.white,
+                                                Colors.white
+                                              ],
+                                            ),
+                                            width: SizeConfig.screenWidth - 150,
+                                            onPressed: () async {
+                                              FirebaseService().addToFavorite(
+                                                  firebaseAuth.currentUser,
+                                                  _user);
+                                            }),
                                       );
                                     },
                                   ),
@@ -561,5 +562,13 @@ class _AgentsDetailsState extends State<AgentsDetails> {
             ],
           )),
     ));
+  }
+
+  Stream<QuerySnapshot> favoritzListStream(String documentId) {
+    return favoriteRef
+        .doc(documentId)
+        .collection(favoritesName)
+        .orderBy('isOnline')
+        .snapshots();
   }
 }

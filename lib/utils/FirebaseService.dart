@@ -142,6 +142,7 @@ class FirebaseService {
     final doc = orderRef.doc();
     if (user != null) {
       docId = doc.id;
+      orders.orderId = docId;
       doc.set(orders.toJson()).onError((error, stackTrace) => print(error));
     }
     return docId;
@@ -163,18 +164,37 @@ class FirebaseService {
     }).onError((error, stackTrace) => print(error));
   }
 
+  updateOrdersStatus(
+      String status, String docId, String agentId, String chatID) async {
+    orderRef.doc(docId).update({
+      "status": status,
+      "agentId": agentId,
+    }).then((value) async {
+      DocumentSnapshot orderDoc = await orderRef.doc(docId).get();
+      DocumentSnapshot snap = await chatRef.doc(chatID).get();
+      Orders orders = Orders.fromJson(orderDoc.data());
+      if (snap.exists) {
+        chatRef.doc(chatID).update({'orders': orders.toJson()});
+      }
+    });
+  }
+
   addToFavorite(User user, UserModel userModel) async {
     if (user != null) {
-      favoriteRef.doc().set({
-        'clientId': user.uid,
-        'agentData': userModel.toJson(),
-      }).onError((error, stackTrace) => print(error));
+      favoriteRef
+          .doc(_firebaseAuth.currentUser.uid)
+          .collection(favoritesName)
+          .add(userModel.toJson());
     }
   }
 
   deleteFromFavorite(User user, String id) async {
     if (user != null) {
-      await favoriteRef.doc(id).delete();
+      await favoriteRef
+          .doc(_firebaseAuth.currentUser.uid)
+          .collection(favoritesName)
+          .doc(id)
+          .delete();
     }
   }
 }

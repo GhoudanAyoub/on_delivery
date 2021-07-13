@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class Orders {
+  String orderId;
   GeoPoint startAt;
   GeoPoint endAt;
   String userId;
@@ -16,7 +17,8 @@ class Orders {
   bool lunchStatus;
 
   Orders(
-      {this.startAt,
+      {this.orderId,
+      this.startAt,
       this.endAt,
       this.userId,
       this.agentId,
@@ -44,12 +46,14 @@ class Orders {
     maxWeight = json['maxWeight'];
     numberItem = json['numberItem'];
     lunchStatus = json['lunchStatus'];
+    orderId = json['orderId'];
   }
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = new Map<String, dynamic>();
     data['startAt'] = this.startAt;
     data['endAt'] = this.endAt;
+    data['orderId'] = this.orderId;
     data['userId'] = this.userId;
     data['agentId'] = this.agentId;
     data['price'] = this.price;

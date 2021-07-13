@@ -42,6 +42,7 @@ class _ConversationState extends State<Conversation> {
   int stages = 1;
   Orders initOrder;
   bool agentRole = false;
+  bool doneChoosing = false;
 
   @override
   void initState() {
@@ -216,7 +217,8 @@ class _ConversationState extends State<Conversation> {
                       onPressed: () async {
                         sendBotMessage(
                             "Thank you for reaching out with me but I’m sorry I am busy.",
-                            firebaseAuth.currentUser);
+                            firebaseAuth.currentUser,
+                            3);
                         Navigator.pop(context);
                       }),
                   SizedBox(
@@ -304,10 +306,10 @@ class _ConversationState extends State<Conversation> {
                       ),
                       width: SizeConfig.screenWidth - 150,
                       onPressed: () async {
-                        sendBotMessage("Yes,Sure", firebaseAuth.currentUser);
+                        sendBotMessage("Yes,Sure", firebaseAuth.currentUser, 3);
                         sendBotMessage("please confirm you position",
-                            firebaseAuth.currentUser);
-
+                            firebaseAuth.currentUser, 3);
+                        //todo : now update the chat order and the global orders same method but the documents r deference
                         Navigator.pop(context);
                       }),
                   SizedBox(
@@ -316,6 +318,93 @@ class _ConversationState extends State<Conversation> {
                   RaisedGradientButton(
                       child: Text(
                         'Cancel',
+                        style: TextStyle(
+                          fontSize: 16,
+                          color: Colors.grey[600],
+                          letterSpacing: 1,
+                        ),
+                      ),
+                      border: true,
+                      gradient: LinearGradient(
+                        colors: <Color>[Colors.white, Colors.white],
+                      ),
+                      width: SizeConfig.screenWidth - 150,
+                      onPressed: () async {
+                        Navigator.pop(context);
+                      }),
+                ],
+              )
+            ],
+          );
+        });
+  }
+
+  locationNotificationInto() {
+    return showDialog(
+        context: context,
+        builder: (context) {
+          return SimpleDialog(
+            contentPadding: EdgeInsets.only(left: 30, right: 30, bottom: 20),
+            backgroundColor: Colors.white,
+            shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(5.0)),
+            children: [
+              Container(
+                padding:
+                    EdgeInsets.only(left: 10, right: 10, bottom: 20, top: 40),
+                width: 150,
+                child: Center(
+                  child: Column(
+                    children: [
+                      SizedBox(
+                        height: 5,
+                      ),
+                      Text(
+                        'Do You want to change your order location?\nif not we will use the one set before',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          fontSize: 14,
+                          letterSpacing: 1,
+                          fontFamily: "Poppins",
+                          color: Colors.grey[600],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              SizedBox(
+                height: 20,
+              ),
+              Column(
+                children: [
+                  RaisedGradientButton(
+                      child: Text(
+                        'Yes,Change it',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                          letterSpacing: 1,
+                          color: Colors.white,
+                        ),
+                      ),
+                      border: false,
+                      gradient: LinearGradient(
+                        colors: <Color>[
+                          Color.fromRGBO(82, 238, 79, 1),
+                          Color.fromRGBO(5, 151, 0, 1)
+                        ],
+                      ),
+                      width: SizeConfig.screenWidth - 150,
+                      onPressed: () async {
+                        Navigator.pop(context);
+                      }),
+                  SizedBox(
+                    height: 20,
+                  ),
+                  RaisedGradientButton(
+                      child: Text(
+                        'No keep it',
                         style: TextStyle(
                           fontSize: 16,
                           color: Colors.grey[600],
@@ -409,16 +498,27 @@ class _ConversationState extends State<Conversation> {
                                           messages.reversed
                                               .toList()[index]
                                               .data());
-                                      return ChatBubble(
-                                        message: '${message.content}',
-                                        time: message?.time,
-                                        isMe: message?.senderUid == user?.uid,
-                                        type: message?.type,
-                                        accepted: message.content
-                                            .toLowerCase()
-                                            .contains(
-                                                "Thank you for reaching out with me but I’m sorry I am busy."
-                                                    .toLowerCase()),
+                                      return GestureDetector(
+                                        onTap: () {
+                                          if (message.content
+                                                  .toLowerCase()
+                                                  .contains(
+                                                      "please confirm you position") &&
+                                              agentRole == false) {
+                                            locationNotificationInto();
+                                          }
+                                        },
+                                        child: ChatBubble(
+                                          message: '${message.content}',
+                                          time: message?.time,
+                                          isMe: message?.senderUid == user?.uid,
+                                          type: message?.type,
+                                          accepted: message.content
+                                              .toLowerCase()
+                                              .contains(
+                                                  "Thank you for reaching out with me but I’m sorry I am busy."
+                                                      .toLowerCase()),
+                                        ),
                                       );
                                     },
                                   );
@@ -511,7 +611,10 @@ class _ConversationState extends State<Conversation> {
                         ],
                       ),
                     )),
-                    widget.isAgent && agentRole && initOrder.lunchStatus == true
+                    widget.isAgent &&
+                            agentRole &&
+                            initOrder.lunchStatus == true &&
+                            (initOrder.status == null && doneChoosing == false)
                         ? Align(
                             alignment: Alignment.bottomCenter,
                             child: Row(
@@ -823,16 +926,31 @@ class _ConversationState extends State<Conversation> {
     }
   }
 
-  sendBotMessage(String msg, var user) async {
+  sendBotMessage(String msg, var user, int stage) async {
     Message message = Message(
         content: '$msg',
         senderUid: user?.uid,
         type: MessageType.TEXT,
         time: Timestamp.now(),
-        stages: 4);
+        stages: stage);
 
     if (msg.isNotEmpty) {
       send(message, widget.chatId);
+      if (msg.contains(
+          "Thank you for reaching out with me but I’m sorry I am busy.")) {
+        FirebaseService().updateOrdersStatus("canceled", initOrder.orderId,
+            firebaseAuth.currentUser.uid, widget.chatId);
+        setState(() {
+          doneChoosing = true;
+        });
+      }
+      if ((msg.contains("Yes,Sure"))) {
+        FirebaseService().updateOrdersStatus("pending", initOrder.orderId,
+            firebaseAuth.currentUser.uid, widget.chatId);
+        setState(() {
+          doneChoosing = true;
+        });
+      }
     }
   }
 

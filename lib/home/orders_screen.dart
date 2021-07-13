@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lottie/lottie.dart';
 import 'package:on_delivery/block/navigation_block/navigation_block.dart';
+import 'package:on_delivery/home/search_screen.dart';
 import 'package:on_delivery/models/User.dart';
 import 'package:on_delivery/models/category.dart';
 import 'package:on_delivery/models/order.dart';
@@ -55,6 +56,27 @@ class _OrderScreenState extends State<OrderScreen> {
       });
     }
   }
+
+  @override
+  void initState() {
+    getOrders();
+    super.initState();
+  }
+
+  List<Category> categories = [
+    Category(
+      id: 1,
+      name: "All",
+    ),
+    Category(
+      id: 2,
+      name: "Current Orders",
+    ),
+    Category(
+      id: 3,
+      name: "Historic",
+    ),
+  ];
 
   @override
   Widget build(BuildContext context) {
@@ -205,54 +227,233 @@ class _OrderScreenState extends State<OrderScreen> {
               SizedBox(
                 height: getProportionateScreenHeight(20),
               ),
-              Container(
-                height: getProportionateScreenHeight(60),
-                decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      colors: <Color>[
-                        Color.fromRGBO(82, 238, 79, 1),
-                        Color.fromRGBO(5, 151, 0, 1)
-                      ],
-                    ),
-                    borderRadius: BorderRadius.circular(10.0),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.grey[500],
-                        offset: Offset(0.0, 1.5),
-                        blurRadius: 1.5,
-                      ),
-                    ]),
-                child: Material(
-                  color: Colors.transparent,
-                  child: InkWell(
-                      onTap: () async {},
-                      child: Center(
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            Image.asset(
-                              "assets/images/looking for agent white.png",
-                              height: getProportionateScreenHeight(40),
+              StreamBuilder(
+                stream: usersRef.doc(firebaseAuth.currentUser.uid).snapshots(),
+                builder: (context, AsyncSnapshot<DocumentSnapshot> snapshot) {
+                  if (snapshot.hasData) {
+                    user1 = UserModel.fromJson(snapshot.data.data());
+                    if (user1.type.toLowerCase().contains("client"))
+                      return Container(
+                        height: 60.0,
+                        decoration: BoxDecoration(
+                            gradient: LinearGradient(
+                              colors: <Color>[
+                                Color.fromRGBO(82, 238, 79, 1),
+                                Color.fromRGBO(5, 151, 0, 1)
+                              ],
                             ),
-                            SizedBox(
-                              width: getProportionateScreenHeight(20),
-                            ),
-                            Text(
-                              'Looking For agent',
-                              style: TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.w600,
-                                letterSpacing: 1,
-                                color: Colors.white,
+                            borderRadius: BorderRadius.circular(10.0),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.grey[500],
+                                offset: Offset(0.0, 1.5),
+                                blurRadius: 1.5,
                               ),
-                            ),
-                          ],
+                            ]),
+                        child: Material(
+                          color: Colors.transparent,
+                          child: InkWell(
+                              onTap: () async {
+                                Navigator.pushNamed(
+                                    context, SearchScreen.routeName);
+                              },
+                              child: Center(
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  children: [
+                                    Image.asset(
+                                      "assets/images/looking for agent white.png",
+                                      height: 40,
+                                    ),
+                                    SizedBox(
+                                      width: 20,
+                                    ),
+                                    Text(
+                                      'Looking For agent',
+                                      style: TextStyle(
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.w600,
+                                        letterSpacing: 1,
+                                        color: Colors.white,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              )),
                         ),
-                      )),
-                ),
+                      );
+                  }
+                  return Container(
+                    height: 0,
+                  );
+                },
               ),
               SizedBox(height: getProportionateScreenHeight(10)),
+              SizedBox(
+                height: 20,
+              ),
+              Align(
+                alignment: Alignment.topCenter,
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Container(
+                      height: 50,
+                      child: ListView.separated(
+                        shrinkWrap: true,
+                        scrollDirection: Axis.horizontal,
+                        padding: EdgeInsets.only(top: 15),
+                        itemBuilder: (BuildContext context, int index) {
+                          return InkWell(
+                            onTap: () {
+                              setState(() {
+                                _activeTabHome = index;
+                                CatName = categories[index].name.toLowerCase();
+                                //search(CatName);
+                              });
+                            },
+                            child: AnimatedContainer(
+                              duration: Duration(milliseconds: 450),
+                              padding: EdgeInsets.symmetric(
+                                horizontal: 10.0,
+                              ),
+                              height: 10,
+                              child: Container(
+                                child: Stack(
+                                  clipBehavior: Clip.none,
+                                  children: [
+                                    Text(
+                                      categories[index].name,
+                                      style: TextStyle(
+                                        letterSpacing: 1,
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.w600,
+                                        color: _activeTabHome == index
+                                            ? Colors.black
+                                            : Colors.grey[400],
+                                      ),
+                                    ),
+                                    _activeTabHome == index
+                                        ? Positioned(
+                                            right: -25,
+                                            top: -10,
+                                            child: Text(
+                                              "(${filteredOrders.length.toString()})",
+                                              style: TextStyle(
+                                                letterSpacing: 1,
+                                                fontSize: 16,
+                                                fontWeight: FontWeight.w600,
+                                                color: _activeTabHome == index
+                                                    ? Colors.green
+                                                    : Colors.grey[400],
+                                              ),
+                                            ),
+                                          )
+                                        : SizedBox(
+                                            height: 0,
+                                            width: 0,
+                                          ),
+                                    SizedBox(
+                                      width: 20,
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          );
+                        },
+                        separatorBuilder: (BuildContext context, int index) {
+                          return SizedBox(
+                            width: 5.0,
+                          );
+                        },
+                        itemCount: categories.length,
+                      ),
+                    ),
+                    Container(
+                      height: getProportionateScreenHeight(50),
+                      child: IconButton(
+                        icon: Icon(
+                          CupertinoIcons.search,
+                          size: 30,
+                          color: Colors.black,
+                        ),
+                        onPressed: () {
+                          setState(() {
+                            searchClicked = !searchClicked;
+                          });
+                        },
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              SizedBox(
+                height: 10,
+              ),
+              searchClicked
+                  ? Theme(
+                      data: ThemeData(
+                        primaryColor: Theme.of(context).accentColor,
+                        accentColor: Theme.of(context).accentColor,
+                      ),
+                      child: TextFormField(
+                        cursorColor: Colors.black,
+                        controller: _searchedController,
+                        onChanged: (query) {
+                          search(query);
+                        },
+                        style: TextStyle(
+                          fontSize: 15.0,
+                        ),
+                        decoration: InputDecoration(
+                            labelText: "First Name,Last Name, Activities",
+                            fillColor: Color.fromRGBO(239, 240, 246, 1),
+                            hintStyle: TextStyle(
+                              color: Color.fromRGBO(110, 113, 130, 1),
+                            ),
+                            filled: true,
+                            /*hintText: widget.hintText,*/
+                            contentPadding:
+                                EdgeInsets.symmetric(horizontal: 10.0),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.all(
+                                Radius.circular(10.0),
+                              ),
+                              borderSide: BorderSide(
+                                color: Colors.white,
+                                width: 0.0,
+                              ),
+                            ),
+                            enabledBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.all(
+                                Radius.circular(10.0),
+                              ),
+                              borderSide: BorderSide(
+                                color: Colors.white,
+                                width: 0.0,
+                              ),
+                            ),
+                            hoverColor: GBottomNav,
+                            focusedBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.all(
+                                Radius.circular(10.0),
+                              ),
+                              borderSide: BorderSide(
+                                color: Color.fromRGBO(110, 113, 145, 1),
+                                width: 1.0,
+                              ),
+                            ),
+                            errorStyle: TextStyle(height: 0.0, fontSize: 0.0)),
+                      ))
+                  : SizedBox(
+                      height: 0,
+                    ),
+              SizedBox(
+                height: 10,
+              ),
               orderAgent(),
               Align(
                 alignment: Alignment.bottomCenter,
@@ -297,204 +498,21 @@ class _OrderScreenState extends State<OrderScreen> {
   }
 
   orderAgent() {
-    List<Category> categories = [
-      Category(
-        id: 1,
-        name: "All",
-      ),
-      Category(
-        id: 2,
-        name: "Current Orders",
-      ),
-      Category(
-        id: 3,
-        name: "Historic",
-      ),
-    ];
     return Expanded(
-        child: ListView(
+        child: Column(
       children: [
-        SizedBox(
-          height: 20,
-        ),
-        Align(
-          alignment: Alignment.topCenter,
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Container(
-                height: 50,
-                child: ListView.separated(
-                  shrinkWrap: true,
-                  scrollDirection: Axis.horizontal,
-                  padding: EdgeInsets.only(top: 15),
-                  itemBuilder: (BuildContext context, int index) {
-                    return InkWell(
-                      onTap: () {
-                        setState(() {
-                          _activeTabHome = index;
-                          CatName = categories[index].name.toLowerCase();
-                          //search(CatName);
-                        });
-                      },
-                      child: AnimatedContainer(
-                        duration: Duration(milliseconds: 450),
-                        padding: EdgeInsets.symmetric(
-                          horizontal: 10.0,
-                        ),
-                        height: 10,
-                        child: Container(
-                          child: Stack(
-                            clipBehavior: Clip.none,
-                            children: [
-                              Text(
-                                categories[index].name,
-                                style: TextStyle(
-                                  letterSpacing: 1,
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.w600,
-                                  color: _activeTabHome == index
-                                      ? Colors.black
-                                      : Colors.grey[400],
-                                ),
-                              ),
-                              _activeTabHome == index
-                                  ? Positioned(
-                                      right: -25,
-                                      top: -10,
-                                      child: Text(
-                                        "(${filteredOrders.length.toString()})",
-                                        style: TextStyle(
-                                          letterSpacing: 1,
-                                          fontSize: 16,
-                                          fontWeight: FontWeight.w600,
-                                          color: _activeTabHome == index
-                                              ? Colors.green
-                                              : Colors.grey[400],
-                                        ),
-                                      ),
-                                    )
-                                  : SizedBox(
-                                      height: 0,
-                                      width: 0,
-                                    ),
-                              SizedBox(
-                                width: 20,
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    );
-                  },
-                  separatorBuilder: (BuildContext context, int index) {
-                    return SizedBox(
-                      width: 5.0,
-                    );
-                  },
-                  itemCount: categories.length,
-                ),
-              ),
-              Container(
-                height: getProportionateScreenHeight(50),
-                child: IconButton(
-                  icon: Icon(
-                    CupertinoIcons.search,
-                    size: 30,
-                    color: Colors.black,
-                  ),
-                  onPressed: () {
-                    setState(() {
-                      searchClicked = !searchClicked;
-                    });
-                  },
-                ),
-              ),
-            ],
-          ),
-        ),
-        SizedBox(
-          height: 10,
-        ),
-        searchClicked
-            ? Theme(
-                data: ThemeData(
-                  primaryColor: Theme.of(context).accentColor,
-                  accentColor: Theme.of(context).accentColor,
-                ),
-                child: TextFormField(
-                  cursorColor: Colors.black,
-                  controller: _searchedController,
-                  onChanged: (query) {
-                    search(query);
-                  },
-                  style: TextStyle(
-                    fontSize: 15.0,
-                  ),
-                  decoration: InputDecoration(
-                      labelText: "First Name,Last Name, Activities",
-                      fillColor: Color.fromRGBO(239, 240, 246, 1),
-                      hintStyle: TextStyle(
-                        color: Color.fromRGBO(110, 113, 130, 1),
-                      ),
-                      filled: true,
-                      /*hintText: widget.hintText,*/
-                      contentPadding: EdgeInsets.symmetric(horizontal: 10.0),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.all(
-                          Radius.circular(10.0),
-                        ),
-                        borderSide: BorderSide(
-                          color: Colors.white,
-                          width: 0.0,
-                        ),
-                      ),
-                      enabledBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.all(
-                          Radius.circular(10.0),
-                        ),
-                        borderSide: BorderSide(
-                          color: Colors.white,
-                          width: 0.0,
-                        ),
-                      ),
-                      hoverColor: GBottomNav,
-                      focusedBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.all(
-                          Radius.circular(10.0),
-                        ),
-                        borderSide: BorderSide(
-                          color: Color.fromRGBO(110, 113, 145, 1),
-                          width: 1.0,
-                        ),
-                      ),
-                      errorStyle: TextStyle(height: 0.0, fontSize: 0.0)),
-                ))
-            : SizedBox(
-                height: 0,
-              ),
-        SizedBox(
-          height: 10,
-        ),
         _activeTabHome == 0
-            ? Container(
-                child: buildAllOrder(),
-                margin: EdgeInsets.fromLTRB(0, 0, 0, 10))
+            ? buildAllOrder()
             : SizedBox(
                 height: 0,
               ),
         _activeTabHome == 1
-            ? Container(
-                child: buildCurrentOrder(),
-                margin: EdgeInsets.fromLTRB(0, 0, 0, 10))
+            ? buildCurrentOrder()
             : SizedBox(
                 height: 0,
               ),
         _activeTabHome == 2
-            ? Container(
-                child: buildHistoricOrder(),
-                margin: EdgeInsets.fromLTRB(0, 0, 0, 10))
+            ? buildHistoricOrder()
             : SizedBox(
                 height: 0,
               ),
@@ -509,7 +527,8 @@ class _OrderScreenState extends State<OrderScreen> {
           child: Center(child: Lottie.asset('assets/lotties/not_found.json')),
         );
       } else {
-        return ListView.builder(
+        return Expanded(
+            child: ListView.builder(
           itemCount: filteredOrders.length,
           scrollDirection: Axis.vertical,
           shrinkWrap: true,
@@ -736,7 +755,7 @@ class _OrderScreenState extends State<OrderScreen> {
                   );
                 });
           },
-        );
+        ));
       }
     } else {
       return Container(
@@ -753,7 +772,8 @@ class _OrderScreenState extends State<OrderScreen> {
           child: Center(child: Lottie.asset('assets/lotties/not_found.json')),
         );
       } else {
-        return ListView.builder(
+        return Expanded(
+            child: ListView.builder(
           itemCount: filteredOrders.length,
           scrollDirection: Axis.vertical,
           shrinkWrap: true,
@@ -761,7 +781,8 @@ class _OrderScreenState extends State<OrderScreen> {
             DocumentSnapshot doc = filteredOrders[index];
             Orders orders = Orders.fromJson(doc.data());
 
-            if (orders.status.toLowerCase().contains("pending")) {
+            if (orders.status != null &&
+                orders.status.toLowerCase().contains("pending")) {
               return StreamBuilder(
                   stream: usersRef.doc(orders.agentId).snapshots(),
                   builder: (context, AsyncSnapshot<DocumentSnapshot> snapshot) {
@@ -987,13 +1008,9 @@ class _OrderScreenState extends State<OrderScreen> {
                     );
                   });
             }
-
-            return Container(
-              child:
-                  Center(child: Lottie.asset('assets/lotties/not_found.json')),
-            );
+            return Container();
           },
-        );
+        ));
       }
     } else {
       return Container(
@@ -1010,7 +1027,8 @@ class _OrderScreenState extends State<OrderScreen> {
           child: Center(child: Lottie.asset('assets/lotties/not_found.json')),
         );
       } else {
-        return ListView.builder(
+        return Expanded(
+            child: ListView.builder(
           itemCount: filteredOrders.length,
           scrollDirection: Axis.vertical,
           shrinkWrap: true,
@@ -1018,8 +1036,10 @@ class _OrderScreenState extends State<OrderScreen> {
             DocumentSnapshot doc = filteredOrders[index];
             Orders orders = Orders.fromJson(doc.data());
 
-            if (orders.status.toLowerCase().contains("canceled") ||
-                orders.status.toLowerCase().contains("delivered")) {
+            if (orders.status != null &&
+                    orders.status.toLowerCase().contains("canceled") ||
+                orders.status != null &&
+                    orders.status.toLowerCase().contains("delivered")) {
               return StreamBuilder(
                   stream: usersRef.doc(orders.agentId).snapshots(),
                   builder: (context, AsyncSnapshot<DocumentSnapshot> snapshot) {
@@ -1245,12 +1265,9 @@ class _OrderScreenState extends State<OrderScreen> {
                     );
                   });
             }
-            return Container(
-              child:
-                  Center(child: Lottie.asset('assets/lotties/not_found.json')),
-            );
+            return Container();
           },
-        );
+        ));
       }
     } else {
       return Container(
