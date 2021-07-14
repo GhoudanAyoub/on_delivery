@@ -45,29 +45,28 @@ class _OrderScreenState extends State<OrderScreen> {
     setState(() {
       loading = false;
     });
-    filteredOrders.indexWhere((element) {
-      if (element.data()["userId"] == firebaseAuth.currentUser.uid)
-        setState(() {
-          myDocs++;
-        });
-      if (element
-              .data()["status"]
-              .toString()
-              .toLowerCase()
-              .contains("delivered") ||
-          element
-              .data()["status"]
-              .toString()
-              .toLowerCase()
-              .contains("canceled"))
-        setState(() {
-          histoDocs++;
-        });
-      if (element.data()["status"].toString().toLowerCase().contains("pending"))
-        setState(() {
-          currentDocs++;
-        });
-      return true;
+  }
+
+  getMyOrders() {
+    orderRef.snapshots().listen((element) {
+      element.docChanges.forEach((element) {
+        Orders order = Orders.fromJson(element.doc.data());
+        if (order.userId.contains(firebaseAuth.currentUser.uid) ||
+            order.agentId.contains(firebaseAuth.currentUser.uid)) {
+          setState(() {
+            myDocs++;
+          });
+          if (order.status.toLowerCase().contains("delivered") ||
+              order.status.toLowerCase().contains("canceled"))
+            setState(() {
+              histoDocs++;
+            });
+          if (order.status.toLowerCase().contains("pending"))
+            setState(() {
+              currentDocs++;
+            });
+        }
+      });
     });
   }
 
@@ -92,6 +91,7 @@ class _OrderScreenState extends State<OrderScreen> {
   @override
   void initState() {
     getOrders();
+    getMyOrders();
     super.initState();
   }
 
