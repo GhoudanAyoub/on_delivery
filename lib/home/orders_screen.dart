@@ -36,6 +36,7 @@ class _OrderScreenState extends State<OrderScreen> {
   int myDocs = 0;
   int currentDocs = 0;
   int histoDocs = 0;
+  int counter;
 
   getOrders() async {
     QuerySnapshot snap = await orderRef.get();
@@ -70,6 +71,30 @@ class _OrderScreenState extends State<OrderScreen> {
     });
   }
 
+  getMessageCount() {
+    int readCount = 0, messageCount = 0;
+    chatRef
+        .where("users", arrayContains: firebaseAuth.currentUser.uid)
+        .snapshots()
+        .listen((event) {
+      event.docChanges.forEach((element) {
+        readCount +=
+            element.doc.data()['reads'][firebaseAuth.currentUser.uid] ?? 0;
+        chatRef
+            .doc(element.doc.id)
+            .collection('messages')
+            .orderBy('time', descending: true)
+            .snapshots()
+            .listen((event) {
+          messageCount += event.docChanges.length;
+        });
+      });
+    });
+    setState(() {
+      counter = messageCount - readCount;
+    });
+  }
+
   search(String query) {
     if (_searchedController.text == "") {
       filteredOrders = orders;
@@ -92,6 +117,7 @@ class _OrderScreenState extends State<OrderScreen> {
   void initState() {
     getOrders();
     getMyOrders();
+    getMessageCount();
     super.initState();
   }
 
@@ -519,7 +545,12 @@ class _OrderScreenState extends State<OrderScreen> {
               BlocProvider.of<NavigationBloc>(context)
                   .add(NavigationEvents.ChatPageClickedEvent);
             },
-            child: Icon(CupertinoIcons.chat_bubble_text_fill)),
+            child: Icon(
+              counter == 0
+                  ? CupertinoIcons.chat_bubble_text_fill
+                  : CupertinoIcons.chat_bubble_text,
+              color: counter == 0 ? Colors.white : Colors.orange,
+            )),
       ),
     ));
   }
@@ -736,6 +767,7 @@ class _OrderScreenState extends State<OrderScreen> {
                           count: user1.type.toLowerCase().contains("client")
                               ? true
                               : false,
+                          show: true,
                         );
                       }
                       return Container(

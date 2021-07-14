@@ -20,6 +20,7 @@ class OrderLayout extends StatefulWidget {
   final UserModel me;
   final bool track;
   final bool count;
+  final bool show;
   final String Time;
 
   const OrderLayout(
@@ -29,7 +30,8 @@ class OrderLayout extends StatefulWidget {
       this.track = true,
       this.Time,
       this.count = true,
-      this.me})
+      this.me,
+      this.show = false})
       : super(key: key);
   @override
   _OrderLayoutState createState() => _OrderLayoutState();
@@ -346,7 +348,8 @@ class _OrderLayoutState extends State<OrderLayout> {
                           ),
                         )
                       : Container(),
-                  widget.me != null &&
+                  widget.show &&
+                          widget.me != null &&
                           widget.me.type.toLowerCase().contains('agent') == true
                       ? ExpandChild(
                           child: Column(

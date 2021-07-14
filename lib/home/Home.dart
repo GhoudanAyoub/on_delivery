@@ -37,6 +37,7 @@ class _HomeState extends State<Home> {
   TextEditingController _searchedController = TextEditingController();
   ScrollController scrollController = ScrollController();
   UserModel locationService;
+  int counter;
 
   getAgents() async {
     QuerySnapshot snap = await usersRef.get();
@@ -66,6 +67,30 @@ class _HomeState extends State<Home> {
     }
   }
 
+  getMessageCount() {
+    int readCount = 0, messageCount = 0;
+    chatRef
+        .where("users", arrayContains: firebaseAuth.currentUser.uid)
+        .snapshots()
+        .listen((event) {
+      event.docChanges.forEach((element) {
+        readCount +=
+            element.doc.data()['reads'][firebaseAuth.currentUser.uid] ?? 0;
+        chatRef
+            .doc(element.doc.id)
+            .collection('messages')
+            .orderBy('time', descending: true)
+            .snapshots()
+            .listen((event) {
+          messageCount += event.docChanges.length;
+        });
+      });
+    });
+    setState(() {
+      counter = messageCount - readCount;
+    });
+  }
+
   removeFromList(index) {
     filteredAgents.removeAt(index);
   }
@@ -77,6 +102,7 @@ class _HomeState extends State<Home> {
   @override
   void initState() {
     getAgents();
+    getMessageCount();
     super.initState();
   }
 
@@ -470,7 +496,12 @@ class _HomeState extends State<Home> {
                 BlocProvider.of<NavigationBloc>(context)
                     .add(NavigationEvents.ChatPageClickedEvent);
               },
-              child: Icon(CupertinoIcons.chat_bubble_text_fill)),
+              child: Icon(
+                counter == 0
+                    ? CupertinoIcons.chat_bubble_text_fill
+                    : CupertinoIcons.chat_bubble_text,
+                color: counter == 0 ? Colors.white : Colors.orange,
+              )),
         ),
       ),
     );
