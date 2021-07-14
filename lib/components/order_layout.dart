@@ -11,6 +11,7 @@ import 'package:on_delivery/models/order.dart';
 import 'package:on_delivery/utils/FirebaseService.dart';
 import 'package:on_delivery/utils/SizeConfig.dart';
 import 'package:on_delivery/utils/constants.dart';
+import 'package:on_delivery/utils/firebase.dart';
 import 'package:on_delivery/utils/utils.dart';
 import 'package:provider/provider.dart';
 
@@ -231,25 +232,29 @@ class _OrderLayoutState extends State<OrderLayout> {
                           color: widget.order.status
                                   .toLowerCase()
                                   .contains("canceled")
-                              ? Color.fromRGBO(10, 201, 71, 1).withOpacity(0.2)
+                              ? Color.fromRGBO(254, 29, 29, 1).withOpacity(0.2)
                               : widget.order.status
                                       .toLowerCase()
                                       .contains("pending")
                                   ? Color.fromRGBO(195, 199, 24, 1)
                                       .withOpacity(0.2)
-                                  : Color.fromRGBO(254, 29, 29, 1)
+                                  : Color.fromRGBO(10, 201, 71, 1)
                                       .withOpacity(0.2),
                           border: Border.all(
-                              width: 1,
-                              color: widget.order.status
-                                      .toLowerCase()
-                                      .contains("canceled")
-                                  ? Color.fromRGBO(10, 201, 71, 1)
-                                  : widget.order.status
-                                          .toLowerCase()
-                                          .contains("pending")
-                                      ? Color.fromRGBO(195, 199, 24, 1)
-                                      : Color.fromRGBO(254, 29, 29, 1)),
+                            width: 1,
+                            color: widget.order.status
+                                    .toLowerCase()
+                                    .contains("canceled")
+                                ? Color.fromRGBO(254, 29, 29, 1)
+                                    .withOpacity(0.2)
+                                : widget.order.status
+                                        .toLowerCase()
+                                        .contains("pending")
+                                    ? Color.fromRGBO(195, 199, 24, 1)
+                                        .withOpacity(0.2)
+                                    : Color.fromRGBO(10, 201, 71, 1)
+                                        .withOpacity(0.2),
+                          ),
                           borderRadius: BorderRadius.circular(10),
                         ),
                         height: 30,
@@ -260,18 +265,19 @@ class _OrderLayoutState extends State<OrderLayout> {
                             Text(
                               "${widget.order.status}",
                               style: TextStyle(
-                                  fontSize: 12,
-                                  fontWeight: FontWeight.w600,
-                                  color: widget.order.status
-                                          .toLowerCase()
-                                          .contains("canceled")
-                                      ? Color.fromRGBO(10, 201, 71, 1)
-                                      : widget.order.status
-                                              .toLowerCase()
-                                              .contains("pending")
-                                          ? Color.fromRGBO(195, 199, 24, 1)
-                                          : Color.fromRGBO(254, 29, 29, 1)),
-                            ),
+                                fontSize: 12,
+                                fontWeight: FontWeight.w600,
+                                color: widget.order.status
+                                        .toLowerCase()
+                                        .contains("canceled")
+                                    ? Color.fromRGBO(254, 29, 29, 1)
+                                    : widget.order.status
+                                            .toLowerCase()
+                                            .contains("pending")
+                                        ? Color.fromRGBO(195, 199, 24, 1)
+                                        : Color.fromRGBO(10, 201, 71, 1),
+                              ),
+                            )
                           ],
                         ),
                       ),
@@ -420,6 +426,7 @@ class _OrderLayoutState extends State<OrderLayout> {
                       ),
                       width: SizeConfig.screenWidth - 150,
                       onPressed: () async {
+                        orderRef.doc(widget.order.orderId).delete();
                         Navigator.pop(context);
                       }),
                   SizedBox(

@@ -33,12 +33,38 @@ class _OrderScreenState extends State<OrderScreen> {
   List<DocumentSnapshot> filteredOrders = [];
   bool loading = true;
   LocationProvider locationData;
+  int myDocs = 0;
+  int currentDocs = 0;
+  int histoDocs = 0;
 
   getOrders() async {
     QuerySnapshot snap = await orderRef.get();
     List<DocumentSnapshot> doc = snap.docs;
     orders = doc;
     filteredOrders = doc;
+    filteredOrders.indexWhere((element) {
+      if (element.data()["userId"] == firebaseAuth.currentUser.uid)
+        setState(() {
+          myDocs++;
+        });
+      if (element.data()["status"].toString().toLowerCase().contains("pending"))
+        setState(() {
+          currentDocs++;
+        });
+      if (element
+              .data()["status"]
+              .toString()
+              .toLowerCase()
+              .contains("delivered") ||
+          element
+              .data()["status"]
+              .toString()
+              .toLowerCase()
+              .contains("canceled"))
+        setState(() {
+          histoDocs++;
+        });
+    });
     setState(() {
       loading = false;
     });
@@ -234,7 +260,7 @@ class _OrderScreenState extends State<OrderScreen> {
                 ),
               ),
               SizedBox(
-                height: getProportionateScreenHeight(20),
+                height: 10,
               ),
               StreamBuilder(
                 stream: usersRef.doc(firebaseAuth.currentUser.uid).snapshots(),
@@ -293,14 +319,14 @@ class _OrderScreenState extends State<OrderScreen> {
                         ),
                       );
                   }
-                  return Container(
-                    height: 0,
+                  return Divider(
+                    thickness: 1,
+                    color: Color.fromRGBO(230, 230, 230, 1),
                   );
                 },
               ),
-              SizedBox(height: getProportionateScreenHeight(10)),
               SizedBox(
-                height: 15,
+                height: 10,
               ),
               Align(
                 alignment: Alignment.topCenter,
@@ -349,7 +375,7 @@ class _OrderScreenState extends State<OrderScreen> {
                                             right: -25,
                                             top: -10,
                                             child: Text(
-                                              "(${filteredOrders.length.toString()})",
+                                              "(${_activeTabHome == 0 ? myDocs.toString() : _activeTabHome == 1 ? currentDocs.toString() : histoDocs.toString()})",
                                               style: TextStyle(
                                                 letterSpacing: 1,
                                                 fontSize: 16,
@@ -487,18 +513,12 @@ class _OrderScreenState extends State<OrderScreen> {
       floatingActionButton: Container(
         padding: EdgeInsets.fromLTRB(24, 24, 24, 10),
         child: FloatingActionButton(
-          backgroundColor: Colors.green,
-          onPressed: () {
-            BlocProvider.of<NavigationBloc>(context)
-                .add(NavigationEvents.ChatPageClickedEvent);
-          },
-          child: Expanded(
-            child: Image.asset(
-              'assets/images/chatbutton.png',
-              fit: BoxFit.fill,
-            ),
-          ),
-        ),
+            backgroundColor: Colors.green,
+            onPressed: () {
+              BlocProvider.of<NavigationBloc>(context)
+                  .add(NavigationEvents.ChatPageClickedEvent);
+            },
+            child: Icon(CupertinoIcons.chat_bubble_text_fill)),
       ),
     ));
   }
@@ -562,6 +582,7 @@ class _OrderScreenState extends State<OrderScreen> {
       }
     } else {
       return Container(
+        height: 350,
         child: Center(child: Lottie.asset('assets/lotties/comp_loading.json')),
       );
     }
