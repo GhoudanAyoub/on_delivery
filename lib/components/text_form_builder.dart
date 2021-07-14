@@ -19,6 +19,7 @@ class TextFormBuilder extends StatefulWidget {
   final Key key;
   final IconData prefix;
   bool suffix = false;
+  final bool readOnly;
 
   TextFormBuilder(
       {this.prefix,
@@ -36,7 +37,8 @@ class TextFormBuilder extends StatefulWidget {
       this.validateFunction,
       this.onSaved,
       this.onChange,
-      this.key});
+      this.key,
+      this.readOnly = false});
 
   @override
   _TextFormBuilderState createState() => _TextFormBuilderState();
@@ -70,6 +72,7 @@ class _TextFormBuilderState extends State<TextFormBuilder> {
                     setState(() {});
                     widget.onSaved(val);
                   },
+                  readOnly: widget.readOnly,
                   style: TextStyle(
                     fontSize: 15.0,
                   ),

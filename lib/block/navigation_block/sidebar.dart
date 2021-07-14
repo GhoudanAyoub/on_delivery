@@ -493,7 +493,7 @@ class _SideBarState extends State<SideBar>
                 width: 150,
                 child: Center(
                   child: Text(
-                    'There are the bank account information of agent name',
+                    'There are Your bank account information',
                     textAlign: TextAlign.center,
                     style: TextStyle(
                       fontSize: 14,
@@ -516,6 +516,7 @@ class _SideBarState extends State<SideBar>
                         TextFormBuilder(
                           controller: ribController,
                           hintText: "RIB",
+                          readOnly: true,
                           suffix: false,
                           textInputAction: TextInputAction.next,
                           validateFunction: Validations.validateRib,
@@ -526,6 +527,7 @@ class _SideBarState extends State<SideBar>
                         TextFormBuilder(
                           controller: bankNameController,
                           hintText: "Bank Name",
+                          readOnly: true,
                           suffix: false,
                           textInputAction: TextInputAction.next,
                           validateFunction: Validations.validateBankName,

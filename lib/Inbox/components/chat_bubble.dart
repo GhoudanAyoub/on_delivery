@@ -84,20 +84,41 @@ class _ChatBubbleState extends State<ChatBubble> {
                             style: TextStyle(
                                 fontSize: 14,
                                 letterSpacing: 0.8,
-                                color: widget.message
-                                        .toLowerCase()
-                                        .contains("please confirm you position")
+                                color: widget.message.toLowerCase().contains(
+                                            "please confirm you position") ||
+                                        widget.message
+                                            .contains("cash delivery") ||
+                                        widget.message
+                                            .contains("Bank transfer option")
                                     ? Color.fromRGBO(45, 111, 214, 1)
                                     : Color.fromRGBO(10, 22, 41, 1),
                                 decoration: widget.message
-                                        .toLowerCase()
-                                        .contains("please confirm you position")
+                                            .toLowerCase()
+                                            .contains(
+                                                "please confirm you position") ||
+                                        widget.message
+                                            .contains("cash delivery") ||
+                                        widget.message
+                                            .contains("Bank transfer option")
                                     ? TextDecoration.underline
                                     : TextDecoration.none),
                           ),
                           SizedBox(
                             height: 2,
                           ),
+                          widget.message.contains("cash delivery")
+                              ? Text(
+                                  "OR",
+                                  style: TextStyle(
+                                    fontSize: 14,
+                                    letterSpacing: 0.8,
+                                    color: Color.fromRGBO(166, 169, 193, 1),
+                                  ),
+                                )
+                              : SizedBox(
+                                  height: 0,
+                                  width: 0,
+                                ),
                           widget.accepted == true
                               ? Text(
                                   "Order declined",

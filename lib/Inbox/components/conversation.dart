@@ -3,8 +3,11 @@ import 'dart:async';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:geocoder/geocoder.dart';
 import 'package:on_delivery/components/RaisedGradientButton.dart';
 import 'package:on_delivery/components/indicators.dart';
+import 'package:on_delivery/components/text_form_builder.dart';
+import 'package:on_delivery/home/trackingmap.dart';
 import 'package:on_delivery/models/User.dart';
 import 'package:on_delivery/models/enum/message_type.dart';
 import 'package:on_delivery/models/new_message_system.dart';
@@ -13,6 +16,7 @@ import 'package:on_delivery/utils/FirebaseService.dart';
 import 'package:on_delivery/utils/SizeConfig.dart';
 import 'package:on_delivery/utils/constants.dart';
 import 'package:on_delivery/utils/firebase.dart';
+import 'package:on_delivery/utils/validation.dart';
 import 'package:on_delivery/viewModel/user_view_model.dart';
 import 'package:provider/provider.dart';
 import 'package:timeago/timeago.dart' as timeago;
@@ -37,12 +41,18 @@ class _ConversationState extends State<Conversation> {
   FocusNode focusNode = FocusNode();
   ScrollController scrollController = ScrollController();
   TextEditingController messageController = TextEditingController();
+  TextEditingController ribController = TextEditingController();
+  TextEditingController bankNameController = TextEditingController();
   bool isFirst = false;
   String chatId;
   int stages = 1;
   Orders initOrder;
   bool agentRole = false;
   bool doneChoosing = false;
+  String startFrom, endAt;
+  String agentId;
+  UserModel agentFullData;
+  Message message;
 
   @override
   void initState() {
@@ -69,11 +79,8 @@ class _ConversationState extends State<Conversation> {
   }
 
   setTyping(typing) {
-    UserViewModel viewModel = Provider.of<UserViewModel>(context);
-    viewModel.setUser();
-    var user = Provider.of<UserViewModel>(context, listen: true).user;
     Provider.of<ConversationViewModel>(context, listen: false)
-        .setUserTyping(widget.chatId, user, typing);
+        .setUserTyping(widget.chatId, firebaseAuth.currentUser, typing);
   }
 
   getChatOrder() async {
@@ -84,6 +91,7 @@ class _ConversationState extends State<Conversation> {
       setState(() {
         initOrder = orders;
       });
+      getCurrentCoordinatesName();
     }
   }
 
@@ -94,6 +102,7 @@ class _ConversationState extends State<Conversation> {
       if (users[0].toString().contains(firebaseAuth.currentUser.uid))
         setState(() {
           agentRole = true;
+          agentId = users[0].toString();
         });
     }
   }
@@ -217,7 +226,7 @@ class _ConversationState extends State<Conversation> {
                       onPressed: () async {
                         sendBotMessage(
                             "Thank you for reaching out with me but I’m sorry I am busy.",
-                            firebaseAuth.currentUser,
+                            firebaseAuth.currentUser.uid,
                             3);
                         Navigator.pop(context);
                       }),
@@ -306,9 +315,10 @@ class _ConversationState extends State<Conversation> {
                       ),
                       width: SizeConfig.screenWidth - 150,
                       onPressed: () async {
-                        sendBotMessage("Yes,Sure", firebaseAuth.currentUser, 3);
+                        sendBotMessage(
+                            "Yes,Sure", firebaseAuth.currentUser.uid, 3);
                         sendBotMessage("please confirm you position",
-                            firebaseAuth.currentUser, 3);
+                            firebaseAuth.currentUser.uid, 3);
                         //todo : now update the chat order and the global orders same method but the documents r deference
                         Navigator.pop(context);
                       }),
@@ -417,6 +427,8 @@ class _ConversationState extends State<Conversation> {
                       ),
                       width: SizeConfig.screenWidth - 150,
                       onPressed: () async {
+                        sendBotMessage("Deliver the Items to : $endAt",
+                            firebaseAuth.currentUser.uid, 3);
                         Navigator.pop(context);
                       }),
                 ],
@@ -424,6 +436,16 @@ class _ConversationState extends State<Conversation> {
             ],
           );
         });
+  }
+
+  getCurrentCoordinatesName() async {
+    final coordinates =
+        new Coordinates(initOrder.endAt.latitude, initOrder.endAt.longitude);
+    final addresses =
+        await Geocoder.local.findAddressesFromCoordinates(coordinates);
+    setState(() {
+      endAt = addresses.first.addressLine;
+    });
   }
 
   @override
@@ -498,14 +520,48 @@ class _ConversationState extends State<Conversation> {
                                           messages.reversed
                                               .toList()[index]
                                               .data());
+                                      if (message.content.contains(
+                                              "Deliver the Items to") &&
+                                          agentRole == true &&
+                                          message.stages == 4) {
+                                        sendBotMessage("cash delivery",
+                                            firebaseAuth.currentUser.uid, 5);
+                                        sendBotMessage("Bank transfer option",
+                                            firebaseAuth.currentUser.uid, 5);
+                                      }
                                       return GestureDetector(
                                         onTap: () {
                                           if (message.content
                                                   .toLowerCase()
                                                   .contains(
                                                       "please confirm you position") &&
-                                              agentRole == false) {
+                                              agentRole == false &&
+                                              message.stages != 6) {
                                             locationNotificationInto();
+                                          }
+                                          if (message.content
+                                                  .contains("cash delivery") &&
+                                              agentRole == false &&
+                                              message.stages != 6) {
+                                            sendBotMessage(
+                                                "You choose Cash on delivery. See you there ",
+                                                agentFullData.id,
+                                                4);
+                                          }
+                                          if (message.content.contains(
+                                                  "Bank transfer option") &&
+                                              agentRole == false &&
+                                              message.stages != 6) {
+                                            sendBotMessage(
+                                                "You Choose Bank transfer. You can Click On this Msg to get my bank account RIB",
+                                                agentFullData.id,
+                                                4);
+                                          }
+                                          if (message.content.contains(
+                                                  "You Choose Bank transfer. You can Click On this Msg to get my bank account RIB") &&
+                                              agentRole == false &&
+                                              message.stages != 6) {
+                                            bankAccountID(context);
                                           }
                                         },
                                         child: ChatBubble(
@@ -529,88 +585,316 @@ class _ConversationState extends State<Conversation> {
                               },
                             ),
                           ),
-                          Align(
-                            alignment: Alignment.bottomCenter,
-                            child: Container(
-                                margin: EdgeInsets.only(
-                                    left: 10, right: 10, top: 10, bottom: 10),
-                                decoration: BoxDecoration(
-                                  gradient: LinearGradient(
-                                    colors: <Color>[Colors.white, Colors.white],
+                          StreamBuilder(
+                            stream: messageListStream(chatId),
+                            builder: (context, snapshot) {
+                              if (snapshot.hasData) {
+                                List messages = snapshot.data.documents;
+                                return Container(
+                                  height: 70,
+                                  child: ListView.builder(
+                                    controller: scrollController,
+                                    padding: EdgeInsets.symmetric(
+                                        horizontal: 4.0, vertical: 5),
+                                    itemCount: messages.length,
+                                    reverse: true,
+                                    itemBuilder:
+                                        (BuildContext context, int index) {
+                                      message = Message.fromJson(messages
+                                          .reversed
+                                          .toList()[index]
+                                          .data());
+                                      if (message.stages == 4)
+                                        return Align(
+                                          alignment: Alignment.bottomCenter,
+                                          child: Container(
+                                              margin: EdgeInsets.only(
+                                                  left: 10,
+                                                  right: 10,
+                                                  top: 10,
+                                                  bottom: 10),
+                                              decoration: BoxDecoration(
+                                                gradient: LinearGradient(
+                                                  colors: <Color>[
+                                                    Colors.white,
+                                                    Colors.white
+                                                  ],
+                                                ),
+                                                borderRadius:
+                                                    BorderRadius.circular(10.0),
+                                                border: Border.all(
+                                                    color: Color.fromRGBO(
+                                                        216, 224, 240, 1)),
+                                              ),
+                                              child: Container(
+                                                constraints: BoxConstraints(
+                                                    maxHeight: 100.0),
+                                                child: Row(
+                                                  crossAxisAlignment:
+                                                      CrossAxisAlignment.center,
+                                                  children: [
+                                                    Flexible(
+                                                      child: TextField(
+                                                        controller:
+                                                            messageController,
+                                                        focusNode: focusNode,
+                                                        readOnly: false,
+                                                        style: TextStyle(
+                                                          fontSize: 15.0,
+                                                          color: Colors.black,
+                                                        ),
+                                                        onChanged:
+                                                            setTyping(true),
+                                                        cursorColor:
+                                                            Colors.black,
+                                                        decoration:
+                                                            InputDecoration(
+                                                          contentPadding:
+                                                              EdgeInsets.all(
+                                                                  10.0),
+                                                          enabledBorder:
+                                                              InputBorder.none,
+                                                          border:
+                                                              InputBorder.none,
+                                                          hintText:
+                                                              "Type your message ...",
+                                                          hintStyle: TextStyle(
+                                                            color: Colors.grey,
+                                                          ),
+                                                        ),
+                                                        maxLines: null,
+                                                      ),
+                                                    ),
+                                                    IconButton(
+                                                      icon: Icon(
+                                                        CupertinoIcons
+                                                            .photo_on_rectangle,
+                                                        color: Color.fromRGBO(
+                                                            20, 20, 43, 1),
+                                                      ),
+                                                      onPressed: () => {
+                                                        showPhotoOptions(
+                                                            viewModel, user)
+                                                      },
+                                                    ),
+                                                    GestureDetector(
+                                                      onTap: () {
+                                                        sendMessage(
+                                                            viewModel, user);
+                                                      },
+                                                      child: Padding(
+                                                        padding:
+                                                            EdgeInsets.only(
+                                                                right: 5,
+                                                                top: 8),
+                                                        child: Image.asset(
+                                                            "assets/images/send active.png"),
+                                                      ),
+                                                    )
+                                                  ],
+                                                ),
+                                              )),
+                                        );
+                                      else
+                                        return Align(
+                                          alignment: Alignment.bottomCenter,
+                                          child: Container(
+                                              margin: EdgeInsets.only(
+                                                  left: 10,
+                                                  right: 10,
+                                                  top: 10,
+                                                  bottom: 10),
+                                              decoration: BoxDecoration(
+                                                gradient: LinearGradient(
+                                                  colors: <Color>[
+                                                    Colors.white,
+                                                    Colors.white
+                                                  ],
+                                                ),
+                                                borderRadius:
+                                                    BorderRadius.circular(10.0),
+                                                border: Border.all(
+                                                    color: Color.fromRGBO(
+                                                        216, 224, 240, 1)),
+                                              ),
+                                              child: Container(
+                                                constraints: BoxConstraints(
+                                                    maxHeight: 100.0),
+                                                child: Row(
+                                                  crossAxisAlignment:
+                                                      CrossAxisAlignment.center,
+                                                  children: [
+                                                    Flexible(
+                                                      child: TextField(
+                                                        controller:
+                                                            messageController,
+                                                        focusNode: focusNode,
+                                                        readOnly: true,
+                                                        style: TextStyle(
+                                                          fontSize: 15.0,
+                                                          color: Colors.black,
+                                                        ),
+                                                        onChanged:
+                                                            setTyping(true),
+                                                        cursorColor:
+                                                            Colors.black,
+                                                        decoration:
+                                                            InputDecoration(
+                                                          contentPadding:
+                                                              EdgeInsets.all(
+                                                                  10.0),
+                                                          enabledBorder:
+                                                              InputBorder.none,
+                                                          border:
+                                                              InputBorder.none,
+                                                          hintText:
+                                                              "Type your message ...",
+                                                          hintStyle: TextStyle(
+                                                            color: Colors.grey,
+                                                          ),
+                                                        ),
+                                                        maxLines: null,
+                                                      ),
+                                                    ),
+                                                    IconButton(
+                                                      icon: Icon(
+                                                        CupertinoIcons
+                                                            .photo_on_rectangle,
+                                                        color: Color.fromRGBO(
+                                                            110, 113, 145, 1),
+                                                      ),
+                                                      onPressed: () => {
+                                                        if (message.stages == 4)
+                                                          showPhotoOptions(
+                                                              viewModel, user)
+                                                      },
+                                                    ),
+                                                    GestureDetector(
+                                                      onTap: () {
+                                                        if (messageController
+                                                                .text
+                                                                .isNotEmpty &&
+                                                            message.stages ==
+                                                                4) {
+                                                          sendMessage(
+                                                              viewModel, user);
+                                                        }
+                                                      },
+                                                      child: Padding(
+                                                        padding:
+                                                            EdgeInsets.only(
+                                                                right: 5,
+                                                                top: 0,
+                                                                left: 5),
+                                                        child: Image.asset(
+                                                            "assets/images/send inactive.png"),
+                                                      ),
+                                                    )
+                                                  ],
+                                                ),
+                                              )),
+                                        );
+                                    },
                                   ),
-                                  borderRadius: BorderRadius.circular(10.0),
-                                  border: Border.all(
-                                      color: Color.fromRGBO(216, 224, 240, 1)),
-                                ),
-                                child: Container(
-                                  constraints: BoxConstraints(maxHeight: 100.0),
-                                  child: Row(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.center,
-                                    children: [
-                                      Flexible(
-                                        child: TextField(
-                                          controller: messageController,
-                                          focusNode: focusNode,
-                                          readOnly: stages == 4 ? false : true,
-                                          style: TextStyle(
-                                            fontSize: 15.0,
-                                            color: Colors.black,
-                                          ),
-                                          onChanged: setTyping(true),
-                                          cursorColor: Colors.black,
-                                          decoration: InputDecoration(
-                                            contentPadding:
-                                                EdgeInsets.all(10.0),
-                                            enabledBorder: InputBorder.none,
-                                            border: InputBorder.none,
-                                            hintText: "Type your message ...",
-                                            hintStyle: TextStyle(
-                                              color: Colors.grey,
-                                            ),
-                                          ),
-                                          maxLines: null,
-                                        ),
-                                      ),
-                                      IconButton(
-                                        icon: Icon(
-                                          CupertinoIcons.photo_on_rectangle,
-                                          color: stages == 4
-                                              ? Color.fromRGBO(20, 20, 43, 1)
-                                              : Color.fromRGBO(
-                                                  110, 113, 145, 1),
-                                        ),
-                                        onPressed: () => {
-                                          if (stages == 4)
-                                            showPhotoOptions(viewModel, user)
-                                        },
-                                      ),
-                                      GestureDetector(
-                                        onTap: () {
-                                          if (messageController
-                                                  .text.isNotEmpty &&
-                                              stages == 4) {
-                                            sendMessage(viewModel, user);
-                                          }
-                                        },
-                                        child: Padding(
-                                          padding: stages == 4
-                                              ? EdgeInsets.only(
-                                                  right: 5, top: 8)
-                                              : EdgeInsets.only(
-                                                  right: 5, top: 0, left: 5),
-                                          child: Image.asset(stages == 4
-                                              ? "assets/images/send active.png"
-                                              : "assets/images/send inactive.png"),
-                                        ),
-                                      )
-                                    ],
-                                  ),
-                                )),
-                          ),
+                                );
+                              } else {
+                                return Center(child: circularProgress(context));
+                              }
+                            },
+                          )
                         ],
                       ),
                     )),
+                    StreamBuilder(
+                      stream: messageListStream(chatId),
+                      builder: (context, snapshot) {
+                        if (snapshot.hasData) {
+                          List messages = snapshot.data.documents;
+                          message =
+                              Message.fromJson(messages.reversed.first.data());
+                          if (message.stages == 4 &&
+                              widget.isAgent == false &&
+                              agentRole == false &&
+                              initOrder.lunchStatus == true &&
+                              initOrder.status
+                                  .toLowerCase()
+                                  .contains("pending"))
+                            return Align(
+                              alignment: Alignment.bottomCenter,
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  InkWell(
+                                    onTap: () {
+                                      Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder: (context) => TrackingMap(
+                                              orders: widget.order,
+                                              userModel: agentFullData,
+                                            ),
+                                          ));
+                                    },
+                                    child: Container(
+                                      decoration: BoxDecoration(
+                                        color: Colors.white,
+                                        border: Border.all(
+                                            width: 1,
+                                            color: Color.fromRGBO(
+                                                160, 163, 189, 1)),
+                                        borderRadius: BorderRadius.circular(10),
+                                      ),
+                                      height: 50,
+                                      width: 150,
+                                      margin: EdgeInsets.only(
+                                        left: 20,
+                                      ),
+                                      child: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceAround,
+                                        children: [
+                                          Text("Track my order",
+                                              style: TextStyle(
+                                                fontSize: 12,
+                                                letterSpacing: 1,
+                                                fontWeight: FontWeight.w500,
+                                                color: Color.fromRGBO(
+                                                    160, 163, 189, 1),
+                                              )),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                  SizedBox(width: 20),
+                                  RaisedGradientButton(
+                                      child: Text(
+                                        'I\'m delivered',
+                                        style: TextStyle(
+                                          fontSize: 14,
+                                          letterSpacing: 1,
+                                          color: Colors.white,
+                                        ),
+                                      ),
+                                      gradient: LinearGradient(
+                                        colors: <Color>[
+                                          Color.fromRGBO(82, 238, 79, 1),
+                                          Color.fromRGBO(5, 151, 0, 1)
+                                        ],
+                                      ),
+                                      width: 150,
+                                      onPressed: imDeliveredButton),
+                                ],
+                              ),
+                            );
+                          else
+                            return SizedBox(
+                              height: 0,
+                            );
+                        } else {
+                          return Center(child: circularProgress(context));
+                        }
+                      },
+                    ),
                     widget.isAgent &&
                             agentRole &&
                             initOrder.lunchStatus == true &&
@@ -706,6 +990,93 @@ class _ConversationState extends State<Conversation> {
     });
   }
 
+  bankAccountID(BuildContext parentContext) {
+    return showDialog(
+        context: parentContext,
+        builder: (context) {
+          return SimpleDialog(
+            contentPadding: EdgeInsets.only(left: 30, right: 30, bottom: 20),
+            backgroundColor: Colors.white,
+            shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(5.0)),
+            children: [
+              Container(
+                padding:
+                    EdgeInsets.only(left: 10, right: 10, bottom: 20, top: 40),
+                width: 150,
+                child: Center(
+                  child: Text(
+                    'There are the bank account information of ${agentFullData.firstName}',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      fontSize: 14,
+                      letterSpacing: 1,
+                      fontFamily: "Poppins",
+                      color: Colors.grey[600],
+                    ),
+                  ),
+                ),
+              ),
+              StreamBuilder(
+                stream: usersRef.doc(agentFullData.id).snapshots(),
+                builder: (context, AsyncSnapshot<DocumentSnapshot> snapshot) {
+                  if (snapshot.hasData) {
+                    UserModel user1 = UserModel.fromJson(snapshot.data.data());
+                    ribController.text = user1.RIB;
+                    bankNameController.text = user1.bankName;
+                    return Column(
+                      children: [
+                        TextFormBuilder(
+                          controller: ribController,
+                          hintText: "RIB",
+                          suffix: false,
+                          readOnly: true,
+                          textInputAction: TextInputAction.next,
+                          validateFunction: Validations.validateRib,
+                        ),
+                        SizedBox(
+                          height: 20,
+                        ),
+                        TextFormBuilder(
+                          controller: bankNameController,
+                          hintText: "Bank Name",
+                          suffix: false,
+                          readOnly: true,
+                          textInputAction: TextInputAction.next,
+                          validateFunction: Validations.validateBankName,
+                        ),
+                      ],
+                    );
+                  }
+                  return Container(
+                    height: 0,
+                  );
+                },
+              ),
+              SizedBox(
+                height: 20,
+              ),
+              RaisedGradientButton(
+                  child: Text(
+                    'Close',
+                    style: TextStyle(
+                      fontSize: 16,
+                      color: Colors.grey[600],
+                    ),
+                  ),
+                  border: true,
+                  gradient: LinearGradient(
+                    colors: <Color>[Colors.white, Colors.white],
+                  ),
+                  width: SizeConfig.screenWidth - 150,
+                  onPressed: () async {
+                    Navigator.pop(context);
+                  })
+            ],
+          );
+        });
+  }
+
   _buildOnlineText(
     var user,
     bool typing,
@@ -727,7 +1098,7 @@ class _ConversationState extends State<Conversation> {
       builder: (context, snapshot) {
         if (snapshot.hasData) {
           DocumentSnapshot documentSnapshot = snapshot.data;
-          UserModel user = UserModel.fromJson(documentSnapshot.data());
+          agentFullData = UserModel.fromJson(documentSnapshot.data());
           return Padding(
             padding: const EdgeInsets.all(10.0),
             child: Row(
@@ -746,8 +1117,8 @@ class _ConversationState extends State<Conversation> {
                             color: Colors.transparent,
                           ),
                           image: DecorationImage(
-                            image: NetworkImage(user.photoUrl != null
-                                ? user.photoUrl
+                            image: NetworkImage(agentFullData.photoUrl != null
+                                ? agentFullData.photoUrl
                                 : "https://image.similarpng.com/very-thumbnail/2020/06/Hand-drawn-delivery-man-with-scooter-royalty-free-PNG.png"),
                             fit: BoxFit.cover,
                           ),
@@ -776,7 +1147,7 @@ class _ConversationState extends State<Conversation> {
                           child: Center(
                             child: Container(
                               decoration: BoxDecoration(
-                                color: user?.isOnline ?? false
+                                color: agentFullData?.isOnline ?? false
                                     ? Color(0xff00d72f)
                                     : Colors.grey,
                                 borderRadius: BorderRadius.circular(6),
@@ -796,7 +1167,7 @@ class _ConversationState extends State<Conversation> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: <Widget>[
                       Text(
-                        '${user.firstName} ${user.lastname.toUpperCase()}',
+                        '${agentFullData.firstName} ${agentFullData.lastname.toUpperCase()}',
                         style: TextStyle(
                           color: Colors.black,
                           fontWeight: FontWeight.w500,
@@ -804,7 +1175,7 @@ class _ConversationState extends State<Conversation> {
                         ),
                       ),
                       Text(
-                        '${user.type}',
+                        '${agentFullData.type}',
                         style: TextStyle(
                           color: Colors.grey,
                           fontWeight: FontWeight.normal,
@@ -820,7 +1191,7 @@ class _ConversationState extends State<Conversation> {
                             Map usersTyping = data['typing'] ?? {};
                             return Text(
                               _buildOnlineText(
-                                user,
+                                agentFullData,
                                 usersTyping[widget.userId] ?? false,
                               ),
                               style: TextStyle(
@@ -926,30 +1297,50 @@ class _ConversationState extends State<Conversation> {
     }
   }
 
-  sendBotMessage(String msg, var user, int stage) async {
+  imDeliveredButton() async {
+    FirebaseService().updateOrdersStatus(
+        "delivered", initOrder.orderId, agentFullData.id, widget.chatId);
+
+    var snapshote = await chatRef
+        .doc(chatId)
+        .collection('messages')
+        .orderBy('time')
+        .snapshots();
+    snapshote.first.then((value) async {
+      await chatRef
+          .doc("$chatId")
+          .collection("messages")
+          .doc(value.docs.last.id)
+          .update({"stages": 6});
+    });
+  }
+
+  sendBotMessage(String msg, String id, int stage) async {
     Message message = Message(
         content: '$msg',
-        senderUid: user?.uid,
+        senderUid: id,
         type: MessageType.TEXT,
         time: Timestamp.now(),
         stages: stage);
 
     if (msg.isNotEmpty) {
-      send(message, widget.chatId);
-      if (msg.contains(
-          "Thank you for reaching out with me but I’m sorry I am busy.")) {
-        FirebaseService().updateOrdersStatus("canceled", initOrder.orderId,
-            firebaseAuth.currentUser.uid, widget.chatId);
-        setState(() {
-          doneChoosing = true;
-        });
-      }
-      if ((msg.contains("Yes,Sure"))) {
-        FirebaseService().updateOrdersStatus("pending", initOrder.orderId,
-            firebaseAuth.currentUser.uid, widget.chatId);
-        setState(() {
-          doneChoosing = true;
-        });
+      if (!initOrder.status.toLowerCase().contains("delivered")) {
+        send(message, widget.chatId);
+        if (msg.contains(
+            "Thank you for reaching out with me but I’m sorry I am busy.")) {
+          FirebaseService().updateOrdersStatus("canceled", initOrder.orderId,
+              firebaseAuth.currentUser.uid, widget.chatId);
+          setState(() {
+            doneChoosing = true;
+          });
+        }
+        if ((msg.contains("Yes,Sure"))) {
+          FirebaseService().updateOrdersStatus("pending", initOrder.orderId,
+              firebaseAuth.currentUser.uid, widget.chatId);
+          setState(() {
+            doneChoosing = true;
+          });
+        }
       }
     }
   }
