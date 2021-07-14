@@ -26,6 +26,14 @@ class AgentsDetails extends StatefulWidget with NavigationStates {
 class _AgentsDetailsState extends State<AgentsDetails> {
   UserModel _user;
   bool show = true;
+  String ChatId;
+
+  @override
+  void initState() {
+    getChatID();
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -562,6 +570,16 @@ class _AgentsDetailsState extends State<AgentsDetails> {
             ],
           )),
     ));
+  }
+
+  getChatID() async {
+    QuerySnapshot docs = await chatRef.get();
+    for (QueryDocumentSnapshot doc in docs.docs) {
+      if (doc.data()["users"][0].toString().contains(widget.id) == true)
+        setState(() {
+          ChatId = doc.id;
+        });
+    }
   }
 
   Stream<QuerySnapshot> favoritzListStream(String documentId) {

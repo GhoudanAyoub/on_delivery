@@ -508,6 +508,8 @@ class _ConversationState extends State<Conversation> {
                                       notificationInto();
                                     });
                                   }
+                                  Message message2 = Message.fromJson(
+                                      messages.reversed.first.data());
                                   return ListView.builder(
                                     controller: scrollController,
                                     padding: EdgeInsets.symmetric(
@@ -523,7 +525,7 @@ class _ConversationState extends State<Conversation> {
                                       if (message.content.contains(
                                               "Deliver the Items to") &&
                                           agentRole == true &&
-                                          message.stages == 4) {
+                                          message2.stages == 3) {
                                         sendBotMessage("cash delivery",
                                             firebaseAuth.currentUser.uid, 5);
                                         sendBotMessage("Bank transfer option",
@@ -536,13 +538,13 @@ class _ConversationState extends State<Conversation> {
                                                   .contains(
                                                       "please confirm you position") &&
                                               agentRole == false &&
-                                              message.stages != 6) {
+                                              message2.stages != 4) {
                                             locationNotificationInto();
                                           }
                                           if (message.content
                                                   .contains("cash delivery") &&
                                               agentRole == false &&
-                                              message.stages != 6) {
+                                              message2.stages != 4) {
                                             sendBotMessage(
                                                 "You choose Cash on delivery. See you there ",
                                                 agentFullData.id,
@@ -551,7 +553,7 @@ class _ConversationState extends State<Conversation> {
                                           if (message.content.contains(
                                                   "Bank transfer option") &&
                                               agentRole == false &&
-                                              message.stages != 6) {
+                                              message2.stages != 4) {
                                             sendBotMessage(
                                                 "You Choose Bank transfer. You can Click On this Msg to get my bank account RIB",
                                                 agentFullData.id,
@@ -560,7 +562,7 @@ class _ConversationState extends State<Conversation> {
                                           if (message.content.contains(
                                                   "You Choose Bank transfer. You can Click On this Msg to get my bank account RIB") &&
                                               agentRole == false &&
-                                              message.stages != 6) {
+                                              message2.stages != 6) {
                                             bankAccountID(context);
                                           }
                                         },
@@ -810,8 +812,9 @@ class _ConversationState extends State<Conversation> {
                       builder: (context, snapshot) {
                         if (snapshot.hasData) {
                           List messages = snapshot.data.documents;
-                          message =
-                              Message.fromJson(messages.reversed.first.data());
+                          if (messages != null)
+                            message = Message.fromJson(
+                                messages.reversed.first.data());
                           if (message.stages == 4 &&
                               widget.isAgent == false &&
                               agentRole == false &&
@@ -1324,7 +1327,27 @@ class _ConversationState extends State<Conversation> {
         stages: stage);
 
     if (msg.isNotEmpty) {
-      if (!initOrder.status.toLowerCase().contains("delivered")) {
+      if (initOrder != null &&
+          initOrder.status != null &&
+          !initOrder.status.toLowerCase().contains("delivered")) {
+        send(message, widget.chatId);
+        if (msg.contains(
+            "Thank you for reaching out with me but I’m sorry I am busy.")) {
+          FirebaseService().updateOrdersStatus("canceled", initOrder.orderId,
+              firebaseAuth.currentUser.uid, widget.chatId);
+          setState(() {
+            doneChoosing = true;
+          });
+        }
+        if ((msg.contains("Yes,Sure"))) {
+          FirebaseService().updateOrdersStatus("pending", initOrder.orderId,
+              firebaseAuth.currentUser.uid, widget.chatId);
+          setState(() {
+            doneChoosing = true;
+          });
+        }
+      }
+      if (initOrder != null && initOrder.status == null) {
         send(message, widget.chatId);
         if (msg.contains(
             "Thank you for reaching out with me but I’m sorry I am busy.")) {

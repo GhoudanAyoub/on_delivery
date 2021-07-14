@@ -42,14 +42,13 @@ class _OrderScreenState extends State<OrderScreen> {
     List<DocumentSnapshot> doc = snap.docs;
     orders = doc;
     filteredOrders = doc;
+    setState(() {
+      loading = false;
+    });
     filteredOrders.indexWhere((element) {
       if (element.data()["userId"] == firebaseAuth.currentUser.uid)
         setState(() {
           myDocs++;
-        });
-      if (element.data()["status"].toString().toLowerCase().contains("pending"))
-        setState(() {
-          currentDocs++;
         });
       if (element
               .data()["status"]
@@ -64,9 +63,11 @@ class _OrderScreenState extends State<OrderScreen> {
         setState(() {
           histoDocs++;
         });
-    });
-    setState(() {
-      loading = false;
+      if (element.data()["status"].toString().toLowerCase().contains("pending"))
+        setState(() {
+          currentDocs++;
+        });
+      return true;
     });
   }
 
@@ -569,8 +570,11 @@ class _OrderScreenState extends State<OrderScreen> {
                     UserModel _user = UserModel.fromJson(snapshot.data.data());
 
                     return OrderLayout(
+                      me: user1,
                       order: orders,
                       user: _user,
+                      track: false,
+                      count: false,
                     );
                   }
                   return Container(
@@ -699,218 +703,17 @@ class _OrderScreenState extends State<OrderScreen> {
                     if (snapshot.hasData && snapshot.data.exists) {
                       UserModel _user =
                           UserModel.fromJson(snapshot.data.data());
-                      return Align(
-                        alignment: Alignment.bottomCenter,
-                        child: GestureDetector(
-                          child: Card(
-                              elevation: 1,
-                              shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(10)),
-                              child: Container(
-                                padding: EdgeInsets.only(
-                                    left: getProportionateScreenHeight(10),
-                                    right: getProportionateScreenHeight(10)),
-                                height: getProportionateScreenHeight(150),
-                                decoration: BoxDecoration(
-                                  color: Colors.white,
-                                  border: Border.all(
-                                      width: 1,
-                                      color: Color.fromRGBO(231, 231, 231, 1)),
-                                  borderRadius: BorderRadius.circular(10),
-                                ),
-                                child: Column(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceAround,
-                                  children: [
-                                    Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceBetween,
-                                      children: [
-                                        Container(
-                                          decoration: BoxDecoration(
-                                            borderRadius:
-                                                BorderRadius.circular(20),
-                                            border: Border.all(
-                                              color: Colors.transparent,
-                                            ),
-                                            image: DecorationImage(
-                                              image: NetworkImage(
-                                                  _user.photoUrl != null
-                                                      ? _user.photoUrl
-                                                      : FirebaseService
-                                                          .getProfileImage()),
-                                              fit: BoxFit.cover,
-                                            ),
-                                            boxShadow: [
-                                              BoxShadow(
-                                                color: Colors.grey
-                                                    .withOpacity(0.3),
-                                                offset: new Offset(0.0, 0.0),
-                                                blurRadius: 2.0,
-                                                spreadRadius: 0.0,
-                                              ),
-                                            ],
-                                          ),
-                                          height:
-                                              getProportionateScreenHeight(60),
-                                          width:
-                                              getProportionateScreenHeight(60),
-                                        ),
-                                        Container(
-                                          width:
-                                              getProportionateScreenWidth(250),
-                                          child: Column(
-                                            children: [
-                                              Row(
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment
-                                                        .spaceBetween,
-                                                children: [
-                                                  Text(
-                                                      "${_user.firstName} ${_user.lastname.toUpperCase()}",
-                                                      overflow:
-                                                          TextOverflow.ellipsis,
-                                                      style: TextStyle(
-                                                        fontSize: 12,
-                                                        letterSpacing: 1,
-                                                        fontWeight:
-                                                            FontWeight.bold,
-                                                        color: Colors.black,
-                                                      )),
-                                                  Text(
-                                                    "${_user.city}",
-                                                    style: TextStyle(
-                                                      fontSize: 10,
-                                                      letterSpacing: 1,
-                                                      fontWeight:
-                                                          FontWeight.normal,
-                                                      color: Colors.grey,
-                                                    ),
-                                                    overflow:
-                                                        TextOverflow.ellipsis,
-                                                  ),
-                                                ],
-                                              ),
-                                              SizedBox(
-                                                height: 3,
-                                              ),
-                                              Text("${_user.city}",
-                                                  style: TextStyle(
-                                                    fontSize: 10,
-                                                    letterSpacing: 1,
-                                                    fontWeight:
-                                                        FontWeight.normal,
-                                                    color: Colors.black,
-                                                  )),
-                                              SizedBox(
-                                                height: 3,
-                                              ),
-                                              Row(
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment
-                                                        .spaceBetween,
-                                                children: [
-                                                  Text(
-                                                      "${_user.activities.toLowerCase()}",
-                                                      style: TextStyle(
-                                                        fontSize: 12,
-                                                        letterSpacing: 1,
-                                                        fontWeight:
-                                                            FontWeight.normal,
-                                                        color: Colors.grey,
-                                                      )),
-                                                  Text(
-                                                      "${_user.price}/${_user.unity.toLowerCase()}",
-                                                      style: TextStyle(
-                                                        fontSize: 10,
-                                                        letterSpacing: 1,
-                                                        fontWeight:
-                                                            FontWeight.normal,
-                                                        color: Colors.grey,
-                                                      ))
-                                                ],
-                                              ),
-                                            ],
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.start,
-                                          ),
-                                        )
-                                      ],
-                                    ),
-                                    Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceBetween,
-                                      children: [
-                                        Container(
-                                          decoration: BoxDecoration(
-                                            color: Colors.white,
-                                            border: Border.all(
-                                                width: 1,
-                                                color: Color.fromRGBO(
-                                                    231, 231, 231, 1)),
-                                            borderRadius:
-                                                BorderRadius.circular(10),
-                                          ),
-                                          height: 30,
-                                          width:
-                                              getProportionateScreenWidth(150),
-                                          margin: EdgeInsets.only(
-                                              right: 20, bottom: 10),
-                                          child: Row(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.spaceAround,
-                                            children: [
-                                              Text("Orders delivered",
-                                                  style: TextStyle(
-                                                    fontSize: 12,
-                                                    fontWeight: FontWeight.w600,
-                                                    color: Colors.grey,
-                                                  )),
-                                              Text("15/19",
-                                                  style: TextStyle(
-                                                    fontSize: 12,
-                                                    fontWeight: FontWeight.bold,
-                                                    color: Colors.black,
-                                                  )),
-                                            ],
-                                          ),
-                                        ),
-                                        Container(
-                                          decoration: BoxDecoration(
-                                            color: Colors.white,
-                                            border: Border.all(
-                                                width: 1,
-                                                color: Color.fromRGBO(
-                                                    238, 71, 0, 1)),
-                                            borderRadius:
-                                                BorderRadius.circular(10),
-                                          ),
-                                          height: 30,
-                                          width:
-                                              getProportionateScreenWidth(90),
-                                          margin: EdgeInsets.only(
-                                              left: 20, bottom: 10),
-                                          child: Row(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.spaceAround,
-                                            children: [
-                                              Text("Details",
-                                                  style: TextStyle(
-                                                    fontSize: 12,
-                                                    fontWeight: FontWeight.w600,
-                                                    color: Color.fromRGBO(
-                                                        238, 71, 0, 1),
-                                                  )),
-                                            ],
-                                          ),
-                                        )
-                                      ],
-                                    )
-                                  ],
-                                ),
-                              )),
-                          onTap: () {},
-                        ),
+
+                      return OrderLayout(
+                        me: user1,
+                        order: orders,
+                        user: _user,
+                        track: user1.type.toLowerCase().contains("client")
+                            ? true
+                            : false,
+                        count: user1.type.toLowerCase().contains("client")
+                            ? true
+                            : false,
                       );
                     }
                     return Container(
@@ -956,218 +759,13 @@ class _OrderScreenState extends State<OrderScreen> {
                     if (snapshot.hasData && snapshot.data.exists) {
                       UserModel _user =
                           UserModel.fromJson(snapshot.data.data());
-                      return Align(
-                        alignment: Alignment.bottomCenter,
-                        child: GestureDetector(
-                          child: Card(
-                              elevation: 1,
-                              shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(10)),
-                              child: Container(
-                                padding: EdgeInsets.only(
-                                    left: getProportionateScreenHeight(10),
-                                    right: getProportionateScreenHeight(10)),
-                                height: getProportionateScreenHeight(150),
-                                decoration: BoxDecoration(
-                                  color: Colors.white,
-                                  border: Border.all(
-                                      width: 1,
-                                      color: Color.fromRGBO(231, 231, 231, 1)),
-                                  borderRadius: BorderRadius.circular(10),
-                                ),
-                                child: Column(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceAround,
-                                  children: [
-                                    Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceBetween,
-                                      children: [
-                                        Container(
-                                          decoration: BoxDecoration(
-                                            borderRadius:
-                                                BorderRadius.circular(20),
-                                            border: Border.all(
-                                              color: Colors.transparent,
-                                            ),
-                                            image: DecorationImage(
-                                              image: NetworkImage(
-                                                  _user.photoUrl != null
-                                                      ? _user.photoUrl
-                                                      : FirebaseService
-                                                          .getProfileImage()),
-                                              fit: BoxFit.cover,
-                                            ),
-                                            boxShadow: [
-                                              BoxShadow(
-                                                color: Colors.grey
-                                                    .withOpacity(0.3),
-                                                offset: new Offset(0.0, 0.0),
-                                                blurRadius: 2.0,
-                                                spreadRadius: 0.0,
-                                              ),
-                                            ],
-                                          ),
-                                          height:
-                                              getProportionateScreenHeight(60),
-                                          width:
-                                              getProportionateScreenHeight(60),
-                                        ),
-                                        Container(
-                                          width:
-                                              getProportionateScreenWidth(250),
-                                          child: Column(
-                                            children: [
-                                              Row(
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment
-                                                        .spaceBetween,
-                                                children: [
-                                                  Text(
-                                                      "${_user.firstName} ${_user.lastname.toUpperCase()}",
-                                                      overflow:
-                                                          TextOverflow.ellipsis,
-                                                      style: TextStyle(
-                                                        fontSize: 12,
-                                                        letterSpacing: 1,
-                                                        fontWeight:
-                                                            FontWeight.bold,
-                                                        color: Colors.black,
-                                                      )),
-                                                  Text(
-                                                    "${_user.city}",
-                                                    style: TextStyle(
-                                                      fontSize: 10,
-                                                      letterSpacing: 1,
-                                                      fontWeight:
-                                                          FontWeight.normal,
-                                                      color: Colors.grey,
-                                                    ),
-                                                    overflow:
-                                                        TextOverflow.ellipsis,
-                                                  ),
-                                                ],
-                                              ),
-                                              SizedBox(
-                                                height: 3,
-                                              ),
-                                              Text("${_user.city}",
-                                                  style: TextStyle(
-                                                    fontSize: 10,
-                                                    letterSpacing: 1,
-                                                    fontWeight:
-                                                        FontWeight.normal,
-                                                    color: Colors.black,
-                                                  )),
-                                              SizedBox(
-                                                height: 3,
-                                              ),
-                                              Row(
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment
-                                                        .spaceBetween,
-                                                children: [
-                                                  Text(
-                                                      "${_user.activities.toLowerCase()}",
-                                                      style: TextStyle(
-                                                        fontSize: 12,
-                                                        letterSpacing: 1,
-                                                        fontWeight:
-                                                            FontWeight.normal,
-                                                        color: Colors.grey,
-                                                      )),
-                                                  Text(
-                                                      "${_user.price}/${_user.unity.toLowerCase()}",
-                                                      style: TextStyle(
-                                                        fontSize: 10,
-                                                        letterSpacing: 1,
-                                                        fontWeight:
-                                                            FontWeight.normal,
-                                                        color: Colors.grey,
-                                                      ))
-                                                ],
-                                              ),
-                                            ],
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.start,
-                                          ),
-                                        )
-                                      ],
-                                    ),
-                                    Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceBetween,
-                                      children: [
-                                        Container(
-                                          decoration: BoxDecoration(
-                                            color: Colors.white,
-                                            border: Border.all(
-                                                width: 1,
-                                                color: Color.fromRGBO(
-                                                    231, 231, 231, 1)),
-                                            borderRadius:
-                                                BorderRadius.circular(10),
-                                          ),
-                                          height: 30,
-                                          width:
-                                              getProportionateScreenWidth(150),
-                                          margin: EdgeInsets.only(
-                                              right: 20, bottom: 10),
-                                          child: Row(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.spaceAround,
-                                            children: [
-                                              Text("Orders delivered",
-                                                  style: TextStyle(
-                                                    fontSize: 12,
-                                                    fontWeight: FontWeight.w600,
-                                                    color: Colors.grey,
-                                                  )),
-                                              Text("15/19",
-                                                  style: TextStyle(
-                                                    fontSize: 12,
-                                                    fontWeight: FontWeight.bold,
-                                                    color: Colors.black,
-                                                  )),
-                                            ],
-                                          ),
-                                        ),
-                                        Container(
-                                          decoration: BoxDecoration(
-                                            color: Colors.white,
-                                            border: Border.all(
-                                                width: 1,
-                                                color: Color.fromRGBO(
-                                                    238, 71, 0, 1)),
-                                            borderRadius:
-                                                BorderRadius.circular(10),
-                                          ),
-                                          height: 30,
-                                          width:
-                                              getProportionateScreenWidth(90),
-                                          margin: EdgeInsets.only(
-                                              left: 20, bottom: 10),
-                                          child: Row(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.spaceAround,
-                                            children: [
-                                              Text("Details",
-                                                  style: TextStyle(
-                                                    fontSize: 12,
-                                                    fontWeight: FontWeight.w600,
-                                                    color: Color.fromRGBO(
-                                                        238, 71, 0, 1),
-                                                  )),
-                                            ],
-                                          ),
-                                        )
-                                      ],
-                                    )
-                                  ],
-                                ),
-                              )),
-                          onTap: () {},
-                        ),
+
+                      return OrderLayout(
+                        me: user1,
+                        order: orders,
+                        user: _user,
+                        track: false,
+                        count: false,
                       );
                     }
                     return Container(

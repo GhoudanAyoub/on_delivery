@@ -39,8 +39,21 @@ class _ChatsState extends State<Chats> {
                       stream:
                           userChatsStream('${firebaseAuth.currentUser.uid}'),
                       builder: (context, snapshot) {
+                        List chatList = [];
                         if (snapshot.hasData) {
-                          List chatList = snapshot.data.documents;
+                          for (DocumentSnapshot doc
+                              in snapshot.data.documents) {
+                            if (doc
+                                    .data()['users'][0]
+                                    .toString()
+                                    .contains(firebaseAuth.currentUser.uid) ||
+                                doc
+                                    .data()['users'][1]
+                                    .toString()
+                                    .contains(firebaseAuth.currentUser.uid)) {
+                              chatList.add(doc);
+                            }
+                          }
                           if (chatList.isNotEmpty) {
                             return Expanded(
                                 child: Column(
@@ -185,7 +198,7 @@ class _ChatsState extends State<Chats> {
                             ));
                           }
                         } else {
-                          return Container(
+                          return Expanded(
                             child: Center(
                                 child: Lottie.asset(
                                     'assets/lotties/loading-animation.json')),
@@ -218,10 +231,14 @@ class _ChatsState extends State<Chats> {
   }
 
   Stream<QuerySnapshot> userChatsStream(String uid) {
-    return chatRef.where('users', arrayContains: '$uid').snapshots();
+    return chatRef.orderBy("lastTextTime", descending: true).snapshots();
   }
 
   Stream<QuerySnapshot> messageListStream(String documentId) {
-    return chatRef.doc(documentId).collection('messages').snapshots();
+    return chatRef
+        .doc(documentId)
+        .collection('messages')
+        .orderBy('time', descending: true)
+        .snapshots();
   }
 }
