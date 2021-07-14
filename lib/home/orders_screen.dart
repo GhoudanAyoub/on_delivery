@@ -563,6 +563,26 @@ class _OrderScreenState extends State<OrderScreen> {
             DocumentSnapshot doc = filteredOrders[index];
             Orders orders = Orders.fromJson(doc.data());
 
+            if (user1.type.toLowerCase().contains('agent'))
+              return StreamBuilder(
+                  stream: usersRef.doc(orders.userId).snapshots(),
+                  builder: (context, AsyncSnapshot<DocumentSnapshot> snapshot) {
+                    if (snapshot.hasData && snapshot.data.exists) {
+                      UserModel _user =
+                          UserModel.fromJson(snapshot.data.data());
+
+                      return OrderLayout(
+                        me: user1,
+                        order: orders,
+                        user: _user,
+                        track: false,
+                        count: false,
+                      );
+                    }
+                    return Container(
+                      height: 0,
+                    );
+                  });
             return StreamBuilder(
                 stream: usersRef.doc(orders.agentId).snapshots(),
                 builder: (context, AsyncSnapshot<DocumentSnapshot> snapshot) {
@@ -697,6 +717,31 @@ class _OrderScreenState extends State<OrderScreen> {
 
             if (orders.status != null &&
                 orders.status.toLowerCase().contains("pending")) {
+              if (user1.type.toLowerCase().contains('agent'))
+                return StreamBuilder(
+                    stream: usersRef.doc(orders.userId).snapshots(),
+                    builder:
+                        (context, AsyncSnapshot<DocumentSnapshot> snapshot) {
+                      if (snapshot.hasData && snapshot.data.exists) {
+                        UserModel _user =
+                            UserModel.fromJson(snapshot.data.data());
+
+                        return OrderLayout(
+                          me: user1,
+                          order: orders,
+                          user: _user,
+                          track: user1.type.toLowerCase().contains("client")
+                              ? true
+                              : false,
+                          count: user1.type.toLowerCase().contains("client")
+                              ? true
+                              : false,
+                        );
+                      }
+                      return Container(
+                        height: 0,
+                      );
+                    });
               return StreamBuilder(
                   stream: usersRef.doc(orders.agentId).snapshots(),
                   builder: (context, AsyncSnapshot<DocumentSnapshot> snapshot) {
@@ -753,6 +798,27 @@ class _OrderScreenState extends State<OrderScreen> {
                     orders.status.toLowerCase().contains("canceled") ||
                 orders.status != null &&
                     orders.status.toLowerCase().contains("delivered")) {
+              if (user1.type.toLowerCase().contains('agent'))
+                return StreamBuilder(
+                    stream: usersRef.doc(orders.userId).snapshots(),
+                    builder:
+                        (context, AsyncSnapshot<DocumentSnapshot> snapshot) {
+                      if (snapshot.hasData && snapshot.data.exists) {
+                        UserModel _user =
+                            UserModel.fromJson(snapshot.data.data());
+
+                        return OrderLayout(
+                          me: user1,
+                          order: orders,
+                          user: _user,
+                          track: false,
+                          count: false,
+                        );
+                      }
+                      return Container(
+                        height: 0,
+                      );
+                    });
               return StreamBuilder(
                   stream: usersRef.doc(orders.agentId).snapshots(),
                   builder: (context, AsyncSnapshot<DocumentSnapshot> snapshot) {

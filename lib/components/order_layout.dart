@@ -364,8 +364,8 @@ class _OrderLayoutState extends State<OrderLayout> {
                                     ),
                                     gradient: LinearGradient(
                                       colors: <Color>[
-                                        Color.fromRGBO(82, 238, 79, 1),
-                                        Color.fromRGBO(5, 151, 0, 1)
+                                        Color.fromRGBO(255, 182, 40, 1),
+                                        Color.fromRGBO(238, 71, 0, 1)
                                       ],
                                     ),
                                     width: getProportionateScreenWidth(200),
@@ -373,7 +373,7 @@ class _OrderLayoutState extends State<OrderLayout> {
                                       Navigator.push(
                                           context,
                                           MaterialPageRoute(
-                                            builder: (context) => TrackingMap(
+                                            builder: (context) => ShowOnMap(
                                               orders: widget.order,
                                               userModel: widget.user,
                                             ),
