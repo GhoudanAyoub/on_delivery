@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:geocoder/geocoder.dart';
 import 'package:on_delivery/components/RaisedGradientButton.dart';
 import 'package:on_delivery/components/indicators.dart';
@@ -12,6 +13,7 @@ import 'package:on_delivery/models/User.dart';
 import 'package:on_delivery/models/enum/message_type.dart';
 import 'package:on_delivery/models/new_message_system.dart';
 import 'package:on_delivery/models/order.dart';
+import 'package:on_delivery/models/rate.dart';
 import 'package:on_delivery/utils/FirebaseService.dart';
 import 'package:on_delivery/utils/SizeConfig.dart';
 import 'package:on_delivery/utils/constants.dart';
@@ -41,11 +43,13 @@ class _ConversationState extends State<Conversation> {
   FocusNode focusNode = FocusNode();
   ScrollController scrollController = ScrollController();
   TextEditingController messageController = TextEditingController();
+  TextEditingController reviewController = TextEditingController();
   TextEditingController ribController = TextEditingController();
   TextEditingController bankNameController = TextEditingController();
   bool isFirst = false;
   String chatId;
   int stages = 1;
+  double ratingG = 3;
   Orders initOrder;
   bool agentRole = false;
   bool doneChoosing = false;
@@ -429,6 +433,151 @@ class _ConversationState extends State<Conversation> {
                       onPressed: () async {
                         sendBotMessage("Deliver the Items to : $endAt",
                             firebaseAuth.currentUser.uid, 3);
+                        Navigator.pop(context);
+                      }),
+                ],
+              )
+            ],
+          );
+        });
+  }
+
+  getReviewForm() {
+    return showDialog(
+        context: context,
+        builder: (context) {
+          return SimpleDialog(
+            contentPadding: EdgeInsets.only(left: 30, right: 30, bottom: 20),
+            backgroundColor: Colors.white,
+            shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(5.0)),
+            children: [
+              Container(
+                padding:
+                    EdgeInsets.only(left: 10, right: 10, bottom: 20, top: 40),
+                width: 150,
+                child: Center(
+                  child: Column(
+                    children: [
+                      SizedBox(
+                        height: 5,
+                      ),
+                      Text(
+                        'What do you think about my service',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          fontSize: 14,
+                          letterSpacing: 1,
+                          color: Colors.grey[600],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              SizedBox(
+                height: 20,
+              ),
+              Column(
+                children: [
+                  RatingBar(
+                    initialRating: 1,
+                    minRating: 1,
+                    direction: Axis.horizontal,
+                    allowHalfRating: false,
+                    itemCount: 5,
+                    itemPadding: EdgeInsets.symmetric(horizontal: 4.0),
+                    glowColor: Colors.white,
+                    ratingWidget: RatingWidget(
+                      full: Image.asset('assets/images/rating active.png'),
+                      empty: Image.asset('assets/images/rating inactive.png'),
+                      half: null,
+                    ),
+                    onRatingUpdate: (rating) {
+                      print(rating);
+                      setState(() {
+                        ratingG = rating;
+                      });
+                    },
+                  ),
+                  SizedBox(
+                    height: 20,
+                  ),
+                  Theme(
+                      data: ThemeData(
+                        primaryColor: Theme.of(context).accentColor,
+                        accentColor: Theme.of(context).accentColor,
+                      ),
+                      child: TextFormField(
+                        keyboardType: TextInputType.multiline,
+                        maxLines: 5,
+                        cursorColor: Colors.black,
+                        controller: reviewController,
+                        style: TextStyle(
+                          fontSize: 15.0,
+                        ),
+                        decoration: InputDecoration(
+                            labelText: "Review",
+                            fillColor: Color.fromRGBO(239, 240, 246, 1),
+                            hintStyle: TextStyle(
+                              color: Color.fromRGBO(110, 113, 130, 1),
+                            ),
+                            filled: true,
+                            contentPadding: EdgeInsets.symmetric(
+                                horizontal: 10.0, vertical: 10),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.all(
+                                Radius.circular(10.0),
+                              ),
+                              borderSide: BorderSide(
+                                color: Colors.white,
+                                width: 0.0,
+                              ),
+                            ),
+                            enabledBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.all(
+                                Radius.circular(10.0),
+                              ),
+                              borderSide: BorderSide(
+                                color: Colors.white,
+                                width: 0.0,
+                              ),
+                            ),
+                            hoverColor: GBottomNav,
+                            focusedBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.all(
+                                Radius.circular(10.0),
+                              ),
+                              borderSide: BorderSide(
+                                color: Color.fromRGBO(110, 113, 145, 1),
+                                width: 1.0,
+                              ),
+                            ),
+                            errorStyle: TextStyle(height: 0.0, fontSize: 0.0)),
+                      )),
+                  SizedBox(
+                    height: 20,
+                  ),
+                  RaisedGradientButton(
+                      child: Text(
+                        'Publish',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                          letterSpacing: 1,
+                          color: Colors.white,
+                        ),
+                      ),
+                      border: false,
+                      gradient: LinearGradient(
+                        colors: <Color>[
+                          Color.fromRGBO(82, 238, 79, 1),
+                          Color.fromRGBO(5, 151, 0, 1)
+                        ],
+                      ),
+                      width: SizeConfig.screenWidth - 150,
+                      onPressed: () async {
+                        publishRate();
                         Navigator.pop(context);
                       }),
                 ],
@@ -1185,28 +1334,6 @@ class _ConversationState extends State<Conversation> {
                           fontSize: 10.0,
                         ),
                       ),
-                      StreamBuilder(
-                        stream: chatRef.doc('${widget.chatId}').snapshots(),
-                        builder: (context, snapshot) {
-                          if (snapshot.hasData) {
-                            DocumentSnapshot snap = snapshot.data;
-                            Map data = snap.data() ?? {};
-                            Map usersTyping = data['typing'] ?? {};
-                            return Text(
-                              _buildOnlineText(
-                                agentFullData,
-                                usersTyping[widget.userId] ?? false,
-                              ),
-                              style: TextStyle(
-                                fontWeight: FontWeight.w400,
-                                fontSize: 10,
-                              ),
-                            );
-                          } else {
-                            return SizedBox();
-                          }
-                        },
-                      ),
                     ],
                   ),
                 ),
@@ -1301,6 +1428,8 @@ class _ConversationState extends State<Conversation> {
   }
 
   imDeliveredButton() async {
+    getReviewForm();
+
     FirebaseService().updateOrdersStatus(
         "delivered", initOrder.orderId, agentFullData.id, widget.chatId);
 
@@ -1315,6 +1444,20 @@ class _ConversationState extends State<Conversation> {
           .collection("messages")
           .doc(value.docs.last.id)
           .update({"stages": 6});
+    });
+  }
+
+  publishRate() {
+    FirebaseService()
+        .addRate(RateModel(
+            userID: firebaseAuth.currentUser.uid,
+            rate: ratingG,
+            rateTxt: reviewController.text,
+            timestamp: Timestamp.now(),
+            agentId: agentFullData.id))
+        .then((value) {
+      Navigator.pop(context);
+      FirebaseService().deleteChat(firebaseAuth.currentUser, chatId);
     });
   }
 

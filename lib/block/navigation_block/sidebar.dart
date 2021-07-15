@@ -186,36 +186,6 @@ class _SideBarState extends State<SideBar>
                               );
                             },
                           ),
-                          StreamBuilder(
-                            stream: usersRef
-                                .doc(firebaseAuth.currentUser.uid)
-                                .snapshots(),
-                            builder: (context,
-                                AsyncSnapshot<DocumentSnapshot> snapshot) {
-                              if (snapshot.hasData) {
-                                user1 =
-                                    UserModel.fromJson(snapshot.data.data());
-                                if (user1.type == "Client") {
-                                  return Column(
-                                    children: [
-                                      MenuItem(
-                                        title: "Favorite agents",
-                                        onTap: () {
-                                          onIconPressed();
-                                        },
-                                      ),
-                                    ],
-                                  );
-                                }
-                                return Container(
-                                  height: 0,
-                                );
-                              }
-                              return Container(
-                                height: 0,
-                              );
-                            },
-                          ),
                           SizedBox(
                             height: 10,
                           ),

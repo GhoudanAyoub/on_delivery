@@ -168,7 +168,7 @@ class _SignUpFormState extends State<SignUpForm> {
                         child: GestureDetector(
                           onTap: () {
                             loginWithFacebook(context).whenComplete(() async {
-                              var u = await AuthService.addUsers(
+                              await AuthService.addUsers(
                                   firebaseAuth.currentUser);
                               setState(() {
                                 isSignIn = false;
@@ -213,7 +213,7 @@ class _SignUpFormState extends State<SignUpForm> {
                           onTap: () async {
                             await signInWithGoogle(context)
                                 .whenComplete(() async {
-                              var u = await AuthService.addUsers(
+                              await AuthService.addUsers(
                                   firebaseAuth.currentUser);
                               setState(() {
                                 isSignIn = false;
@@ -310,7 +310,7 @@ class _SignUpFormState extends State<SignUpForm> {
                   ),
                   SizedBox(
                     width: double.infinity,
-                    child: FlatButton(
+                    child: TextButton(
                       onPressed: () {
                         Navigator.popUntil(
                             context, ModalRoute.withName('/HomeScreen'));

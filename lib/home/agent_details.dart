@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:on_delivery/Inbox/components/conversation.dart';
 import 'package:on_delivery/block/navigation_block/navigation_block.dart';
 import 'package:on_delivery/components/RaisedGradientButton.dart';
+import 'package:on_delivery/home/reviews.dart';
 import 'package:on_delivery/models/User.dart';
 import 'package:on_delivery/models/order.dart';
 import 'package:on_delivery/utils/FirebaseService.dart';
@@ -27,11 +28,30 @@ class _AgentsDetailsState extends State<AgentsDetails> {
   UserModel _user;
   bool show = true;
   String ChatId;
+  double rate;
 
   @override
   void initState() {
     getChatID();
+    getReviews2();
+
     super.initState();
+  }
+
+  getReviews2() {
+    double i = 0;
+    int j = 1;
+    rateRef.snapshots().listen((event) {
+      event.docChanges.forEach((element) {
+        if (element.doc.data()["agentId"].contains(widget.id)) {
+          j++;
+          i += element.doc.data()["rate"];
+        }
+      });
+    });
+    setState(() {
+      rate = (i / j);
+    });
   }
 
   @override
@@ -105,18 +125,31 @@ class _AgentsDetailsState extends State<AgentsDetails> {
                                     crossAxisAlignment:
                                         CrossAxisAlignment.start,
                                     children: [
-                                      Container(
-                                        child: Text("Reviews",
-                                            style: TextStyle(
-                                              fontSize: 14,
-                                              decoration:
-                                                  TextDecoration.underline,
-                                              letterSpacing: 1,
-                                              fontWeight: FontWeight.bold,
-                                              foreground: Paint()
-                                                ..shader = greenLinearGradient,
-                                            )),
-                                        width: getProportionateScreenWidth(60),
+                                      GestureDetector(
+                                        child: Container(
+                                          child: Text("Reviews",
+                                              style: TextStyle(
+                                                fontSize: 14,
+                                                decoration:
+                                                    TextDecoration.underline,
+                                                letterSpacing: 1,
+                                                fontWeight: FontWeight.bold,
+                                                foreground: Paint()
+                                                  ..shader =
+                                                      greenLinearGradient,
+                                              )),
+                                          width:
+                                              getProportionateScreenWidth(60),
+                                        ),
+                                        onTap: () {
+                                          Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                                builder: (context) => Review(
+                                                      id: widget.id,
+                                                    )),
+                                          );
+                                        },
                                       ),
                                       Column(
                                         children: [
@@ -319,7 +352,7 @@ class _AgentsDetailsState extends State<AgentsDetails> {
                                           children: [
                                             Image.asset(
                                                 'assets/images/agent rate.png'),
-                                            Text("5.0",
+                                            Text(rate != null ? "$rate" : "NR",
                                                 style: TextStyle(
                                                   fontSize: 12,
                                                   letterSpacing: 1,

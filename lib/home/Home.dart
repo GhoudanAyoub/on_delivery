@@ -99,6 +99,20 @@ class _HomeState extends State<Home> {
     return firebaseAuth.currentUser.uid;
   }
 
+  double getReviews2(id) {
+    double i = 0;
+    int j = 1;
+    rateRef.snapshots().listen((event) {
+      event.docChanges.forEach((element) {
+        if (element.doc.data()["agentId"].contains(id)) {
+          j++;
+          i += element.doc.data()["rate"];
+        }
+      });
+    });
+    return (i / j);
+  }
+
   @override
   void initState() {
     getAgents();
@@ -387,21 +401,23 @@ class _HomeState extends State<Home> {
                           itemCount: categories.length,
                         ),
                       ),
-                      Container(
-                        height: getProportionateScreenHeight(50),
-                        child: IconButton(
-                          icon: Icon(
-                            CupertinoIcons.search,
-                            size: 30,
-                            color: Colors.black,
-                          ),
-                          onPressed: () {
-                            setState(() {
-                              searchClicked = !searchClicked;
-                            });
-                          },
-                        ),
-                      ),
+                      _activeTabHome != 1
+                          ? Container(
+                              height: getProportionateScreenHeight(50),
+                              child: IconButton(
+                                icon: Icon(
+                                  CupertinoIcons.search,
+                                  size: 30,
+                                  color: Colors.black,
+                                ),
+                                onPressed: () {
+                                  setState(() {
+                                    searchClicked = !searchClicked;
+                                  });
+                                },
+                              ),
+                            )
+                          : Container(),
                     ],
                   ),
                 ),
@@ -529,10 +545,11 @@ class _HomeState extends State<Home> {
     if (!loading) {
       if (filteredAgents.isEmpty) {
         return Container(
+          height: 150,
           child: Center(child: Lottie.asset('assets/lotties/not_found.json')),
         );
       } else {
-        return Expanded(
+        return Flexible(
             child: ListView.builder(
           itemCount: filteredAgents.length,
           scrollDirection: Axis.vertical,
@@ -629,7 +646,10 @@ class _HomeState extends State<Home> {
                                           children: [
                                             Image.asset(
                                                 'assets/images/agent rate.png'),
-                                            Text("5.0",
+                                            Text(
+                                                getReviews2(_user.id) != 0
+                                                    ? "${getReviews2(_user.id)}"
+                                                    : "NR",
                                                 style: TextStyle(
                                                   fontSize: 12,
                                                   letterSpacing: 1,
@@ -768,10 +788,9 @@ class _HomeState extends State<Home> {
   buildFavoriteAgents() {
     return StreamBuilder(
       stream: favoriteListStream(firebaseAuth.currentUser.uid),
-      // ignore: missing_return
       builder: (context, snapshot) {
         if (snapshot.hasData) {
-          return Expanded(
+          return Flexible(
               child: ListView.builder(
                   controller: scrollController,
                   padding: EdgeInsets.symmetric(horizontal: 4.0, vertical: 5),
@@ -1009,6 +1028,7 @@ class _HomeState extends State<Home> {
                   }));
         } else {
           return Container(
+            height: 150,
             child: Center(child: Lottie.asset('assets/lotties/not_found.json')),
           );
         }

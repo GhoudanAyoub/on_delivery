@@ -17,6 +17,7 @@ CollectionReference usersRef = firestore.collection('onDeliveryUsers');
 CollectionReference userLocationRef =
     firestore.collection('onDeliveryUserLocation');
 CollectionReference orderRef = firestore.collection('onDeliveryOrders');
+CollectionReference rateRef = firestore.collection('onDeliveryRate');
 CollectionReference favoriteRef = firestore.collection('onDeliveryFavorites');
 CollectionReference plansRef = firestore.collection('onDeliveryPlans');
 CollectionReference chatRef = firestore.collection("onDeliveryChats");

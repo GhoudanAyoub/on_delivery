@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
 import 'package:on_delivery/SignIn/sign_in_screen.dart';
@@ -10,14 +12,29 @@ class Body extends StatefulWidget {
 }
 
 class _BodyState extends State<Body> {
+  bool connect = true;
   @override
   void initState() {
-    new Future.delayed(Duration(seconds: 3), () {
-      if (firebaseAuth.currentUser != null)
-        Navigator.pushNamed(context, Base.routeName);
-      else
-        Navigator.pushNamed(context, SignInScreen.routeName);
-    });
+    checkInternet();
+    super.initState();
+  }
+
+  checkInternet() async {
+    try {
+      final result = await InternetAddress.lookup('example.com');
+      if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
+        new Future.delayed(Duration(seconds: 3), () {
+          if (firebaseAuth.currentUser != null)
+            Navigator.pushNamed(context, Base.routeName);
+          else
+            Navigator.pushNamed(context, SignInScreen.routeName);
+        });
+      }
+    } on SocketException catch (_) {
+      setState(() {
+        connect = false;
+      });
+    }
   }
 
   @override
@@ -29,7 +46,10 @@ class _BodyState extends State<Body> {
           fit: BoxFit.cover,
         ),
       ),
-      child: Center(child: Lottie.asset('assets/lotties/delivery.json')),
+      child: Center(
+          child: Lottie.asset(connect
+              ? 'assets/lotties/delivery.json'
+              : 'assets/lotties/connection_lost.json')),
     );
   }
 }

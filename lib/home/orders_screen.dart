@@ -585,7 +585,7 @@ class _OrderScreenState extends State<OrderScreen> {
           child: Center(child: Lottie.asset('assets/lotties/not_found.json')),
         );
       } else {
-        return Expanded(
+        return Flexible(
             child: ListView.builder(
           itemCount: filteredOrders.length,
           scrollDirection: Axis.vertical,
@@ -737,7 +737,7 @@ class _OrderScreenState extends State<OrderScreen> {
           child: Center(child: Lottie.asset('assets/lotties/not_found.json')),
         );
       } else {
-        return Expanded(
+        return Flexible(
             child: ListView.builder(
           itemCount: filteredOrders.length,
           scrollDirection: Axis.vertical,
@@ -817,7 +817,7 @@ class _OrderScreenState extends State<OrderScreen> {
           child: Center(child: Lottie.asset('assets/lotties/not_found.json')),
         );
       } else {
-        return Expanded(
+        return Flexible(
             child: ListView.builder(
           itemCount: filteredOrders.length,
           scrollDirection: Axis.vertical,

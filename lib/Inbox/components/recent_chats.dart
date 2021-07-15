@@ -192,16 +192,16 @@ class _ChatsState extends State<Chats> {
                             ));
                           } else {
                             return Expanded(
-                                child: Center(
-                              child: Text(
-                                  'You Chat Will Appears here When Its Ready'),
-                            ));
+                              child: Center(
+                                  child: Lottie.asset(
+                                      'assets/lotties/chat_not_ready.json')),
+                            );
                           }
                         } else {
                           return Expanded(
                             child: Center(
                                 child: Lottie.asset(
-                                    'assets/lotties/loading-animation.json')),
+                                    'assets/lotties/empty_chat.json')),
                           );
                         }
                       }),

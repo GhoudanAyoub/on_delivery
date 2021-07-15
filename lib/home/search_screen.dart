@@ -600,7 +600,11 @@ class _SearchScreenState extends State<SearchScreen> {
                                         context,
                                         MaterialPageRoute(
                                           builder: (context) =>
-                                              SearchMapTripScreen(),
+                                              SearchMapTripScreen(
+                                            sLocation: GeoPoint(
+                                                locationData.lnt,
+                                                locationData.lng),
+                                          ),
                                         ));
                                     setState(() {
                                       arrivalPointString = result.split("/")[1];
@@ -935,7 +939,11 @@ class _SearchScreenState extends State<SearchScreen> {
                                         context,
                                         MaterialPageRoute(
                                           builder: (context) =>
-                                              SearchMapTripScreen(),
+                                              SearchMapTripScreen(
+                                            sLocation: GeoPoint(
+                                                locationData.lnt,
+                                                locationData.lng),
+                                          ),
                                         ));
                                     setState(() {
                                       arrivalPointString = result.split("/")[1];
@@ -1289,7 +1297,11 @@ class _SearchScreenState extends State<SearchScreen> {
                                         context,
                                         MaterialPageRoute(
                                           builder: (context) =>
-                                              SearchMapTripScreen(),
+                                              SearchMapTripScreen(
+                                            sLocation: GeoPoint(
+                                                locationData.lnt,
+                                                locationData.lng),
+                                          ),
                                         ));
                                     setState(() {
                                       arrivalPointString = result.split("/")[1];
@@ -1651,9 +1663,12 @@ class _SearchScreenState extends State<SearchScreen> {
                                         context,
                                         MaterialPageRoute(
                                           builder: (context) =>
-                                              SearchMapTripScreen(),
+                                              SearchMapTripScreen(
+                                            sLocation: GeoPoint(
+                                                locationData.lnt,
+                                                locationData.lng),
+                                          ),
                                         ));
-                                    print("12221${result.split("/")[0]}");
                                     setState(() {
                                       arrivalPointString = result.split("/")[1];
                                     });
@@ -1936,8 +1951,10 @@ class _SearchScreenState extends State<SearchScreen> {
 class SearchMapTripScreen extends StatefulWidget {
   static String routeName = '/SearchMapTripScreen';
   final User user;
+  final GeoPoint sLocation;
 
-  const SearchMapTripScreen({Key key, this.user}) : super(key: key);
+  const SearchMapTripScreen({Key key, this.user, this.sLocation})
+      : super(key: key);
   @override
   _SearchMapTripScreenState createState() => _SearchMapTripScreenState();
 }
@@ -2002,12 +2019,15 @@ class _SearchMapTripScreenState extends State<SearchMapTripScreen> {
                             ? startingTripLocationString = value
                             : arriveTripLocationString = value;
                       }));
-                  locationData.getMoveCameraLntLng().then((value) => start
-                      ? startingLocationLnt = value.latitude
-                      : startingLocationLng = value.longitude);
-                  locationData.getMoveCameraLntLng().then((value) => start
-                      ? arrivedLocationLnt = value.latitude
-                      : arrivedLocationLng = value.longitude);
+                  start
+                      ? locationData.getMoveCameraLntLng().then((value) {
+                          startingLocationLnt = value.latitude;
+                          startingLocationLng = value.longitude;
+                        })
+                      : locationData.getMoveCameraLntLng().then((value) {
+                          arrivedLocationLnt = value.latitude;
+                          arrivedLocationLng = value.longitude;
+                        });
                 },
               ),
               Align(
@@ -2158,13 +2178,11 @@ class _SearchMapTripScreenState extends State<SearchMapTripScreen> {
                         Orders order = new Orders(
                             userId: firebaseAuth.currentUser.uid,
                             lunchStatus: false,
-                            startAt: GeoPoint(
-                                locationData.lnt != null
-                                    ? locationData.lnt
-                                    : startingLocationLnt,
-                                locationData.lng != null
-                                    ? locationData.lng
-                                    : startingLocationLng),
+                            startAt: widget.sLocation != null
+                                ? GeoPoint(
+                                    startingLocationLnt, startingLocationLng)
+                                : GeoPoint(widget.sLocation.latitude,
+                                    widget.sLocation.longitude),
                             endAt: GeoPoint(
                                 arrivedLocationLnt, arrivedLocationLng));
 
@@ -2341,7 +2359,6 @@ class _SearchMapAgentScreenState extends State<SearchMapAgentScreen> {
             agentTime.add(value);
           });
         });
-        print("855${agentTime.length}");
         if (!user1.id.contains(firebaseAuth.currentUser.uid))
           userList.add(user1);
 
@@ -2489,8 +2506,7 @@ class _SearchMapAgentScreenState extends State<SearchMapAgentScreen> {
                   child: GoogleMap(
                     initialCameraPosition:
                         CameraPosition(target: currentLocation, zoom: 14),
-                    zoomControlsEnabled: false,
-                    minMaxZoomPreference: MinMaxZoomPreference(6.5, 20.8),
+                    zoomControlsEnabled: true,
                     myLocationEnabled: false,
                     myLocationButtonEnabled: false,
                     mapType: MapType.normal,
@@ -2776,6 +2792,8 @@ class _SearchMapAgentScreenState extends State<SearchMapAgentScreen> {
                                     ),
                                   )),
                               onTap: () {
+                                _goToPosition(_controller.future,
+                                    userList[index].Lnt, userList[index].Lng);
                                 Navigator.push(
                                   context,
                                   MaterialPageRoute(
@@ -3786,6 +3804,7 @@ class _SearchMapAgentScreenState extends State<SearchMapAgentScreen> {
       position: LatLng(lat, lon),
       draggable: false,
       onTap: () {
+        _goToPosition(_controller.future, lat, lon);
         setState(() {
           clicked = true;
           agentLocationId = id;
@@ -4150,5 +4169,3 @@ class _AllAgentState extends State<AllAgent> {
         ));
   }
 }
-
-

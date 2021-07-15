@@ -6,6 +6,7 @@ import 'package:on_delivery/models/message.dart';
 import 'package:on_delivery/models/message_list.dart';
 import 'package:on_delivery/models/order.dart';
 import 'package:on_delivery/models/plans.dart';
+import 'package:on_delivery/models/rate.dart';
 import 'package:on_delivery/utils/firebase.dart';
 import 'package:on_delivery/utils/utils.dart';
 
@@ -148,6 +149,13 @@ class FirebaseService {
     return docId;
   }
 
+  Future<String> addRate(RateModel rate) async {
+    String docId;
+    final doc = rateRef.doc();
+    doc.set(rate.toJson()).onError((error, stackTrace) => print(error));
+    return docId;
+  }
+
   updateOrders(User user, Orders orders, String docId) {
     orderRef.doc(docId).update({
       "date": Utils.getCurrentDate(),
@@ -195,6 +203,12 @@ class FirebaseService {
           .collection(favoritesName)
           .doc(id)
           .delete();
+    }
+  }
+
+  deleteChat(User user, String id) async {
+    if (user != null) {
+      await chatRef.doc(id).delete();
     }
   }
 }
