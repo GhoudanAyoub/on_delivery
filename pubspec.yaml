@@ -10,6 +10,7 @@ dependencies:
   flutter:
     sdk: flutter
 
+  http:
   flutter_polyline_points:
   lottie:
   firebase_messaging:
@@ -32,6 +33,7 @@ dependencies:
   flutter_launcher_icons: 0.7.5
   flutter_google_places:
 
+  stripe_payment: ^1.1.1
   flutter_places_autocomplete:
   geocoder: ^0.2.1
   location: ^3.0.0

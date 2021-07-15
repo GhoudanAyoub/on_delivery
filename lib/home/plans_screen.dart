@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:on_delivery/block/navigation_block/navigation_block.dart';
 import 'package:on_delivery/components/RaisedGradientButton.dart';
 import 'package:on_delivery/models/plans.dart';
+import 'package:on_delivery/services/payment.dart';
 import 'package:on_delivery/utils/SizeConfig.dart';
 import 'package:on_delivery/utils/firebase.dart';
 import 'package:on_delivery/utils/utils.dart';
@@ -16,6 +17,20 @@ class Plans extends StatefulWidget with NavigationStates {
 
 class _PlansState extends State<Plans> {
   bool starter = false, eco = false;
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    StripeServices.init();
+  }
+
+  payNow(String price) async {
+    var response =
+        await StripeServices.payNowHandler(amount: price, currency: 'MAD');
+    print('response message : ${response.message}');
+  }
+
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -144,6 +159,7 @@ class _PlansState extends State<Plans> {
                         starter = true;
                         eco = false;
                       });
+                      eco ? payNow("600") : payNow("70");
                     },
                   ),
                   SizedBox(height: 20),
