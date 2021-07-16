@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:on_delivery/block/navigation_block/navigation_block.dart';
 import 'package:on_delivery/components/RaisedGradientButton.dart';
 import 'package:on_delivery/models/plans.dart';
-import 'package:on_delivery/services/payment.dart';
+import 'package:on_delivery/payment/payment_gateways.dart';
 import 'package:on_delivery/utils/SizeConfig.dart';
 import 'package:on_delivery/utils/firebase.dart';
 import 'package:on_delivery/utils/utils.dart';
@@ -17,19 +17,6 @@ class Plans extends StatefulWidget with NavigationStates {
 
 class _PlansState extends State<Plans> {
   bool starter = false, eco = false;
-
-  @override
-  void initState() {
-    // TODO: implement initState
-    super.initState();
-    StripeServices.init();
-  }
-
-  payNow(String price) async {
-    var response =
-        await StripeServices.payNowHandler(amount: price, currency: 'MAD');
-    print('response message : ${response.message}');
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -159,7 +146,6 @@ class _PlansState extends State<Plans> {
                         starter = true;
                         eco = false;
                       });
-                      eco ? payNow("600") : payNow("70");
                     },
                   ),
                   SizedBox(height: 20),
@@ -281,7 +267,15 @@ class _PlansState extends State<Plans> {
                               ],
                             ),
                             width: SizeConfig.screenWidth - 150,
-                            onPressed: () async {})
+                            onPressed: () async {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => PaymentGateways(
+                                          amount: eco ? "600" : "70",
+                                        )),
+                              );
+                            })
                         : SizedBox(
                             height: 0,
                           ),

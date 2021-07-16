@@ -550,232 +550,239 @@ class _HomeState extends State<Home> {
         );
       } else {
         return Flexible(
-            child: ListView.builder(
-          itemCount: filteredAgents.length,
-          scrollDirection: Axis.vertical,
-          shrinkWrap: true,
-          padding: EdgeInsets.only(bottom: 20),
-          itemBuilder: (BuildContext context, int index) {
-            DocumentSnapshot doc = filteredAgents[index];
-            UserModel _user = UserModel.fromJson(doc.data());
-            if ((firebaseAuth.currentUser != null &&
-                    doc.id == currentUserId() &&
-                    _user.type.toLowerCase().contains("agent")) ||
-                _user.type.toLowerCase().contains("client") ||
-                _user.isOnline != true ||
-                !_user.city.toLowerCase().contains(user1.city)) {
-              Timer(Duration(milliseconds: 10), () {
-                setState(() {
-                  removeFromList(index);
+            child: RefreshIndicator(
+          child: ListView.builder(
+            itemCount: filteredAgents.length,
+            scrollDirection: Axis.vertical,
+            shrinkWrap: true,
+            padding: EdgeInsets.only(bottom: 20),
+            itemBuilder: (BuildContext context, int index) {
+              DocumentSnapshot doc = filteredAgents[index];
+              UserModel _user = UserModel.fromJson(doc.data());
+              if ((firebaseAuth.currentUser != null &&
+                      doc.id == currentUserId() &&
+                      _user.type.toLowerCase().contains("agent")) ||
+                  _user.type.toLowerCase().contains("client") ||
+                  _user.isOnline != true ||
+                  !_user.city.toLowerCase().contains(user1.city)) {
+                Timer(Duration(milliseconds: 10), () {
+                  setState(() {
+                    removeFromList(index);
+                  });
                 });
-              });
-            }
-            return Align(
-              alignment: Alignment.bottomCenter,
-              child: GestureDetector(
-                child: Card(
-                    elevation: 1,
-                    shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10)),
-                    child: Container(
-                      padding: EdgeInsets.only(
-                          left: getProportionateScreenHeight(10),
-                          right: getProportionateScreenHeight(10)),
-                      height: getProportionateScreenHeight(150),
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        border: Border.all(
-                            width: 1, color: Color.fromRGBO(231, 231, 231, 1)),
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.spaceAround,
-                        children: [
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Container(
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(20),
-                                  border: Border.all(
-                                    color: Colors.transparent,
+              }
+              return Align(
+                alignment: Alignment.bottomCenter,
+                child: GestureDetector(
+                  child: Card(
+                      elevation: 1,
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10)),
+                      child: Container(
+                        padding: EdgeInsets.only(
+                            left: getProportionateScreenHeight(10),
+                            right: getProportionateScreenHeight(10)),
+                        height: getProportionateScreenHeight(150),
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          border: Border.all(
+                              width: 1,
+                              color: Color.fromRGBO(231, 231, 231, 1)),
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.spaceAround,
+                          children: [
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Container(
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(20),
+                                    border: Border.all(
+                                      color: Colors.transparent,
+                                    ),
+                                    image: DecorationImage(
+                                      image: NetworkImage(_user.photoUrl != null
+                                          ? _user.photoUrl
+                                          : FirebaseService.getProfileImage()),
+                                      fit: BoxFit.cover,
+                                    ),
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: Colors.grey.withOpacity(0.3),
+                                        offset: new Offset(0.0, 0.0),
+                                        blurRadius: 2.0,
+                                        spreadRadius: 0.0,
+                                      ),
+                                    ],
                                   ),
-                                  image: DecorationImage(
-                                    image: NetworkImage(_user.photoUrl != null
-                                        ? _user.photoUrl
-                                        : FirebaseService.getProfileImage()),
-                                    fit: BoxFit.cover,
+                                  height: getProportionateScreenHeight(60),
+                                  width: getProportionateScreenHeight(60),
+                                ),
+                                Container(
+                                  width: getProportionateScreenWidth(230),
+                                  child: Column(
+                                    children: [
+                                      Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          Row(
+                                            children: [
+                                              Text(
+                                                  "${_user.firstName} ${_user.lastname.toUpperCase()}",
+                                                  style: TextStyle(
+                                                    fontSize: 12,
+                                                    letterSpacing: 1,
+                                                    fontWeight: FontWeight.w500,
+                                                    color: Colors.black,
+                                                  )),
+                                              _user.verified == "true"
+                                                  ? Image.asset(
+                                                      "assets/images/ver_agent.png")
+                                                  : SizedBox(height: 0)
+                                            ],
+                                          ),
+                                          Row(
+                                            children: [
+                                              Image.asset(
+                                                  'assets/images/agent rate.png'),
+                                              Text(
+                                                  getReviews2(_user.id) != 0
+                                                      ? "${getReviews2(_user.id)}"
+                                                      : "NR",
+                                                  style: TextStyle(
+                                                    fontSize: 12,
+                                                    letterSpacing: 1,
+                                                    fontWeight: FontWeight.w500,
+                                                    color: Colors.black,
+                                                  )),
+                                            ],
+                                          ),
+                                        ],
+                                      ),
+                                      SizedBox(
+                                        height: 3,
+                                      ),
+                                      Text("${_user.city}",
+                                          style: TextStyle(
+                                            fontSize: 12,
+                                            letterSpacing: 1,
+                                            fontWeight: FontWeight.normal,
+                                            color: Colors.grey,
+                                          )),
+                                      SizedBox(
+                                        height: 3,
+                                      ),
+                                      Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          Text(
+                                              "${_user.activities.toLowerCase()}",
+                                              style: TextStyle(
+                                                fontSize: 14,
+                                                letterSpacing: 1,
+                                                fontWeight: FontWeight.normal,
+                                                color: Colors.grey,
+                                              )),
+                                          Text(
+                                              "${_user.price}/${_user.unity.toLowerCase()}",
+                                              style: TextStyle(
+                                                fontSize: 12,
+                                                letterSpacing: 1,
+                                                fontWeight: FontWeight.normal,
+                                                color: Colors.grey,
+                                              ))
+                                        ],
+                                      ),
+                                    ],
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
                                   ),
-                                  boxShadow: [
-                                    BoxShadow(
-                                      color: Colors.grey.withOpacity(0.3),
-                                      offset: new Offset(0.0, 0.0),
-                                      blurRadius: 2.0,
-                                      spreadRadius: 0.0,
-                                    ),
-                                  ],
+                                )
+                              ],
+                            ),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Container(
+                                  decoration: BoxDecoration(
+                                    color: Colors.white,
+                                    border: Border.all(
+                                        width: 1,
+                                        color:
+                                            Color.fromRGBO(231, 231, 231, 1)),
+                                    borderRadius: BorderRadius.circular(10),
+                                  ),
+                                  height: 30,
+                                  width: getProportionateScreenWidth(150),
+                                  margin:
+                                      EdgeInsets.only(right: 20, bottom: 10),
+                                  child: Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceAround,
+                                    children: [
+                                      Text("Orders delivered",
+                                          style: TextStyle(
+                                            fontSize: 12,
+                                            fontWeight: FontWeight.w600,
+                                            color: Colors.grey,
+                                          )),
+                                      Text("15/19",
+                                          style: TextStyle(
+                                            fontSize: 12,
+                                            fontWeight: FontWeight.bold,
+                                            color: Colors.black,
+                                          )),
+                                    ],
+                                  ),
                                 ),
-                                height: getProportionateScreenHeight(60),
-                                width: getProportionateScreenHeight(60),
-                              ),
-                              Container(
-                                width: getProportionateScreenWidth(230),
-                                child: Column(
-                                  children: [
-                                    Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceBetween,
-                                      children: [
-                                        Row(
-                                          children: [
-                                            Text(
-                                                "${_user.firstName} ${_user.lastname.toUpperCase()}",
-                                                style: TextStyle(
-                                                  fontSize: 12,
-                                                  letterSpacing: 1,
-                                                  fontWeight: FontWeight.w500,
-                                                  color: Colors.black,
-                                                )),
-                                            _user.verified == "true"
-                                                ? Image.asset(
-                                                    "assets/images/ver_agent.png")
-                                                : SizedBox(height: 0)
-                                          ],
-                                        ),
-                                        Row(
-                                          children: [
-                                            Image.asset(
-                                                'assets/images/agent rate.png'),
-                                            Text(
-                                                getReviews2(_user.id) != 0
-                                                    ? "${getReviews2(_user.id)}"
-                                                    : "NR",
-                                                style: TextStyle(
-                                                  fontSize: 12,
-                                                  letterSpacing: 1,
-                                                  fontWeight: FontWeight.w500,
-                                                  color: Colors.black,
-                                                )),
-                                          ],
-                                        ),
-                                      ],
-                                    ),
-                                    SizedBox(
-                                      height: 3,
-                                    ),
-                                    Text("${_user.city}",
-                                        style: TextStyle(
-                                          fontSize: 12,
-                                          letterSpacing: 1,
-                                          fontWeight: FontWeight.normal,
-                                          color: Colors.grey,
-                                        )),
-                                    SizedBox(
-                                      height: 3,
-                                    ),
-                                    Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceBetween,
-                                      children: [
-                                        Text(
-                                            "${_user.activities.toLowerCase()}",
-                                            style: TextStyle(
-                                              fontSize: 14,
-                                              letterSpacing: 1,
-                                              fontWeight: FontWeight.normal,
-                                              color: Colors.grey,
-                                            )),
-                                        Text(
-                                            "${_user.price}/${_user.unity.toLowerCase()}",
-                                            style: TextStyle(
-                                              fontSize: 12,
-                                              letterSpacing: 1,
-                                              fontWeight: FontWeight.normal,
-                                              color: Colors.grey,
-                                            ))
-                                      ],
-                                    ),
-                                  ],
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                ),
-                              )
-                            ],
-                          ),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Container(
-                                decoration: BoxDecoration(
-                                  color: Colors.white,
-                                  border: Border.all(
-                                      width: 1,
-                                      color: Color.fromRGBO(231, 231, 231, 1)),
-                                  borderRadius: BorderRadius.circular(10),
-                                ),
-                                height: 30,
-                                width: getProportionateScreenWidth(150),
-                                margin: EdgeInsets.only(right: 20, bottom: 10),
-                                child: Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceAround,
-                                  children: [
-                                    Text("Orders delivered",
-                                        style: TextStyle(
-                                          fontSize: 12,
-                                          fontWeight: FontWeight.w600,
-                                          color: Colors.grey,
-                                        )),
-                                    Text("15/19",
-                                        style: TextStyle(
-                                          fontSize: 12,
-                                          fontWeight: FontWeight.bold,
-                                          color: Colors.black,
-                                        )),
-                                  ],
-                                ),
-                              ),
-                              Container(
-                                decoration: BoxDecoration(
-                                  color: Colors.white,
-                                  border: Border.all(
-                                      width: 1,
-                                      color: Color.fromRGBO(238, 71, 0, 1)),
-                                  borderRadius: BorderRadius.circular(10),
-                                ),
-                                height: 30,
-                                width: getProportionateScreenWidth(90),
-                                margin: EdgeInsets.only(left: 20, bottom: 10),
-                                child: Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceAround,
-                                  children: [
-                                    Text("Details",
-                                        style: TextStyle(
-                                          fontSize: 12,
-                                          fontWeight: FontWeight.w600,
-                                          foreground: Paint()
-                                            ..shader = orangeLinearGradient,
-                                        )),
-                                  ],
-                                ),
-                              )
-                            ],
-                          )
-                        ],
-                      ),
-                    )),
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => AgentsDetails(
-                              id: doc.id,
-                            )),
-                  );
-                },
-              ),
-            );
-          },
+                                Container(
+                                  decoration: BoxDecoration(
+                                    color: Colors.white,
+                                    border: Border.all(
+                                        width: 1,
+                                        color: Color.fromRGBO(238, 71, 0, 1)),
+                                    borderRadius: BorderRadius.circular(10),
+                                  ),
+                                  height: 30,
+                                  width: getProportionateScreenWidth(90),
+                                  margin: EdgeInsets.only(left: 20, bottom: 10),
+                                  child: Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceAround,
+                                    children: [
+                                      Text("Details",
+                                          style: TextStyle(
+                                            fontSize: 12,
+                                            fontWeight: FontWeight.w600,
+                                            foreground: Paint()
+                                              ..shader = orangeLinearGradient,
+                                          )),
+                                    ],
+                                  ),
+                                )
+                              ],
+                            )
+                          ],
+                        ),
+                      )),
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => AgentsDetails(
+                                id: doc.id,
+                              )),
+                    );
+                  },
+                ),
+              );
+            },
+          ),
+          onRefresh: _refreshAgents,
         ));
       }
     } else {
@@ -783,6 +790,10 @@ class _HomeState extends State<Home> {
         child: Center(child: Lottie.asset('assets/lotties/comp_loading.json')),
       );
     }
+  }
+
+  Future<Null> _refreshAgents() async {
+    getAgents();
   }
 
   buildFavoriteAgents() {

@@ -77,6 +77,36 @@ class StripeServices {
     }
   }
 
+  static Future<StripeTransactionResponse> choseExistingCard(
+      {String amount, String currency, CreditCard card}) async {
+    try {
+      var stripePaymentMethod = await StripePayment.createPaymentMethod(
+          PaymentMethodRequest(card: card));
+      var stripePaymentIntent =
+          await StripeServices.createPaymentIntent(amount, currency);
+      var response = await StripePayment.confirmPaymentIntent(PaymentIntent(
+          clientSecret: stripePaymentIntent['client_secret'],
+          paymentMethodId: stripePaymentMethod.id));
+
+      if (response.status == 'succeeded') {
+        //if the payment process success
+        return new StripeTransactionResponse(
+            message: 'Transaction successful', success: true);
+      } else {
+        //payment process fail
+        return new StripeTransactionResponse(
+            message: 'Transaction failed', success: false);
+      }
+    } on PlatformException catch (error) {
+      return StripeServices.getErrorAndAnalyze(error);
+    } catch (error) {
+      return new StripeTransactionResponse(
+          //convert the error to string and assign to message variable for json resposne
+          message: 'Transaction failed: ${error.toString()}',
+          success: false);
+    }
+  }
+
   static getErrorAndAnalyze(err) {
     String message = 'Something went wrong';
     if (err.code == 'cancelled') {

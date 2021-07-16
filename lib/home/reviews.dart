@@ -57,21 +57,24 @@ class _ReviewState extends State<Review> {
               ),
               SizedBox(height: 40),
               Expanded(
-                  child: ListView.builder(
-                scrollDirection: Axis.vertical,
-                padding: EdgeInsets.symmetric(horizontal: 4.0, vertical: 5),
-                itemCount: rateList.length,
-                shrinkWrap: true,
-                itemBuilder: (BuildContext context, int index) {
-                  DocumentSnapshot doc = rateList[index];
-                  RateModel rate = RateModel.fromJson(doc.data());
-                  if (rate.agentId.contains(widget.id))
-                    return RateLayout(
-                      id: widget.id,
-                      rateModel: rate,
-                    );
-                  return Container();
-                },
+                  child: RefreshIndicator(
+                child: ListView.builder(
+                  scrollDirection: Axis.vertical,
+                  padding: EdgeInsets.symmetric(horizontal: 4.0, vertical: 5),
+                  itemCount: rateList.length,
+                  shrinkWrap: true,
+                  itemBuilder: (BuildContext context, int index) {
+                    DocumentSnapshot doc = rateList[index];
+                    RateModel rate = RateModel.fromJson(doc.data());
+                    if (rate.agentId.contains(widget.id))
+                      return RateLayout(
+                        id: widget.id,
+                        rateModel: rate,
+                      );
+                    return Container();
+                  },
+                ),
+                onRefresh: _refreshReviews,
               )),
               Align(
                 alignment: Alignment.bottomCenter,
@@ -101,6 +104,10 @@ class _ReviewState extends State<Review> {
             ],
           )),
     ));
+  }
+
+  Future<Null> _refreshReviews() async {
+    getReviews();
   }
 
   getReviews() async {
