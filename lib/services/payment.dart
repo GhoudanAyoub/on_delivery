@@ -67,7 +67,7 @@ class StripeServices {
             message: 'Transaction successful ', success: true);
       } else {
         return StripeTransactionResponse(
-            message: 'Transaction failed', success: false);
+            message: 'Transaction failed: ${response.status}', success: false);
       }
     } on PlatformException catch (error) {
       return StripeServices.getErrorAndAnalyze(error);

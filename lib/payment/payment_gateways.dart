@@ -1,7 +1,9 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:on_delivery/components/indicators.dart';
 import 'package:on_delivery/payment/PaypalPayment.dart';
 import 'package:on_delivery/payment/cars.dart';
+import 'package:on_delivery/payment/success.dart';
 import 'package:on_delivery/services/payment.dart';
 
 class PaymentGateways extends StatefulWidget {
@@ -14,6 +16,7 @@ class PaymentGateways extends StatefulWidget {
 }
 
 class _PaymentGatewaysState extends State<PaymentGateways> {
+  bool visible = false;
   @override
   void initState() {
     // TODO: implement initState
@@ -22,9 +25,20 @@ class _PaymentGatewaysState extends State<PaymentGateways> {
   }
 
   payNow(String price) async {
-    var response =
-        await StripeServices.payNowHandler(amount: price, currency: 'MAD');
-    print('response message : ${response.message}');
+    await StripeServices.payNowHandler(amount: price, currency: 'MAD')
+        .then((value) {
+      if (value.success == true)
+        Navigator.pushNamed(context, Success.routeName);
+      else {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text("${value.message}"),
+          duration: Duration(seconds: 3),
+        ));
+        setState(() {
+          visible = false;
+        });
+      }
+    });
   }
 
   @override
@@ -139,6 +153,42 @@ class _PaymentGatewaysState extends State<PaymentGateways> {
                 alignment: Alignment.bottomCenter,
                 child: Container(
                   margin: EdgeInsets.only(bottom: 8),
+                  child: Text.rich(
+                    TextSpan(children: [
+                      TextSpan(
+                          text: 'This Section is still under development\n',
+                          style: TextStyle(
+                              fontSize: 12, fontWeight: FontWeight.normal)),
+                      TextSpan(
+                          text:
+                              'This will be available only for people outside morocco\n',
+                          style: TextStyle(
+                              fontSize: 11, fontWeight: FontWeight.normal)),
+                      TextSpan(
+                          text: ' No real founds are taken!',
+                          style: TextStyle(
+                              fontSize: 12,
+                              fontWeight: FontWeight.normal,
+                              color: Colors.red)),
+                    ], style: TextStyle(letterSpacing: 1)),
+                    textAlign: TextAlign.center,
+                  ),
+                ),
+              ),
+              Align(
+                alignment: Alignment.center,
+                child: Container(
+                  margin: EdgeInsets.only(bottom: 8),
+                  child: Visibility(
+                    child: circularProgress(context),
+                    visible: visible,
+                  ),
+                ),
+              ),
+              Align(
+                alignment: Alignment.bottomCenter,
+                child: Container(
+                  margin: EdgeInsets.only(bottom: 8),
                   width: 135,
                   height: 5,
                   decoration: BoxDecoration(
@@ -172,8 +222,10 @@ class _PaymentGatewaysState extends State<PaymentGateways> {
         );
         break;
       case 1:
-        //addNewCard(context);
         payNow(widget.amount);
+        setState(() {
+          visible = true;
+        });
         break;
       case 2:
         Navigator.push(

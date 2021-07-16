@@ -1,6 +1,7 @@
 import 'dart:core';
 
 import 'package:flutter/material.dart';
+import 'package:on_delivery/payment/success.dart';
 import 'package:on_delivery/services/PaypalServices.dart';
 import 'package:on_delivery/utils/firebase.dart';
 import 'package:webview_flutter/webview_flutter.dart';
@@ -170,9 +171,11 @@ class PaypalPaymentState extends State<PaypalPayment> {
                     .executePayment(executeUrl, payerID, accessToken)
                     .then((id) {
                   // widget.onFinish(id);
-                  var ref = paymentRef.doc(firebaseAuth.currentUser.uid);
+                  var ref = plansRef.doc(firebaseAuth.currentUser.uid);
+                  //todo : need to be compatible with the plan model
                   ref.set({"id": ref.id, "packet": widget.itemPrice});
                   Navigator.of(context).pop();
+                  Navigator.pushNamed(context, Success.routeName);
                 });
               } else {
                 Navigator.of(context).pop();

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 import 'constants.dart';
 
@@ -55,6 +56,7 @@ InputDecorationTheme inputDecorationTheme() {
 
 TextTheme textTheme() {
   return TextTheme(
+    button: GoogleFonts.poppins(),
     bodyText1: TextStyle(color: kTextColor),
     bodyText2: TextStyle(color: kTextColor),
   );
@@ -66,6 +68,7 @@ AppBarTheme appBarTheme() {
     elevation: 0,
     brightness: Brightness.light,
     iconTheme: IconThemeData(color: Colors.white),
+    titleTextStyle: GoogleFonts.poppins(),
     textTheme: TextTheme(
       headline6: TextStyle(color: Colors.white, fontSize: 18),
     ),
