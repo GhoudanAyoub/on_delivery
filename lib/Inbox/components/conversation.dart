@@ -657,6 +657,7 @@ class _ConversationState extends State<Conversation> {
                                       notificationInto();
                                     });
                                   }
+                                  //todo : check  message  if not  null
                                   Message message2 = Message.fromJson(
                                       messages.reversed.first.data());
                                   return ListView.builder(

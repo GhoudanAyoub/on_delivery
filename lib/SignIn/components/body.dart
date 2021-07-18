@@ -36,7 +36,7 @@ class _BodyState extends State<Body> {
   Widget build(BuildContext context) {
     return SingleChildScrollView(
       child: Container(
-          height: SizeConfig.screenHeight,
+          height: SizeConfig.screenHeight - 30,
           decoration: BoxDecoration(
             gradient: LinearGradient(
                 begin: Alignment.bottomCenter,
@@ -81,11 +81,10 @@ class _BodyState extends State<Body> {
                         ),
                       )),
                   Expanded(
-                    child: ListView(
+                    child: Column(
                       children: [
                         SizedBox(height: 40),
                         SignForm(),
-                        SizedBox(height: 20),
                       ],
                     ),
                   ),

@@ -66,79 +66,76 @@ class _SignFormState extends State<SignForm> {
 
   @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      child: Form(
-        key: _formKey,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.end,
-          children: [
-            buildEmailFormField(),
-            SizedBox(height: 15),
-            buildPasswordFormField(),
-            SizedBox(height: 30),
-            RaisedGradientButton(
-                child: submitted
-                    ? SizedBox(
-                        height: 15,
-                        width: 15,
-                        child: CircularProgressIndicator(
-                          strokeWidth: 2,
-                          valueColor:
-                              AlwaysStoppedAnimation<Color>(Colors.white),
-                        ),
-                      )
-                    : Text(
-                        buttonText,
-                        style: TextStyle(
-                          fontSize: 16,
-                          color: Colors.white,
-                        ),
+    return Form(
+      key: _formKey,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.end,
+        children: [
+          buildEmailFormField(),
+          SizedBox(height: 15),
+          buildPasswordFormField(),
+          SizedBox(height: 30),
+          RaisedGradientButton(
+              child: submitted
+                  ? SizedBox(
+                      height: 15,
+                      width: 15,
+                      child: CircularProgressIndicator(
+                        strokeWidth: 2,
+                        valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
                       ),
-                gradient: LinearGradient(
-                  colors: <Color>[
-                    Color.fromRGBO(82, 238, 79, 1),
-                    Color.fromRGBO(5, 151, 0, 1)
-                  ],
-                ),
-                onPressed: () async {
-                  AuthService auth = AuthService();
-                  if (_formKey.currentState.validate()) {
-                    submitted = true;
-                    KeyboardUtil.hideKeyboard(context);
-                    String success;
-                    try {
-                      removeError(error: success);
-                      success = await auth.loginUser(
-                        email: _emailContoller.text,
-                        password: _passwordController.text,
-                      );
-                      if (success == firebaseAuth.currentUser.uid) {
-                        final data = await usersRef.doc(success).get();
-                        if (data.exists) {
-                          Navigator.pushNamed(context, Base.routeName);
-                          Scaffold.of(context).showSnackBar(
-                              SnackBar(content: Text('Welcome Back')));
-                        } else {
-                          Navigator.pushNamed(context, ChooseSide.routeName);
-                          Scaffold.of(context).showSnackBar(SnackBar(
-                              content: Text(
-                                  'You have To Finish uploading your data')));
-                        }
+                    )
+                  : Text(
+                      buttonText,
+                      style: TextStyle(
+                        fontSize: 16,
+                        color: Colors.white,
+                      ),
+                    ),
+              gradient: LinearGradient(
+                colors: <Color>[
+                  Color.fromRGBO(82, 238, 79, 1),
+                  Color.fromRGBO(5, 151, 0, 1)
+                ],
+              ),
+              onPressed: () async {
+                AuthService auth = AuthService();
+                if (_formKey.currentState.validate()) {
+                  submitted = true;
+                  KeyboardUtil.hideKeyboard(context);
+                  String success;
+                  try {
+                    removeError(error: success);
+                    success = await auth.loginUser(
+                      email: _emailContoller.text,
+                      password: _passwordController.text,
+                    );
+                    if (success == firebaseAuth.currentUser.uid) {
+                      final data = await usersRef.doc(success).get();
+                      if (data.exists) {
+                        Navigator.pushNamed(context, Base.routeName);
+                        Scaffold.of(context).showSnackBar(
+                            SnackBar(content: Text('Welcome Back')));
                       } else {
-                        addError(error: success);
-                        submitted = false;
+                        Navigator.pushNamed(context, ChooseSide.routeName);
+                        Scaffold.of(context).showSnackBar(SnackBar(
+                            content: Text(
+                                'You have To Finish uploading your data')));
                       }
-                    } catch (e) {
-                      submitted = false;
+                    } else {
                       addError(error: success);
-                      showInSnackBar(
-                          '${auth.handleFirebaseAuthError(e.toString())}');
+                      submitted = false;
                     }
+                  } catch (e) {
+                    submitted = false;
+                    addError(error: success);
+                    showInSnackBar(
+                        '${auth.handleFirebaseAuthError(e.toString())}');
                   }
-                }),
-            FormError(errors: errors),
-          ],
-        ),
+                }
+              }),
+          FormError(errors: errors),
+        ],
       ),
     );
   }

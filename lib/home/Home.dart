@@ -544,9 +544,12 @@ class _HomeState extends State<Home> {
   buildAgents() {
     if (!loading) {
       if (filteredAgents.isEmpty) {
-        return Container(
-          height: 150,
-          child: Center(child: Lottie.asset('assets/lotties/not_found.json')),
+        return RefreshIndicator(
+          child: Container(
+            height: 150,
+            child: Center(child: Lottie.asset('assets/lotties/not_found.json')),
+          ),
+          onRefresh: _refreshAgents,
         );
       } else {
         return Flexible(
@@ -564,7 +567,9 @@ class _HomeState extends State<Home> {
                       _user.type.toLowerCase().contains("agent")) ||
                   _user.type.toLowerCase().contains("client") ||
                   _user.isOnline != true ||
-                  !_user.city.toLowerCase().contains(user1.city)) {
+                  !_user.city
+                      .toLowerCase()
+                      .contains(user1.city.toLowerCase())) {
                 Timer(Duration(milliseconds: 10), () {
                   setState(() {
                     removeFromList(index);
