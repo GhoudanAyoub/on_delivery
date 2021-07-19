@@ -90,7 +90,7 @@ class _SideBarState extends State<SideBar>
                   child: ClipPath(
                     clipper: CustomMenuClipper(),
                     child: Container(
-                      width: 20,
+                      width: 25,
                       height: 80,
                       color: Colors.white,
                       alignment: Alignment.centerRight,
@@ -98,7 +98,7 @@ class _SideBarState extends State<SideBar>
                         progress: _animationController.view,
                         icon: AnimatedIcons.menu_close,
                         color: Colors.black,
-                        size: 25,
+                        size: 30,
                       ),
                     ),
                   ),

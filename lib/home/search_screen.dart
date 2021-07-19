@@ -786,6 +786,7 @@ class _SearchScreenState extends State<SearchScreen> {
                                         maxWeight: maxWeightController.text,
                                         brand: brand,
                                         iceBox: icebox,
+                                        status: 'pending',
                                         numberItem: itemNumberController.text,
                                         transport: transport,
                                         startAt: GeoPoint(
@@ -1113,6 +1114,7 @@ class _SearchScreenState extends State<SearchScreen> {
                                         maxWeight: maxWeightController.text,
                                         brand: brand,
                                         iceBox: icebox,
+                                        status: 'pending',
                                         numberItem: itemNumberController.text,
                                         transport: transport,
                                         startAt: GeoPoint(
@@ -1510,6 +1512,7 @@ class _SearchScreenState extends State<SearchScreen> {
                                         maxWeight: maxWeightController.text,
                                         brand: brand,
                                         iceBox: icebox,
+                                        status: 'pending',
                                         numberItem: itemNumberController.text,
                                         transport: transport,
                                         startAt: GeoPoint(
@@ -1902,6 +1905,7 @@ class _SearchScreenState extends State<SearchScreen> {
                                         maxWeight: maxWeightController.text,
                                         brand: brand,
                                         iceBox: icebox,
+                                        status: 'pending',
                                         numberItem: itemNumberController.text,
                                         transport: transport,
                                         startAt: GeoPoint(

@@ -585,60 +585,55 @@ class _OrderScreenState extends State<OrderScreen> {
           child: Center(child: Lottie.asset('assets/lotties/not_found.json')),
         );
       } else {
-        return RefreshIndicator(
-            child: Flexible(
-                child: ListView.builder(
-              itemCount: filteredOrders.length,
-              scrollDirection: Axis.vertical,
-              shrinkWrap: true,
-              itemBuilder: (BuildContext context, int index) {
-                DocumentSnapshot doc = filteredOrders[index];
-                Orders orders = Orders.fromJson(doc.data());
+        return Flexible(
+            child: ListView.builder(
+          itemCount: filteredOrders.length,
+          scrollDirection: Axis.vertical,
+          shrinkWrap: true,
+          itemBuilder: (BuildContext context, int index) {
+            DocumentSnapshot doc = filteredOrders[index];
+            Orders orders = Orders.fromJson(doc.data());
 
-                if (user1.type.toLowerCase().contains('agent'))
-                  return StreamBuilder(
-                      stream: usersRef.doc(orders.userId).snapshots(),
-                      builder:
-                          (context, AsyncSnapshot<DocumentSnapshot> snapshot) {
-                        if (snapshot.hasData && snapshot.data.exists) {
-                          UserModel _user =
-                              UserModel.fromJson(snapshot.data.data());
+            if (user1.type.toLowerCase().contains('agent'))
+              return StreamBuilder(
+                  stream: usersRef.doc(orders.userId).snapshots(),
+                  builder: (context, AsyncSnapshot<DocumentSnapshot> snapshot) {
+                    if (snapshot.hasData && snapshot.data.exists) {
+                      UserModel _user =
+                          UserModel.fromJson(snapshot.data.data());
 
-                          return OrderLayout(
-                            me: user1,
-                            order: orders,
-                            user: _user,
-                            track: false,
-                            count: false,
-                          );
-                        }
-                        return Container(
-                          height: 0,
-                        );
-                      });
-                return StreamBuilder(
-                    stream: usersRef.doc(orders.agentId).snapshots(),
-                    builder:
-                        (context, AsyncSnapshot<DocumentSnapshot> snapshot) {
-                      if (snapshot.hasData && snapshot.data.exists) {
-                        UserModel _user =
-                            UserModel.fromJson(snapshot.data.data());
-
-                        return OrderLayout(
-                          me: user1,
-                          order: orders,
-                          user: _user,
-                          track: false,
-                          count: false,
-                        );
-                      }
-                      return Container(
-                        height: 0,
+                      return OrderLayout(
+                        me: user1,
+                        order: orders,
+                        user: _user,
+                        track: false,
+                        count: false,
                       );
-                    });
-              },
-            )),
-            onRefresh: _refreshOrders);
+                    }
+                    return Container(
+                      height: 0,
+                    );
+                  });
+            return StreamBuilder(
+                stream: usersRef.doc(orders.agentId).snapshots(),
+                builder: (context, AsyncSnapshot<DocumentSnapshot> snapshot) {
+                  if (snapshot.hasData && snapshot.data.exists) {
+                    UserModel _user = UserModel.fromJson(snapshot.data.data());
+
+                    return OrderLayout(
+                      me: user1,
+                      order: orders,
+                      user: _user,
+                      track: false,
+                      count: false,
+                    );
+                  }
+                  return Container(
+                    height: 0,
+                  );
+                });
+          },
+        ));
       }
     } else {
       return Container(
