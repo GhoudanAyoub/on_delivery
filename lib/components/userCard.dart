@@ -17,14 +17,15 @@ class UserCard extends StatefulWidget {
 class _UserCardState extends State<UserCard> {
   int myDocs = 0;
   int doneDocs = 0;
-  double rate = null;
+  double i = 0;
+  int j = 0;
+  double rate;
 
   getMyOrders() {
     orderRef.snapshots().listen((element) {
       element.docChanges.forEach((element) {
         Orders order = Orders.fromJson(element.doc.data());
-        if (order.userId.contains(widget.userModel.id) ||
-            order.agentId.contains(widget.userModel.id)) {
+        if (order.agentId.contains(widget.userModel.id)) {
           setState(() {
             myDocs++;
           });
@@ -38,18 +39,16 @@ class _UserCardState extends State<UserCard> {
   }
 
   getReviews2() {
-    double i = 0;
-    int j = 1;
     rateRef.snapshots().listen((event) {
       event.docChanges.forEach((element) {
         if (element.doc.data()["agentId"].contains(widget.userModel.id)) {
-          j++;
-          i += element.doc.data()["rate"];
+          setState(() {
+            j++;
+            i += element.doc.data()["rate"];
+            rate = (i / j);
+          });
         }
       });
-    });
-    setState(() {
-      rate = (i / j);
     });
   }
 
@@ -121,7 +120,7 @@ class _UserCardState extends State<UserCard> {
                                 Row(
                                   children: [
                                     Text(
-                                        "${widget.userModel.firstName} ${widget.userModel.lastname.toUpperCase()}",
+                                        "${widget.userModel.firstName} ${widget.userModel.lastname != null ? widget.userModel.lastname.toUpperCase() : ""}",
                                         style: TextStyle(
                                           fontSize: 12,
                                           letterSpacing: 1,

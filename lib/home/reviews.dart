@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:lottie/lottie.dart';
 import 'package:on_delivery/components/rate_layout.dart';
 import 'package:on_delivery/models/rate.dart';
 import 'package:on_delivery/utils/SizeConfig.dart';
@@ -67,9 +68,34 @@ class _ReviewState extends State<Review> {
                     DocumentSnapshot doc = rateList[index];
                     RateModel rate = RateModel.fromJson(doc.data());
                     if (rate.agentId.contains(widget.id))
-                      return RateLayout(
-                        id: widget.id,
-                        rateModel: rate,
+                      return Column(
+                        children: [
+                          Visibility(
+                            child: RateLayout(
+                              id: widget.id,
+                              rateModel: rate,
+                            ),
+                            visible: rate.agentId.contains(widget.id),
+                          ),
+                          Visibility(
+                            child: Column(
+                              children: [
+                                Center(
+                                    child: Lottie.asset(
+                                        'assets/lotties/chat_not_ready.json')),
+                                Text("No Reviews For The Moments",
+                                    overflow: TextOverflow.ellipsis,
+                                    style: TextStyle(
+                                      fontSize: 14,
+                                      letterSpacing: 1,
+                                      fontWeight: FontWeight.normal,
+                                      color: Colors.grey,
+                                    )),
+                              ],
+                            ),
+                            visible: !rate.agentId.contains(widget.id),
+                          ),
+                        ],
                       );
                     return Container();
                   },

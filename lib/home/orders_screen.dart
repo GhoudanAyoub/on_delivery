@@ -13,7 +13,6 @@ import 'package:on_delivery/models/category.dart';
 import 'package:on_delivery/models/order.dart';
 import 'package:on_delivery/utils/FirebaseService.dart';
 import 'package:on_delivery/utils/SizeConfig.dart';
-import 'package:on_delivery/utils/constants.dart';
 import 'package:on_delivery/utils/firebase.dart';
 import 'package:provider/provider.dart';
 
@@ -93,24 +92,6 @@ class _OrderScreenState extends State<OrderScreen> {
     setState(() {
       counter = messageCount - readCount;
     });
-  }
-
-  search(String query) {
-    if (_searchedController.text == "") {
-      filteredOrders = orders;
-    } else {
-      List userSearch = orders.where((userSnap) {
-        Map user = userSnap.data();
-        String userName = user['firstName'];
-        return userName
-            .toLowerCase()
-            .contains(_searchedController.text.toLowerCase());
-      }).toList();
-
-      setState(() {
-        filteredOrders = userSearch;
-      });
-    }
   }
 
   @override
@@ -434,85 +415,12 @@ class _OrderScreenState extends State<OrderScreen> {
                         itemCount: categories.length,
                       ),
                     ),
-                    Container(
-                      height: getProportionateScreenHeight(50),
-                      child: IconButton(
-                        icon: Icon(
-                          CupertinoIcons.search,
-                          size: 30,
-                          color: Colors.black,
-                        ),
-                        onPressed: () {
-                          setState(() {
-                            searchClicked = !searchClicked;
-                          });
-                        },
-                      ),
-                    ),
                   ],
                 ),
               ),
               SizedBox(
                 height: 5,
               ),
-              searchClicked
-                  ? Theme(
-                      data: ThemeData(
-                        primaryColor: Theme.of(context).accentColor,
-                        accentColor: Theme.of(context).accentColor,
-                      ),
-                      child: TextFormField(
-                        cursorColor: Colors.black,
-                        controller: _searchedController,
-                        onChanged: (query) {
-                          search(query);
-                        },
-                        style: TextStyle(
-                          fontSize: 15.0,
-                        ),
-                        decoration: InputDecoration(
-                            labelText: "First Name,Last Name, Activities",
-                            fillColor: Color.fromRGBO(239, 240, 246, 1),
-                            hintStyle: TextStyle(
-                              color: Color.fromRGBO(110, 113, 130, 1),
-                            ),
-                            filled: true,
-                            /*hintText: widget.hintText,*/
-                            contentPadding:
-                                EdgeInsets.symmetric(horizontal: 10.0),
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.all(
-                                Radius.circular(10.0),
-                              ),
-                              borderSide: BorderSide(
-                                color: Colors.white,
-                                width: 0.0,
-                              ),
-                            ),
-                            enabledBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.all(
-                                Radius.circular(10.0),
-                              ),
-                              borderSide: BorderSide(
-                                color: Colors.white,
-                                width: 0.0,
-                              ),
-                            ),
-                            hoverColor: GBottomNav,
-                            focusedBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.all(
-                                Radius.circular(10.0),
-                              ),
-                              borderSide: BorderSide(
-                                color: Color.fromRGBO(110, 113, 145, 1),
-                                width: 1.0,
-                              ),
-                            ),
-                            errorStyle: TextStyle(height: 0.0, fontSize: 0.0)),
-                      ))
-                  : SizedBox(
-                      height: 0,
-                    ),
               orderAgent(),
               Align(
                 alignment: Alignment.bottomCenter,
@@ -586,17 +494,38 @@ class _OrderScreenState extends State<OrderScreen> {
         );
       } else {
         return Flexible(
-            child: ListView.builder(
-          itemCount: filteredOrders.length,
-          scrollDirection: Axis.vertical,
-          shrinkWrap: true,
-          itemBuilder: (BuildContext context, int index) {
-            DocumentSnapshot doc = filteredOrders[index];
-            Orders orders = Orders.fromJson(doc.data());
+            child: RefreshIndicator(
+          child: ListView.builder(
+            itemCount: filteredOrders.length,
+            scrollDirection: Axis.vertical,
+            shrinkWrap: true,
+            itemBuilder: (BuildContext context, int index) {
+              DocumentSnapshot doc = filteredOrders[index];
+              Orders orders = Orders.fromJson(doc.data());
 
-            if (user1.type.toLowerCase().contains('agent'))
+              if (user1.type.toLowerCase().contains('agent'))
+                return StreamBuilder(
+                    stream: usersRef.doc(orders.userId).snapshots(),
+                    builder:
+                        (context, AsyncSnapshot<DocumentSnapshot> snapshot) {
+                      if (snapshot.hasData && snapshot.data.exists) {
+                        UserModel _user =
+                            UserModel.fromJson(snapshot.data.data());
+
+                        return OrderLayout(
+                          me: user1,
+                          order: orders,
+                          user: _user,
+                          track: false,
+                          count: false,
+                        );
+                      }
+                      return Container(
+                        height: 0,
+                      );
+                    });
               return StreamBuilder(
-                  stream: usersRef.doc(orders.userId).snapshots(),
+                  stream: usersRef.doc(orders.agentId).snapshots(),
                   builder: (context, AsyncSnapshot<DocumentSnapshot> snapshot) {
                     if (snapshot.hasData && snapshot.data.exists) {
                       UserModel _user =
@@ -614,25 +543,9 @@ class _OrderScreenState extends State<OrderScreen> {
                       height: 0,
                     );
                   });
-            return StreamBuilder(
-                stream: usersRef.doc(orders.agentId).snapshots(),
-                builder: (context, AsyncSnapshot<DocumentSnapshot> snapshot) {
-                  if (snapshot.hasData && snapshot.data.exists) {
-                    UserModel _user = UserModel.fromJson(snapshot.data.data());
-
-                    return OrderLayout(
-                      me: user1,
-                      order: orders,
-                      user: _user,
-                      track: false,
-                      count: false,
-                    );
-                  }
-                  return Container(
-                    height: 0,
-                  );
-                });
-          },
+            },
+          ),
+          onRefresh: _refreshOrders,
         ));
       }
     } else {
@@ -644,6 +557,11 @@ class _OrderScreenState extends State<OrderScreen> {
   }
 
   Future<Null> _refreshOrders() async {
+    setState(() {
+      myDocs = 0;
+      currentDocs = 0;
+      histoDocs = 0;
+    });
     getOrders();
     getMyOrders();
   }

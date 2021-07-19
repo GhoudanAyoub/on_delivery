@@ -29,29 +29,47 @@ class _AgentsDetailsState extends State<AgentsDetails> {
   bool show = true;
   String ChatId;
   double rate;
+  int myDocs = 0;
+  int doneDocs = 0;
+  double i = 0;
+  int j = 0;
+
+  getMyOrders(id) {
+    orderRef.snapshots().listen((element) {
+      element.docChanges.forEach((element) {
+        Orders order = Orders.fromJson(element.doc.data());
+        if (order.agentId.contains(id)) {
+          setState(() {
+            myDocs++;
+          });
+          if (order.status.toLowerCase().contains("delivered"))
+            setState(() {
+              doneDocs++;
+            });
+        }
+      });
+    });
+  }
+
+  getReviews2(id) {
+    rateRef.snapshots().listen((event) {
+      event.docChanges.forEach((element) {
+        if (element.doc.data()["agentId"].contains(id)) {
+          setState(() {
+            j++;
+            i += element.doc.data()["rate"];
+            rate = (i / j);
+          });
+        }
+      });
+    });
+  }
 
   @override
   void initState() {
     getChatID();
-    getReviews2();
 
     super.initState();
-  }
-
-  getReviews2() {
-    double i = 0;
-    int j = 1;
-    rateRef.snapshots().listen((event) {
-      event.docChanges.forEach((element) {
-        if (element.doc.data()["agentId"].contains(widget.id)) {
-          j++;
-          i += element.doc.data()["rate"];
-        }
-      });
-    });
-    setState(() {
-      rate = (i / j);
-    });
   }
 
   @override
@@ -99,6 +117,8 @@ class _AgentsDetailsState extends State<AgentsDetails> {
                         (context, AsyncSnapshot<DocumentSnapshot> snapshot) {
                       if (snapshot.hasData) {
                         _user = UserModel.fromJson(snapshot.data.data());
+                        getMyOrders(_user.id);
+                        getReviews2(_user.id);
                         return Container(
                           padding: EdgeInsets.only(
                               top: 20, bottom: 20, left: 10, right: 10),
@@ -322,7 +342,7 @@ class _AgentsDetailsState extends State<AgentsDetails> {
                                               fontWeight: FontWeight.w500,
                                               color: Colors.grey,
                                             )),
-                                        Text("15/19",
+                                        Text("$doneDocs/$myDocs",
                                             style: TextStyle(
                                               fontSize: 12,
                                               letterSpacing: 1,
@@ -381,7 +401,7 @@ class _AgentsDetailsState extends State<AgentsDetails> {
                                               color: Colors.grey,
                                             )),
                                         Text(
-                                            "${_user.price} ${_user.unity.toLowerCase()}",
+                                            "${_user.price != "" ? _user.price : "??"} ${_user.unity.toLowerCase()}",
                                             style: TextStyle(
                                               fontSize: 12,
                                               letterSpacing: 1,
