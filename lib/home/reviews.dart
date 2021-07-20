@@ -18,6 +18,8 @@ class Review extends StatefulWidget {
 class _ReviewState extends State<Review> {
   ScrollController scrollController = ScrollController();
   List<DocumentSnapshot> rateList = [];
+  bool loading = true;
+  bool empty = true;
   @override
   void initState() {
     getReviews();
@@ -57,51 +59,25 @@ class _ReviewState extends State<Review> {
                     )),
               ),
               SizedBox(height: 40),
-              Expanded(
-                  child: RefreshIndicator(
-                child: ListView.builder(
-                  scrollDirection: Axis.vertical,
-                  padding: EdgeInsets.symmetric(horizontal: 4.0, vertical: 5),
-                  itemCount: rateList.length,
-                  shrinkWrap: true,
-                  itemBuilder: (BuildContext context, int index) {
-                    DocumentSnapshot doc = rateList[index];
-                    RateModel rate = RateModel.fromJson(doc.data());
-                    if (rate.agentId.contains(widget.id))
-                      return Column(
+              empty
+                  ? buildReviews()
+                  : Expanded(
+                      child: Column(
                         children: [
-                          Visibility(
-                            child: RateLayout(
-                              id: widget.id,
-                              rateModel: rate,
-                            ),
-                            visible: rate.agentId.contains(widget.id),
-                          ),
-                          Visibility(
-                            child: Column(
-                              children: [
-                                Center(
-                                    child: Lottie.asset(
-                                        'assets/lotties/chat_not_ready.json')),
-                                Text("No Reviews For The Moments",
-                                    overflow: TextOverflow.ellipsis,
-                                    style: TextStyle(
-                                      fontSize: 14,
-                                      letterSpacing: 1,
-                                      fontWeight: FontWeight.normal,
-                                      color: Colors.grey,
-                                    )),
-                              ],
-                            ),
-                            visible: !rate.agentId.contains(widget.id),
-                          ),
+                          Center(
+                              child: Lottie.asset(
+                                  'assets/lotties/chat_not_ready.json')),
+                          Text("No Chat For The Moments",
+                              overflow: TextOverflow.ellipsis,
+                              style: TextStyle(
+                                fontSize: 14,
+                                letterSpacing: 1,
+                                fontWeight: FontWeight.normal,
+                                color: Colors.grey,
+                              )),
                         ],
-                      );
-                    return Container();
-                  },
-                ),
-                onRefresh: _refreshReviews,
-              )),
+                      ),
+                    ),
               Align(
                 alignment: Alignment.bottomCenter,
                 child: Column(
@@ -132,6 +108,45 @@ class _ReviewState extends State<Review> {
     ));
   }
 
+  buildReviews() {
+    if (!loading) {
+      if (rateList.isEmpty) {
+        return RefreshIndicator(
+          child: Container(
+            height: 150,
+            child: Center(child: Lottie.asset('assets/lotties/not_found.json')),
+          ),
+          onRefresh: _refreshReviews,
+        );
+      } else {
+        return Expanded(
+            child: RefreshIndicator(
+          child: ListView.builder(
+            scrollDirection: Axis.vertical,
+            padding: EdgeInsets.symmetric(horizontal: 4.0, vertical: 5),
+            itemCount: rateList.length,
+            shrinkWrap: true,
+            itemBuilder: (BuildContext context, int index) {
+              DocumentSnapshot doc = rateList[index];
+              RateModel rate = RateModel.fromJson(doc.data());
+              if (rate.agentId.contains(widget.id))
+                return RateLayout(
+                  id: widget.id,
+                  rateModel: rate,
+                );
+              return Container();
+            },
+          ),
+          onRefresh: _refreshReviews,
+        ));
+      }
+    } else {
+      return Container(
+        child: Center(child: Lottie.asset('assets/lotties/comp_loading.json')),
+      );
+    }
+  }
+
   Future<Null> _refreshReviews() async {
     getReviews();
   }
@@ -141,6 +156,7 @@ class _ReviewState extends State<Review> {
     List<DocumentSnapshot> doc = snap.docs;
     setState(() {
       rateList = doc;
+      loading = false;
     });
   }
 }

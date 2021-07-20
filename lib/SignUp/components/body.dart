@@ -43,7 +43,7 @@ class _BodyState extends State<Body> {
   Widget build(BuildContext context) {
     return SingleChildScrollView(
         child: Container(
-      height: SizeConfig.screenHeight - 100,
+      height: SizeConfig.screenHeight - 110,
       decoration: BoxDecoration(
         image: DecorationImage(
           image: ExactAssetImage('assets/images/pg.png'),
@@ -51,16 +51,12 @@ class _BodyState extends State<Body> {
         ),
       ),
       child: Padding(
-        padding: EdgeInsets.only(left: 40, right: 40, top: 60, bottom: 20),
+        padding: EdgeInsets.only(left: 40, right: 40, top: 50, bottom: 20),
         child: Column(
           children: [
             Flexible(
-              fit: FlexFit.tight,
-              child: Column(
-                children: [
-                  SignUpForm(),
-                ],
-              ),
+              fit: FlexFit.loose,
+              child: SignUpForm(),
             ),
             Align(
               alignment: Alignment.bottomCenter,
@@ -198,6 +194,7 @@ class _BodyState extends State<Body> {
                 ],
               ),
             ),
+            SizedBox(height: 10),
           ],
         ),
       ),

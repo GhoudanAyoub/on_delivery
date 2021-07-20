@@ -3,6 +3,7 @@ import 'package:on_delivery/Condition & rules/C&R.dart';
 import 'package:on_delivery/SignIn/sign_in_screen.dart';
 import 'package:on_delivery/SignUp/sign_up_screen.dart';
 import 'package:on_delivery/SplashScreen/splash_screen.dart';
+import 'package:on_delivery/forgot_password/forgot_password_screen.dart';
 import 'package:on_delivery/home/Home.dart';
 import 'package:on_delivery/home/SetUpProfile/ChooseSide.dart';
 import 'package:on_delivery/home/SetUpProfile/UpdateProfile.dart';
@@ -43,4 +44,5 @@ final Map<String, WidgetBuilder> routes = {
   Cards.routeName: (context) => Cards(),
   Success.routeName: (context) => Success(),
   SearchMapTripScreen.routeName: (context) => SearchMapTripScreen(),
+  ForgotPasswordScreen.routeName: (context) => ForgotPasswordScreen(),
 };

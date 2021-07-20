@@ -6,16 +6,16 @@ import 'package:flutter_facebook_login/flutter_facebook_login.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:http/http.dart' as http;
+import 'package:on_delivery/SignIn/components/sign_form.dart';
 import 'package:on_delivery/SignUp/sign_up_screen.dart';
 import 'package:on_delivery/components/indicators.dart';
+import 'package:on_delivery/forgot_password/forgot_password_screen.dart';
 import 'package:on_delivery/home/SetUpProfile/ChooseSide.dart';
 import 'package:on_delivery/home/base.dart';
 import 'package:on_delivery/models/User.dart';
 import 'package:on_delivery/services/auth_service.dart';
 import 'package:on_delivery/utils/SizeConfig.dart';
 import 'package:on_delivery/utils/firebase.dart';
-
-import 'sign_form.dart';
 
 class Body extends StatefulWidget {
   @override
@@ -36,7 +36,7 @@ class _BodyState extends State<Body> {
   Widget build(BuildContext context) {
     return SingleChildScrollView(
       child: Container(
-          height: SizeConfig.screenHeight - 30,
+          height: SizeConfig.screenHeight - 60,
           decoration: BoxDecoration(
             gradient: LinearGradient(
                 begin: Alignment.bottomCenter,
@@ -273,12 +273,11 @@ class _BodyState extends State<Body> {
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            Container(
-                              margin: EdgeInsets.fromLTRB(5, 0, 0, 0),
-                              child: GestureDetector(
-                                onTap: () => {},
-                                /*Navigator.pushNamed(
-                    context, ForgotPasswordScreen.routeName),*/
+                            GestureDetector(
+                              onTap: () => Navigator.pushNamed(
+                                  context, ForgotPasswordScreen.routeName),
+                              child: Container(
+                                margin: EdgeInsets.fromLTRB(5, 0, 0, 0),
                                 child: Text(
                                   "Forgot your Password?",
                                   style: TextStyle(
@@ -290,11 +289,11 @@ class _BodyState extends State<Body> {
                                 ),
                               ),
                             ),
-                            Container(
-                              margin: EdgeInsets.fromLTRB(0, 0, 5, 0),
-                              child: GestureDetector(
-                                onTap: () => Navigator.pushNamed(
-                                    context, SignUpScreen.routeName),
+                            GestureDetector(
+                              onTap: () => Navigator.pushNamed(
+                                  context, SignUpScreen.routeName),
+                              child: Container(
+                                margin: EdgeInsets.fromLTRB(0, 0, 5, 0),
                                 child: Text(
                                   "Sign up?",
                                   style: TextStyle(
@@ -307,7 +306,8 @@ class _BodyState extends State<Body> {
                               ),
                             ),
                           ],
-                        )
+                        ),
+                        SizedBox(height: 10)
                       ],
                     ),
                   )
