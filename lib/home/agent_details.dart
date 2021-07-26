@@ -36,8 +36,8 @@ class _AgentsDetailsState extends State<AgentsDetails> {
 
   getMyOrders(id) {
     orderRef.snapshots().listen((element) {
-      element.docChanges.forEach((element) {
-        Orders order = Orders.fromJson(element.doc.data());
+      for (DocumentSnapshot d in element.docs) {
+        Orders order = Orders.fromJson(d.data());
         if (order.agentId.contains(id)) {
           setState(() {
             myDocs++;
@@ -47,7 +47,7 @@ class _AgentsDetailsState extends State<AgentsDetails> {
               doneDocs++;
             });
         }
-      });
+      }
     });
   }
 

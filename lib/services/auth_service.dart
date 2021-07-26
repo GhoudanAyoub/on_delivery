@@ -60,6 +60,7 @@ class AuthService extends Service {
           'percentage': "0",
           'price': "",
           'verified': "",
+          'enable': true,
         });
       }
     }
@@ -97,6 +98,7 @@ class AuthService extends Service {
         'percentage': "0",
         'price': "",
         'verified': "",
+        'enable': true,
       });
     }
   }

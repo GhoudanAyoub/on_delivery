@@ -653,83 +653,89 @@ class _ConversationState extends State<Conversation> {
                                   }
                                   if (messages.length == 0 && stages == 1) {
                                     sendFirstMessageBot();
+
                                     Timer(Duration(milliseconds: 1), () {
                                       notificationInto();
                                     });
                                   }
-                                  //todo : check  message  if not  null
-                                  Message message2 = Message.fromJson(
-                                      messages.reversed.first.data());
-                                  return ListView.builder(
-                                    controller: scrollController,
-                                    padding: EdgeInsets.symmetric(
-                                        horizontal: 4.0, vertical: 5),
-                                    itemCount: messages.length,
-                                    reverse: true,
-                                    itemBuilder:
-                                        (BuildContext context, int index) {
-                                      Message message = Message.fromJson(
-                                          messages.reversed
-                                              .toList()[index]
-                                              .data());
-                                      if (message.content.contains(
-                                              "Deliver the Items to") &&
-                                          agentRole == true &&
-                                          message2.stages == 3) {
-                                        sendBotMessage("cash delivery",
-                                            firebaseAuth.currentUser.uid, 5);
-                                        sendBotMessage("Bank transfer option",
-                                            firebaseAuth.currentUser.uid, 5);
-                                      }
-                                      return GestureDetector(
-                                        onTap: () {
-                                          if (message.content
-                                                  .toLowerCase()
-                                                  .contains(
-                                                      "please confirm you position") &&
-                                              agentRole == false &&
-                                              message2.stages != 4) {
-                                            locationNotificationInto();
-                                          }
-                                          if (message.content
-                                                  .contains("cash delivery") &&
-                                              agentRole == false &&
-                                              message2.stages != 4) {
-                                            sendBotMessage(
-                                                "You choose Cash on delivery. See you there ",
-                                                agentFullData.id,
-                                                4);
-                                          }
-                                          if (message.content.contains(
-                                                  "Bank transfer option") &&
-                                              agentRole == false &&
-                                              message2.stages != 4) {
-                                            sendBotMessage(
-                                                "You Choose Bank transfer. You can Click On this Msg to get my bank account RIB",
-                                                agentFullData.id,
-                                                4);
-                                          }
-                                          if (message.content.contains(
-                                                  "You Choose Bank transfer. You can Click On this Msg to get my bank account RIB") &&
-                                              agentRole == false &&
-                                              message2.stages != 6) {
-                                            bankAccountID(context);
-                                          }
-                                        },
-                                        child: ChatBubble(
-                                          message: '${message.content}',
-                                          time: message?.time,
-                                          isMe: message?.senderUid == user?.uid,
-                                          type: message?.type,
-                                          accepted: message.content
-                                              .toLowerCase()
-                                              .contains(
-                                                  "Thank you for reaching out with me but I’m sorry I am busy."
-                                                      .toLowerCase()),
-                                        ),
-                                      );
-                                    },
-                                  );
+                                  if (messages.isNotEmpty &&
+                                      messages.reversed.isNotEmpty) {
+                                    // ignore: missing_return
+                                    Message message2 = Message.fromJson(
+                                        messages.reversed.first.data());
+                                    return ListView.builder(
+                                      controller: scrollController,
+                                      padding: EdgeInsets.symmetric(
+                                          horizontal: 4.0, vertical: 5),
+                                      itemCount: messages.length,
+                                      reverse: true,
+                                      itemBuilder:
+                                          (BuildContext context, int index) {
+                                        Message message = Message.fromJson(
+                                            messages.reversed
+                                                .toList()[index]
+                                                .data());
+                                        if (message.content.contains(
+                                                "Deliver the Items to") &&
+                                            agentRole == true &&
+                                            message2.stages == 3) {
+                                          sendBotMessage("cash delivery",
+                                              firebaseAuth.currentUser.uid, 5);
+                                          sendBotMessage("Bank transfer option",
+                                              firebaseAuth.currentUser.uid, 5);
+                                        }
+                                        return GestureDetector(
+                                          onTap: () {
+                                            if (message.content
+                                                    .toLowerCase()
+                                                    .contains(
+                                                        "please confirm you position") &&
+                                                agentRole == false &&
+                                                message2.stages != 4) {
+                                              locationNotificationInto();
+                                            }
+                                            if (message.content.contains(
+                                                    "cash delivery") &&
+                                                agentRole == false &&
+                                                message2.stages != 4) {
+                                              sendBotMessage(
+                                                  "You choose Cash on delivery. See you there ",
+                                                  agentFullData.id,
+                                                  4);
+                                            }
+                                            if (message.content.contains(
+                                                    "Bank transfer option") &&
+                                                agentRole == false &&
+                                                message2.stages != 4) {
+                                              sendBotMessage(
+                                                  "You Choose Bank transfer. You can Click On this Msg to get my bank account RIB",
+                                                  agentFullData.id,
+                                                  4);
+                                            }
+                                            if (message.content.contains(
+                                                    "You Choose Bank transfer. You can Click On this Msg to get my bank account RIB") &&
+                                                agentRole == false &&
+                                                message2.stages != 6) {
+                                              bankAccountID(context);
+                                            }
+                                          },
+                                          child: ChatBubble(
+                                            message: '${message.content}',
+                                            time: message?.time,
+                                            isMe:
+                                                message?.senderUid == user?.uid,
+                                            type: message?.type,
+                                            accepted: message.content
+                                                .toLowerCase()
+                                                .contains(
+                                                    "Thank you for reaching out with me but I’m sorry I am busy."
+                                                        .toLowerCase()),
+                                          ),
+                                        );
+                                      },
+                                    );
+                                  } else
+                                    return Container();
                                 } else {
                                   return Center(
                                       child: circularProgress(context));
@@ -962,84 +968,92 @@ class _ConversationState extends State<Conversation> {
                       builder: (context, snapshot) {
                         if (snapshot.hasData) {
                           List messages = snapshot.data.documents;
-                          if (messages != null)
+                          if (messages != null &&
+                              messages.isNotEmpty &&
+                              messages.reversed.isNotEmpty)
                             message = Message.fromJson(
                                 messages.reversed.first.data());
-                          if (message.stages == 4 &&
-                              widget.isAgent == false &&
-                              agentRole == false &&
-                              initOrder.lunchStatus == true &&
-                              initOrder.status
-                                  .toLowerCase()
-                                  .contains("pending"))
-                            return Align(
-                              alignment: Alignment.bottomCenter,
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  InkWell(
-                                    onTap: () {
-                                      Navigator.push(
-                                          context,
-                                          MaterialPageRoute(
-                                            builder: (context) => TrackingMap(
-                                              orders: widget.order,
-                                              userModel: agentFullData,
-                                            ),
-                                          ));
-                                    },
-                                    child: Container(
-                                      decoration: BoxDecoration(
-                                        color: Colors.white,
-                                        border: Border.all(
-                                            width: 1,
-                                            color: Color.fromRGBO(
-                                                160, 163, 189, 1)),
-                                        borderRadius: BorderRadius.circular(10),
-                                      ),
-                                      height: 50,
-                                      width: 150,
-                                      margin: EdgeInsets.only(
-                                        left: 20,
-                                      ),
-                                      child: Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.spaceAround,
-                                        children: [
-                                          Text("Track my order",
-                                              style: TextStyle(
-                                                fontSize: 12,
-                                                letterSpacing: 1,
-                                                fontWeight: FontWeight.w500,
-                                                color: Color.fromRGBO(
-                                                    160, 163, 189, 1),
-                                              )),
-                                        ],
-                                      ),
-                                    ),
-                                  ),
-                                  SizedBox(width: 20),
-                                  RaisedGradientButton(
-                                      child: Text(
-                                        'I\'m delivered',
-                                        style: TextStyle(
-                                          fontSize: 14,
-                                          letterSpacing: 1,
+                          if (message != null) {
+                            if (message.stages == 4 &&
+                                widget.isAgent == false &&
+                                agentRole == false &&
+                                initOrder.lunchStatus == true &&
+                                initOrder.status
+                                    .toLowerCase()
+                                    .contains("pending"))
+                              return Align(
+                                alignment: Alignment.bottomCenter,
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    InkWell(
+                                      onTap: () {
+                                        Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                              builder: (context) => TrackingMap(
+                                                orders: widget.order,
+                                                userModel: agentFullData,
+                                              ),
+                                            ));
+                                      },
+                                      child: Container(
+                                        decoration: BoxDecoration(
                                           color: Colors.white,
+                                          border: Border.all(
+                                              width: 1,
+                                              color: Color.fromRGBO(
+                                                  160, 163, 189, 1)),
+                                          borderRadius:
+                                              BorderRadius.circular(10),
+                                        ),
+                                        height: 50,
+                                        width: 150,
+                                        margin: EdgeInsets.only(
+                                          left: 20,
+                                        ),
+                                        child: Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceAround,
+                                          children: [
+                                            Text("Track my order",
+                                                style: TextStyle(
+                                                  fontSize: 12,
+                                                  letterSpacing: 1,
+                                                  fontWeight: FontWeight.w500,
+                                                  color: Color.fromRGBO(
+                                                      160, 163, 189, 1),
+                                                )),
+                                          ],
                                         ),
                                       ),
-                                      gradient: LinearGradient(
-                                        colors: <Color>[
-                                          Color.fromRGBO(82, 238, 79, 1),
-                                          Color.fromRGBO(5, 151, 0, 1)
-                                        ],
-                                      ),
-                                      width: 150,
-                                      onPressed: imDeliveredButton),
-                                ],
-                              ),
-                            );
-                          else
+                                    ),
+                                    SizedBox(width: 20),
+                                    RaisedGradientButton(
+                                        child: Text(
+                                          'I\'m delivered',
+                                          style: TextStyle(
+                                            fontSize: 14,
+                                            letterSpacing: 1,
+                                            color: Colors.white,
+                                          ),
+                                        ),
+                                        gradient: LinearGradient(
+                                          colors: <Color>[
+                                            Color.fromRGBO(82, 238, 79, 1),
+                                            Color.fromRGBO(5, 151, 0, 1)
+                                          ],
+                                        ),
+                                        width: 150,
+                                        onPressed: imDeliveredButton),
+                                  ],
+                                ),
+                              );
+                            else
+                              return SizedBox(
+                                height: 0,
+                              );
+                          } else
                             return SizedBox(
                               height: 0,
                             );

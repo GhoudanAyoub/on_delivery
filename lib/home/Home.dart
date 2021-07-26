@@ -65,7 +65,7 @@ class _HomeState extends State<Home> {
       });
     }
   }
-
+/*
   getMessageCount() {
     int readCount = 0, messageCount = 0;
     chatRef
@@ -88,7 +88,7 @@ class _HomeState extends State<Home> {
     setState(() {
       counter = messageCount - readCount;
     });
-  }
+  }*/
 
   removeFromList(index) {
     filteredAgents.removeAt(index);
@@ -115,7 +115,7 @@ class _HomeState extends State<Home> {
   @override
   void initState() {
     getAgents();
-    getMessageCount();
+    //getMessageCount();
     super.initState();
   }
 

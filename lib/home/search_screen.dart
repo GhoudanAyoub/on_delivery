@@ -8,6 +8,8 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_google_places/flutter_google_places.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:geocoder/geocoder.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:google_api_headers/google_api_headers.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:google_maps_webservice/places.dart';
@@ -914,16 +916,33 @@ class _SearchScreenState extends State<SearchScreen> {
                                   child: CustomSwitch(
                                     value: locationState,
                                     activeColor: Colors.green,
-                                    onChanged: (state) {
+                                    onChanged: (state) async {
                                       if (state == true)
-                                        locationData.getCurrentPosition();
+                                        //locationData.getCurrentPosition();
 
+                                        /*
                                       locationData
                                           .getMoveCamera()
                                           .then((value) => setState(() {
                                                 locationState = state;
                                                 startingPointString = value;
-                                              }));
+                                              }));*/
+
+                                        Geolocator.getCurrentPosition(
+                                                desiredAccuracy:
+                                                    LocationAccuracy.high)
+                                            .then((value) {
+                                          Geocoder.local
+                                              .findAddressesFromCoordinates(
+                                                  new Coordinates(
+                                                      value.latitude,
+                                                      value.longitude))
+                                              .then((value) => setState(() {
+                                                    locationState = state;
+                                                    startingPointString =
+                                                        value.first.addressLine;
+                                                  }));
+                                        });
                                     },
                                   ),
                                 )
@@ -1996,6 +2015,7 @@ class _SearchMapTripScreenState extends State<SearchMapTripScreen> {
     }
 
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       backgroundColor: Colors.white,
       body: WillPopScope(
         onWillPop: () {
@@ -2554,7 +2574,7 @@ class _SearchMapAgentScreenState extends State<SearchMapAgentScreen> {
                                       borderRadius: BorderRadius.circular(10)),
                                   child: Container(
                                     padding:
-                                        EdgeInsets.only(left: 10, right: 10),
+                                        EdgeInsets.only(left: 5, right: 10),
                                     height: 150,
                                     decoration: BoxDecoration(
                                       color: Colors.white,
@@ -2682,16 +2702,23 @@ class _SearchMapAgentScreenState extends State<SearchMapAgentScreen> {
                                                         MainAxisAlignment
                                                             .spaceBetween,
                                                     children: [
-                                                      Text(
-                                                          "${userList[index].activities.toLowerCase()}",
-                                                          style: TextStyle(
-                                                            fontSize: 14,
-                                                            letterSpacing: 1,
-                                                            fontWeight:
-                                                                FontWeight
-                                                                    .normal,
-                                                            color: Colors.grey,
-                                                          )),
+                                                      Container(
+                                                        child: Text(
+                                                            "${userList[index].activities.toLowerCase()}",
+                                                            overflow:
+                                                                TextOverflow
+                                                                    .ellipsis,
+                                                            style: TextStyle(
+                                                              fontSize: 14,
+                                                              letterSpacing: 1,
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .normal,
+                                                              color:
+                                                                  Colors.grey,
+                                                            )),
+                                                        width: 150,
+                                                      ),
                                                       Text(
                                                           "${userList[index].price}/${userList[index].unity.toLowerCase()}",
                                                           style: TextStyle(
@@ -2778,7 +2805,7 @@ class _SearchMapAgentScreenState extends State<SearchMapAgentScreen> {
                                                                   0 ||
                                                               userList == null
                                                           ? "calculating ..."
-                                                          : " ${agentTime[index]}",
+                                                          : " ${agentTime.length == 0 || userList.length == 0 ? agentTime[0] : "calculating ..."}",
                                                       style: TextStyle(
                                                         fontSize: 12,
                                                         fontWeight:
@@ -2807,7 +2834,7 @@ class _SearchMapAgentScreenState extends State<SearchMapAgentScreen> {
                                                     agentTime.length == 0 ||
                                                     userList == null
                                                 ? ""
-                                                : " ${agentTime[index]}",
+                                                : " ${agentTime.length == 0 || userList.length == 0 ? agentTime[0] : "calculating ..."}",
                                             order: order,
                                           )),
                                 );
@@ -3074,7 +3101,7 @@ class _SearchMapAgentScreenState extends State<SearchMapAgentScreen> {
                                                                     0 ||
                                                                 userList == null
                                                             ? "calculating ..."
-                                                            : " ${agentTime[index]}",
+                                                            : " ${agentTime.length == 0 || userList.length == 0 ? agentTime[0] : "calculating ..."}",
                                                         style: TextStyle(
                                                           fontSize: 12,
                                                           fontWeight:
@@ -3101,7 +3128,7 @@ class _SearchMapAgentScreenState extends State<SearchMapAgentScreen> {
                                                       agentTime.length == 0 ||
                                                       userList == null
                                                   ? ""
-                                                  : " ${agentTime[index]}",
+                                                  : " ${agentTime.length == 0 || userList.length == 0 ? agentTime[0] : agentTime[index]}",
                                               order: order,
                                             )),
                                   );

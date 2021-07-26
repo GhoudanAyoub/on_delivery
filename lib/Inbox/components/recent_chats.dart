@@ -6,6 +6,7 @@ import 'package:on_delivery/components/chat_item.dart';
 import 'package:on_delivery/components/chat_item2.dart';
 import 'package:on_delivery/home/base.dart';
 import 'package:on_delivery/models/new_message_system.dart';
+import 'package:on_delivery/utils/SizeConfig.dart';
 import 'package:on_delivery/utils/constants.dart';
 import 'package:on_delivery/utils/firebase.dart';
 import 'package:on_delivery/viewModel/user_view_model.dart';
@@ -17,6 +18,7 @@ class Chats extends StatefulWidget with NavigationStates {
 }
 
 class _ChatsState extends State<Chats> {
+  List chatList = [];
   @override
   Widget build(BuildContext context) {
     UserViewModel viewModel =
@@ -45,7 +47,6 @@ class _ChatsState extends State<Chats> {
                           stream: userChatsStream(
                               '${firebaseAuth.currentUser.uid}'),
                           builder: (context, snapshot) {
-                            List chatList = [];
                             if (snapshot.hasData) {
                               for (DocumentSnapshot doc
                                   in snapshot.data.documents) {
@@ -212,6 +213,64 @@ class _ChatsState extends State<Chats> {
                                             fontWeight: FontWeight.normal,
                                             color: Colors.grey,
                                           )),
+                                      SizedBox(
+                                        height: 10,
+                                      ),
+                                      Align(
+                                        alignment: Alignment.bottomCenter,
+                                        child: Container(
+                                          height: 60.0,
+                                          width:
+                                              getProportionateScreenWidth(200),
+                                          decoration: BoxDecoration(
+                                              gradient: LinearGradient(
+                                                colors: <Color>[
+                                                  Color.fromRGBO(
+                                                      82, 238, 79, 1),
+                                                  Color.fromRGBO(5, 151, 0, 1)
+                                                ],
+                                              ),
+                                              borderRadius:
+                                                  BorderRadius.circular(10.0),
+                                              boxShadow: [
+                                                BoxShadow(
+                                                  color: Colors.grey[500],
+                                                  offset: Offset(0.0, 1.5),
+                                                  blurRadius: 1.5,
+                                                ),
+                                              ]),
+                                          child: Material(
+                                            color: Colors.transparent,
+                                            child: InkWell(
+                                                onTap: () async {
+                                                  Navigator.pushNamed(
+                                                      context, Base.routeName);
+                                                },
+                                                child: Center(
+                                                  child: Row(
+                                                    mainAxisAlignment:
+                                                        MainAxisAlignment
+                                                            .center,
+                                                    crossAxisAlignment:
+                                                        CrossAxisAlignment
+                                                            .center,
+                                                    children: [
+                                                      Text(
+                                                        'Return',
+                                                        style: TextStyle(
+                                                          fontSize: 16,
+                                                          fontWeight:
+                                                              FontWeight.w600,
+                                                          letterSpacing: 1,
+                                                          color: Colors.white,
+                                                        ),
+                                                      ),
+                                                    ],
+                                                  ),
+                                                )),
+                                          ),
+                                        ),
+                                      )
                                     ],
                                   ),
                                 );
