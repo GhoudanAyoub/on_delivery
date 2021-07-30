@@ -992,7 +992,7 @@ class _ConversationState extends State<Conversation> {
                                             context,
                                             MaterialPageRoute(
                                               builder: (context) => TrackingMap(
-                                                orders: widget.order,
+                                                orders: initOrder,
                                                 userModel: agentFullData,
                                               ),
                                             ));
@@ -1065,7 +1065,7 @@ class _ConversationState extends State<Conversation> {
                     widget.isAgent &&
                             agentRole &&
                             initOrder.lunchStatus == true &&
-                            (initOrder.status == null && doneChoosing == false)
+                            doneChoosing == false
                         ? Align(
                             alignment: Alignment.bottomCenter,
                             child: Row(

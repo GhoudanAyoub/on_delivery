@@ -176,7 +176,7 @@ class _UserCardState extends State<UserCard> {
                                       )),
                                 ),
                                 Text(
-                                    "${widget.userModel.price != "" ? widget.userModel.price : '??'}/${widget.userModel.unity.toLowerCase()}",
+                                    "${widget.userModel.price != "" ? widget.userModel.price : '??'}/${widget.userModel.unity != null ? widget.userModel.unity.toLowerCase() : "??"}",
                                     style: TextStyle(
                                       fontSize: 12,
                                       letterSpacing: 1,

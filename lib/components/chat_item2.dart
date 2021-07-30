@@ -1,7 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:on_delivery/Inbox/components/conversation.dart';
 import 'package:on_delivery/models/User.dart';
 import 'package:on_delivery/models/enum/message_type.dart';
 import 'package:on_delivery/utils/firebase.dart';
@@ -15,6 +14,7 @@ class ChatItem2 extends StatelessWidget {
   final MessageType type;
   final String currentUserId;
   final bool isAgent;
+  final Function onTap;
 
   ChatItem2(
       {Key key,
@@ -25,7 +25,8 @@ class ChatItem2 extends StatelessWidget {
       @required this.chatId,
       @required this.type,
       @required this.currentUserId,
-      this.isAgent = false})
+      this.isAgent = false,
+      this.onTap})
       : super(key: key);
 
   @override
@@ -78,19 +79,7 @@ class ChatItem2 extends StatelessWidget {
                 ],
               ),
             ),
-            onTap: () {
-              Navigator.of(context, rootNavigator: true).push(
-                MaterialPageRoute(
-                  builder: (BuildContext context) {
-                    return Conversation(
-                      userId: userId,
-                      chatId: chatId,
-                      isAgent: isAgent,
-                    );
-                  },
-                ),
-              );
-            },
+            onTap: onTap,
           );
         } else {
           return SizedBox();

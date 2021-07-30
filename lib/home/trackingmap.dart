@@ -79,7 +79,6 @@ class _TrackingMapState extends State<TrackingMap> {
   @override
   void initState() {
     getCurrentLocation();
-    getagentLocation();
     super.initState();
   }
 
@@ -191,6 +190,8 @@ class _TrackingMapState extends State<TrackingMap> {
                     center: LatLng(widget.orders.endAt.latitude,
                         widget.orders.endAt.longitude),
                     fillColor: Colors.green.withAlpha(70)));
+
+                getagentLocation();
               },
             ),
           ),

@@ -515,7 +515,7 @@ class _HomeState extends State<Home> {
                 counter == 0
                     ? CupertinoIcons.chat_bubble_text_fill
                     : CupertinoIcons.chat_bubble_text,
-                color: counter == 0 ? Colors.white : Colors.orange,
+                color: Colors.white,
               )),
         ),
       ),

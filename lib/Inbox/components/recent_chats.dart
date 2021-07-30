@@ -12,6 +12,8 @@ import 'package:on_delivery/utils/firebase.dart';
 import 'package:on_delivery/viewModel/user_view_model.dart';
 import 'package:provider/provider.dart';
 
+import 'conversation.dart';
+
 class Chats extends StatefulWidget with NavigationStates {
   @override
   _ChatsState createState() => _ChatsState();
@@ -107,6 +109,35 @@ class _ChatsState extends State<Chats> {
                                                             horizontal: 5.0,
                                                             vertical: 5.0),
                                                     child: ChatItem2(
+                                                      onTap: () {
+                                                        Navigator.of(context,
+                                                                rootNavigator:
+                                                                    true)
+                                                            .push(
+                                                          MaterialPageRoute(
+                                                            builder:
+                                                                (BuildContext
+                                                                    context) {
+                                                              return Conversation(
+                                                                userId:
+                                                                    recipient,
+                                                                chatId:
+                                                                    chatListSnapshot
+                                                                        .id,
+                                                                isAgent: viewModel
+                                                                        .type
+                                                                        .toLowerCase()
+                                                                        .contains(
+                                                                            "agent")
+                                                                    ? true
+                                                                    : false,
+                                                              );
+                                                            },
+                                                          ),
+                                                        ).then((value) =>
+                                                                chatList
+                                                                    .clear());
+                                                      },
                                                       userId: recipient,
                                                       messageCount:
                                                           messages?.length,
