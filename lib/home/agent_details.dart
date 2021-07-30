@@ -69,6 +69,7 @@ class _AgentsDetailsState extends State<AgentsDetails> {
   void initState() {
     getChatID();
 
+    getMyOrders(widget.id);
     super.initState();
   }
 
@@ -117,7 +118,6 @@ class _AgentsDetailsState extends State<AgentsDetails> {
                         (context, AsyncSnapshot<DocumentSnapshot> snapshot) {
                       if (snapshot.hasData) {
                         _user = UserModel.fromJson(snapshot.data.data());
-                        getMyOrders(_user.id);
                         getReviews2(_user.id);
                         return Container(
                           padding: EdgeInsets.only(

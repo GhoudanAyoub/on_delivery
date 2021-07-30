@@ -50,6 +50,7 @@ class _ChatsState extends State<Chats> {
                               '${firebaseAuth.currentUser.uid}'),
                           builder: (context, snapshot) {
                             if (snapshot.hasData) {
+                              chatList.clear();
                               for (DocumentSnapshot doc
                                   in snapshot.data.documents) {
                                 if (doc.data()['users'][0].toString().contains(
@@ -134,9 +135,7 @@ class _ChatsState extends State<Chats> {
                                                               );
                                                             },
                                                           ),
-                                                        ).then((value) =>
-                                                                chatList
-                                                                    .clear());
+                                                        );
                                                       },
                                                       userId: recipient,
                                                       messageCount:

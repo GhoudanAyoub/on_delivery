@@ -134,6 +134,7 @@ class _HomeState extends State<Home> {
     locationService = Provider.of<UserModel>(context);
     return SafeArea(
       child: Scaffold(
+        resizeToAvoidBottomInset: false,
         body: Container(
           decoration: BoxDecoration(
             image: DecorationImage(
