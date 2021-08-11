@@ -2018,9 +2018,10 @@ class _SearchMapTripScreenState extends State<SearchMapTripScreen> {
       resizeToAvoidBottomInset: false,
       backgroundColor: Colors.white,
       body: WillPopScope(
-        onWillPop: () {
+        onWillPop: () async {
           Navigator.pop(
               context, p2 != null ? p2.description : arriveTripLocationString);
+          return true;
         },
         child: SafeArea(
           child: Stack(
