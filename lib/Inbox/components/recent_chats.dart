@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
 import 'package:on_delivery/block/navigation_block/navigation_block.dart';
@@ -6,7 +7,6 @@ import 'package:on_delivery/components/chat_item.dart';
 import 'package:on_delivery/components/chat_item2.dart';
 import 'package:on_delivery/home/base.dart';
 import 'package:on_delivery/models/new_message_system.dart';
-import 'package:on_delivery/utils/SizeConfig.dart';
 import 'package:on_delivery/utils/constants.dart';
 import 'package:on_delivery/utils/firebase.dart';
 import 'package:on_delivery/viewModel/user_view_model.dart';
@@ -248,7 +248,18 @@ class _ChatsState extends State<Chats> {
                                       ),
                                       Align(
                                         alignment: Alignment.bottomCenter,
-                                        child: Container(
+                                        child: IconButton(
+                                          icon: Icon(
+                                            CupertinoIcons.backward,
+                                            color: Colors.green,
+                                          ),
+                                          onPressed: () {
+                                            Navigator.pushNamed(
+                                                context, Base.routeName);
+                                          },
+                                        )
+
+                                        /*Container(
                                           height: 60.0,
                                           width:
                                               getProportionateScreenWidth(200),
@@ -299,7 +310,8 @@ class _ChatsState extends State<Chats> {
                                                   ),
                                                 )),
                                           ),
-                                        ),
+                                        )*/
+                                        ,
                                       )
                                     ],
                                   ),

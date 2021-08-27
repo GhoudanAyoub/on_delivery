@@ -25,7 +25,9 @@ class _UserCardState extends State<UserCard> {
     orderRef.snapshots().listen((element) {
       element.docChanges.forEach((element) {
         Orders order = Orders.fromJson(element.doc.data());
-        if (order != null && order.agentId.contains(widget.userModel.id)) {
+        if (order != null &&
+            order.agentId != null &&
+            order.agentId.contains(widget.userModel.id)) {
           setState(() {
             myDocs++;
           });
