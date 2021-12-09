@@ -51,8 +51,10 @@ class _OrderScreenState extends State<OrderScreen> {
     orderRef.snapshots().listen((element) {
       element.docChanges.forEach((element) {
         Orders order = Orders.fromJson(element.doc.data());
-        if (order.userId.contains(firebaseAuth.currentUser.uid) ||
-            order.agentId.contains(firebaseAuth.currentUser.uid)) {
+        if (order.userId != null &&
+                order.userId.contains(firebaseAuth.currentUser.uid) ||
+            order.agentId != null &&
+                order.agentId.contains(firebaseAuth.currentUser.uid)) {
           setState(() {
             myDocs++;
           });
