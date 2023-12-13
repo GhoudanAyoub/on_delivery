@@ -14,17 +14,17 @@ class ChatItem2 extends StatelessWidget {
   final MessageType type;
   final String currentUserId;
   final bool isAgent;
-  final Function onTap;
+  final VoidCallback onTap;
 
   ChatItem2(
-      {Key key,
-      @required this.userId,
-      @required this.time,
-      @required this.msg,
-      @required this.messageCount,
-      @required this.chatId,
-      @required this.type,
-      @required this.currentUserId,
+      {Key? key,
+      required this.userId,
+      required this.time,
+      required this.msg,
+      required this.messageCount,
+      required this.chatId,
+      required this.type,
+      required this.currentUserId,
       this.isAgent = false,
       this.onTap})
       : super(key: key);

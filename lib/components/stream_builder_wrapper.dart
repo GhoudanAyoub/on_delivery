@@ -18,9 +18,9 @@ class StreamBuilderWrapper extends StatelessWidget {
   final String text;
 
   const StreamBuilderWrapper({
-    Key key,
-    @required this.stream,
-    @required this.itemBuilder,
+    Key? key,
+    required this.stream,
+    required this.itemBuilder,
     this.text,
     this.scrollDirection = Axis.vertical,
     this.shrinkWrap = false,

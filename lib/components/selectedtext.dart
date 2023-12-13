@@ -3,7 +3,7 @@ import 'package:on_delivery/style/style.dart';
 
 class SelectText extends StatelessWidget {
   const SelectText({
-    Key key,
+    Key? key,
     this.isSelect: true,
     this.title,
   }) : super(key: key);

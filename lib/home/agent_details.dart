@@ -18,7 +18,7 @@ class AgentsDetails extends StatefulWidget with NavigationStates {
   final String time;
   final Orders order;
 
-  const AgentsDetails({Key key, this.id, this.time, this.order})
+  const AgentsDetails({Key? key, this.id, this.time, this.order})
       : super(key: key);
   @override
   _AgentsDetailsState createState() => _AgentsDetailsState();

@@ -19,14 +19,14 @@ class ChatItem extends StatelessWidget {
   final bool isAgent;
 
   ChatItem(
-      {Key key,
-      @required this.userId,
-      @required this.time,
-      @required this.msg,
-      @required this.messageCount,
-      @required this.chatId,
-      @required this.type,
-      @required this.currentUserId,
+      {Key? key,
+      required this.userId,
+      required this.time,
+      required this.msg,
+      required this.messageCount,
+      required this.chatId,
+      required this.type,
+      required this.currentUserId,
       this.isAgent = false})
       : super(key: key);
 
@@ -36,8 +36,8 @@ class ChatItem extends StatelessWidget {
       stream: usersRef.doc('$userId').snapshots(),
       builder: (context, snapshot) {
         if (snapshot.hasData) {
-          DocumentSnapshot documentSnapshot = snapshot.data;
-          UserModel user = UserModel.fromJson(documentSnapshot.data());
+          DocumentSnapshot? documentSnapshot = snapshot.data;
+          UserModel user = UserModel.fromJson(documentSnapshot!.data());
 
           return Container(
             margin: EdgeInsets.symmetric(horizontal: 8.0, vertical: 8.0),

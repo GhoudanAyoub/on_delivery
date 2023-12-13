@@ -23,7 +23,7 @@ class TrackingMap extends StatefulWidget {
   final Orders orders;
   final UserModel userModel;
 
-  const TrackingMap({Key key, this.orders, this.userModel}) : super(key: key);
+  const TrackingMap({Key? key, this.orders, this.userModel}) : super(key: key);
   @override
   _TrackingMapState createState() => _TrackingMapState();
 }
@@ -308,7 +308,7 @@ class ShowOnMap extends StatefulWidget {
   final Orders orders;
   final UserModel userModel;
 
-  const ShowOnMap({Key key, this.orders, this.userModel}) : super(key: key);
+  const ShowOnMap({Key? key, this.orders, this.userModel}) : super(key: key);
   @override
   _ShowOnMapState createState() => _ShowOnMapState();
 }

@@ -33,7 +33,7 @@ class Conversation extends StatefulWidget {
   final Orders order;
 
   const Conversation(
-      {@required this.userId, @required this.chatId, this.isAgent, this.order});
+      {required this.userId, required this.chatId, this.isAgent, this.order});
 
   @override
   _ConversationState createState() => _ConversationState();

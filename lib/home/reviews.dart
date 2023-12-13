@@ -10,7 +10,7 @@ class Review extends StatefulWidget {
   static String routeName = "/Review";
   final String id;
 
-  const Review({Key key, this.id}) : super(key: key);
+  const Review({Key? key, this.id}) : super(key: key);
   @override
   _ReviewState createState() => _ReviewState();
 }

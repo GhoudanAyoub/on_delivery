@@ -9,7 +9,7 @@ class Cards extends StatefulWidget {
   static String routeName = "/cards";
   final String amount;
 
-  const Cards({Key key, this.amount}) : super(key: key);
+  const Cards({Key? key, this.amount}) : super(key: key);
   @override
   _CardsState createState() => _CardsState();
 }

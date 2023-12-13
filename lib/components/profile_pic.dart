@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 class ProfilePic extends StatelessWidget {
   final Widget child;
   const ProfilePic({
-    Key key,
+    Key? key,
     this.child,
   }) : super(key: key);
 

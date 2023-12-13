@@ -6,7 +6,7 @@ class LiveCardInfoShow extends StatelessWidget {
   final String name;
   final String views;
 
-  const LiveCardInfoShow({Key key, this.image, this.name, this.views})
+  const LiveCardInfoShow({Key? key, this.image, this.name, this.views})
       : super(key: key);
 
   @override

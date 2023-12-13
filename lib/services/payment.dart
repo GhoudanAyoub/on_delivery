@@ -9,8 +9,8 @@ class StripeTransactionResponse {
   String message;
   bool success;
   StripeTransactionResponse({
-    @required this.message,
-    @required this.success,
+    required this.message,
+    required this.success,
   });
 }
 
@@ -52,7 +52,7 @@ class StripeServices {
   }
 
   static Future<StripeTransactionResponse> payNowHandler(
-      {@required String amount, @required String currency}) async {
+      {required String amount, required String currency}) async {
     try {
       var paymentMethod = await StripePayment.paymentRequestWithCardForm(
           CardFormPaymentRequest());

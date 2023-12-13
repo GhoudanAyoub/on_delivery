@@ -14,12 +14,12 @@ class messages {
   final DateTime createdAt;
 
   const messages({
-    @required this.sender,
-    @required this.receiver,
-    @required this.urlAvatar,
-    @required this.username,
-    @required this.message,
-    @required this.createdAt,
+    required this.sender,
+    required this.receiver,
+    required this.urlAvatar,
+    required this.username,
+    required this.message,
+    required this.createdAt,
   });
 
   static messages fromJson(Map<String, dynamic> json) => messages(

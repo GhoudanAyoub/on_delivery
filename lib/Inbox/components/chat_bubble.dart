@@ -13,10 +13,10 @@ class ChatBubble extends StatefulWidget {
   final bool accepted;
 
   ChatBubble({
-    @required this.message,
-    @required this.time,
-    @required this.isMe,
-    @required this.type,
+    required this.message,
+    required this.time,
+    required this.isMe,
+    required this.type,
     this.accepted,
   });
 

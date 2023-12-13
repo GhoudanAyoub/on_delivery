@@ -23,7 +23,7 @@ class OrderLayout extends StatefulWidget {
   final String Time;
 
   const OrderLayout(
-      {Key key,
+      {Key? key,
       this.order,
       this.user,
       this.track = true,

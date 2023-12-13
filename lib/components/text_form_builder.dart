@@ -16,7 +16,7 @@ class TextFormBuilder extends StatefulWidget {
   final VoidCallback submitAction;
   final FormFieldValidator<String> validateFunction;
   final void Function(String) onSaved, onChange;
-  final Key key;
+  final Key? key;
   final IconData prefix;
   bool suffix = false;
   final bool readOnly;

@@ -18,8 +18,8 @@ class DirectionsRepository {
   DirectionsRepository({Dio dio}) : _dio = dio ?? Dio();
 
   Future<Directions> getDirections({
-    @required LatLng origin,
-    @required LatLng destination,
+    required LatLng origin,
+    required LatLng destination,
   }) async {
     final response = await _dio.get(
       _baseUrl,

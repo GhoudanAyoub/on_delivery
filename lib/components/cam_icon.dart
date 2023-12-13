@@ -3,7 +3,7 @@ import 'package:on_delivery/utils/constants.dart';
 
 class CamIcon extends StatelessWidget {
   const CamIcon({
-    Key key,
+    Key? key,
   }) : super(key: key);
 
   @override

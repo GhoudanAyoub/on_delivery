@@ -9,8 +9,8 @@ class RaisedGradientButton extends StatelessWidget {
   final bool border;
 
   const RaisedGradientButton(
-      {Key key,
-      @required this.child,
+      {Key? key,
+      required this.child,
       this.gradient,
       this.width = double.infinity,
       this.height = 50.0,

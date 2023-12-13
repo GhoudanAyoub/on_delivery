@@ -8,7 +8,7 @@ class CustomCard extends StatelessWidget {
   final Color color;
 
   CustomCard({
-    @required this.child,
+    required this.child,
     this.onTap,
     this.borderRadius,
     this.elevated = true,

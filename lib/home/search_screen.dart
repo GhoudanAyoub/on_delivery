@@ -1976,7 +1976,7 @@ class SearchMapTripScreen extends StatefulWidget {
   final User user;
   final GeoPoint sLocation;
 
-  const SearchMapTripScreen({Key key, this.user, this.sLocation})
+  const SearchMapTripScreen({Key? key, this.user, this.sLocation})
       : super(key: key);
   @override
   _SearchMapTripScreenState createState() => _SearchMapTripScreenState();
@@ -2329,7 +2329,7 @@ class SearchMapAgentScreen extends StatefulWidget {
   final User user;
   final String orders;
 
-  const SearchMapAgentScreen({Key key, this.user, this.orders})
+  const SearchMapAgentScreen({Key? key, this.user, this.orders})
       : super(key: key);
   @override
   _SearchMapAgentScreenState createState() => _SearchMapAgentScreenState();
@@ -3877,7 +3877,7 @@ class AllAgent extends StatefulWidget {
   final String time;
   final Orders order;
 
-  const AllAgent({Key key, this.userList, this.time, this.order})
+  const AllAgent({Key? key, this.userList, this.time, this.order})
       : super(key: key);
   @override
   _AllAgentState createState() => _AllAgentState();

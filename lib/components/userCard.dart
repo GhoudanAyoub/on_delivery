@@ -9,7 +9,7 @@ import 'package:on_delivery/utils/firebase.dart';
 class UserCard extends StatefulWidget {
   final UserModel userModel;
 
-  const UserCard({Key key, this.userModel}) : super(key: key);
+  const UserCard({Key? key, this.userModel}) : super(key: key);
   @override
   _UserCardState createState() => _UserCardState();
 }

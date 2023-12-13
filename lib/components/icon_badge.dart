@@ -7,7 +7,7 @@ class IconBadge extends StatefulWidget {
   final double size;
   final Color color;
 
-  IconBadge({Key key, @required this.icon, this.size, this.color})
+  IconBadge({Key? key, required this.icon, this.size, this.color})
       : super(key: key);
 
   @override

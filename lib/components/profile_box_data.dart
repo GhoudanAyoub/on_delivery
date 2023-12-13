@@ -3,7 +3,7 @@ import 'package:on_delivery/utils/SizeConfig.dart';
 import 'package:on_delivery/utils/constants.dart';
 
 class ProfileBoxData extends StatelessWidget {
-  const ProfileBoxData({Key key, this.LIKES, this.FOLLOWING, this.FOLLOWERS})
+  const ProfileBoxData({Key? key, this.LIKES, this.FOLLOWING, this.FOLLOWERS})
       : super(key: key);
   final String LIKES, FOLLOWING, FOLLOWERS;
 

@@ -8,7 +8,7 @@ class AdMucisText extends StatelessWidget {
   final bool enableOffset;
 
   const AdMucisText({
-    Key key,
+    Key? key,
     this.text,
     this.style,
     this.defaultStyle,
@@ -17,7 +17,7 @@ class AdMucisText extends StatelessWidget {
 
   const AdMucisText.small(
     String text, {
-    Key key,
+    Key? key,
     TextStyle style,
     bool enableOffset,
   }) : this(
@@ -30,7 +30,7 @@ class AdMucisText extends StatelessWidget {
 
   const AdMucisText.normal(
     String text, {
-    Key key,
+    Key? key,
     TextStyle style,
     bool enableOffset,
   }) : this(
@@ -43,7 +43,7 @@ class AdMucisText extends StatelessWidget {
 
   const AdMucisText.big(
     String text, {
-    Key key,
+    Key? key,
     TextStyle style,
     bool enableOffset,
   }) : this(

@@ -10,7 +10,7 @@ class PaymentGateways extends StatefulWidget {
   static String routeName = "/PaymentGateways";
   final String amount;
 
-  const PaymentGateways({Key key, this.amount}) : super(key: key);
+  const PaymentGateways({Key? key, this.amount}) : super(key: key);
   @override
   _PaymentGatewaysState createState() => _PaymentGatewaysState();
 }

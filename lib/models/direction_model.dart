@@ -9,10 +9,10 @@ class Directions {
   final String totalDuration;
 
   const Directions({
-    @required this.bounds,
-    @required this.polylinePoints,
-    @required this.totalDistance,
-    @required this.totalDuration,
+    required this.bounds,
+    required this.polylinePoints,
+    required this.totalDistance,
+    required this.totalDuration,
   });
 
   factory Directions.fromMap(Map<String, dynamic> map) {

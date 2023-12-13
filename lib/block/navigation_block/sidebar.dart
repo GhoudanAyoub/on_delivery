@@ -25,12 +25,12 @@ class SideBar extends StatefulWidget {
 
 class _SideBarState extends State<SideBar>
     with SingleTickerProviderStateMixin<SideBar> {
-  AnimationController _animationController;
-  StreamController<bool> isSidebarOpenedStreamController;
-  Stream<bool> isSidebarOpenedStream;
-  StreamSink<bool> isSidebarOpenedSink;
+  late AnimationController _animationController;
+  late StreamController<bool> isSidebarOpenedStreamController;
+  late Stream<bool> isSidebarOpenedStream;
+  late StreamSink<bool> isSidebarOpenedSink;
   final _animationDuration = const Duration(milliseconds: 500);
-  UserModel user1;
+  late UserModel user1;
   TextEditingController ribController = TextEditingController();
   TextEditingController bankNameController = TextEditingController();
 
@@ -77,8 +77,8 @@ class _SideBarState extends State<SideBar>
           duration: _animationDuration,
           top: 0,
           bottom: 0,
-          right: isSideBarOpenedAsync.data ? 0 : -screenWidth,
-          left: isSideBarOpenedAsync.data ? 0 : screenWidth - 40,
+          right: isSideBarOpenedAsync.data ?? false ? 0 : -screenWidth,
+          left: (isSideBarOpenedAsync.data ?? false) ? 0 : screenWidth - 40,
           child: Row(
             children: <Widget>[
               Align(

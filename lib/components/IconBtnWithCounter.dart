@@ -5,10 +5,10 @@ import 'package:on_delivery/utils/constants.dart';
 
 class IconBtnWithCounter extends StatelessWidget {
   const IconBtnWithCounter({
-    Key key,
-    @required this.svgSrc,
+    Key? key,
+    required this.svgSrc,
     this.numOfitem = 0,
-    @required this.press,
+    required this.press,
   }) : super(key: key);
 
   final String svgSrc;

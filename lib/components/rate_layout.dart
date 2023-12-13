@@ -12,7 +12,7 @@ class RateLayout extends StatefulWidget {
   final String id;
   final RateModel rateModel;
 
-  const RateLayout({Key key, this.id, this.rateModel}) : super(key: key);
+  const RateLayout({Key? key, this.id, this.rateModel}) : super(key: key);
   @override
   _RateLayoutState createState() => _RateLayoutState();
 }

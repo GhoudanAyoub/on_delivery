@@ -36,7 +36,7 @@ class UpdateProfiles extends StatefulWidget {
   static String routeName = "/UpdateProfiles";
   final bool Type;
 
-  const UpdateProfiles({Key key, this.Type}) : super(key: key);
+  const UpdateProfiles({Key? key, this.Type}) : super(key: key);
   @override
   _UpdateProfilesState createState() => _UpdateProfilesState();
 }
@@ -3766,7 +3766,7 @@ class MapScreen extends StatefulWidget {
   static String routeName = '/MapScreen';
   final User user;
 
-  const MapScreen({Key key, this.user}) : super(key: key);
+  const MapScreen({Key? key, this.user}) : super(key: key);
   @override
   _MapScreenState createState() => _MapScreenState();
 }
@@ -4013,7 +4013,7 @@ class MapTripScreen extends StatefulWidget {
   static String routeName = '/MapTripScreen';
   final User user;
 
-  const MapTripScreen({Key key, this.user}) : super(key: key);
+  const MapTripScreen({Key? key, this.user}) : super(key: key);
   @override
   _MapTripScreenState createState() => _MapTripScreenState();
 }

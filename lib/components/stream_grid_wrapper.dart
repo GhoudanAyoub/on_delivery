@@ -17,9 +17,9 @@ class StreamGridWrapper extends StatelessWidget {
   final EdgeInsets padding;
 
   const StreamGridWrapper({
-    Key key,
-    @required this.stream,
-    @required this.itemBuilder,
+    Key? key,
+    required this.stream,
+    required this.itemBuilder,
     this.scrollDirection = Axis.vertical,
     this.shrinkWrap = false,
     this.physics = const ClampingScrollPhysics(),

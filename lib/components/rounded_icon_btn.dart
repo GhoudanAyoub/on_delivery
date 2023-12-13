@@ -3,9 +3,9 @@ import 'package:on_delivery/utils/SizeConfig.dart';
 
 class RoundedIconBtn extends StatelessWidget {
   const RoundedIconBtn({
-    Key key,
-    @required this.icon,
-    @required this.press,
+    Key? key,
+    required this.icon,
+    required this.press,
     this.showShadow = false,
   }) : super(key: key);
 
