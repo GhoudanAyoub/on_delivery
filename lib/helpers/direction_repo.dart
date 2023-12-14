@@ -6,18 +6,18 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:on_delivery/models/direction_model.dart';
 
 class DirectionsRepository {
-  String kGoogleApiKey = Platform.isAndroid
+  String? kGoogleApiKey = Platform.isAndroid
       ? "AIzaSyD3exTbi5W-6kYICekpUEslE3gIcSF5weI"
       : "AIzaSyDvpynTkP9xyNU8KO4UlJYWlQfn-trjeGw";
 
-  static const String _baseUrl =
+  static const String? _baseUrl =
       'https://maps.googleapis.com/maps/api/directions/json?';
 
   final Dio _dio;
 
-  DirectionsRepository({Dio dio}) : _dio = dio ?? Dio();
+  DirectionsRepository({Dio? dio}) : _dio = dio ?? Dio();
 
-  Future<Directions> getDirections({
+  Future<Directions?> getDirections({
     required LatLng origin,
     required LatLng destination,
   }) async {

@@ -5,25 +5,25 @@ import 'package:on_delivery/utils/constants.dart';
 import 'custom_card.dart';
 
 class TextFormBuilder extends StatefulWidget {
-  final String initialValue;
-  final bool enabled;
-  final String hintText;
-  final TextInputType textInputType;
-  final TextEditingController controller;
-  final TextInputAction textInputAction;
-  final bool obscureText;
-  final FocusNode focusNode, nextFocusNode;
+  final String? initialValue;
+  final bool? enabled;
+  final String? hintText;
+  final TextInputType? textInputType;
+  final TextEditingController? controller;
+  final TextInputAction? textInputAction;
+  final bool? obscureText;
+  final FocusNode? focusNode, nextFocusNode;
   final VoidCallback submitAction;
-  final FormFieldValidator<String> validateFunction;
-  final void Function(String) onSaved, onChange;
+  final FormFieldValidator<String?> validateFunction;
+  final void Function(String?)? onSaved, onChange;
   final Key? key;
-  final IconData prefix;
+  final IconData? prefix;
   bool suffix = false;
   final bool readOnly;
 
   TextFormBuilder(
       {this.prefix,
-      this.suffix,
+      required this.suffix,
       this.initialValue,
       this.enabled,
       this.hintText,
@@ -32,9 +32,9 @@ class TextFormBuilder extends StatefulWidget {
       this.textInputAction,
       this.nextFocusNode,
       this.focusNode,
-      this.submitAction,
+      required this.submitAction,
       this.obscureText = false,
-      this.validateFunction,
+      required this.validateFunction,
       this.onSaved,
       this.onChange,
       this.key,
@@ -45,7 +45,7 @@ class TextFormBuilder extends StatefulWidget {
 }
 
 class _TextFormBuilderState extends State<TextFormBuilder> {
-  String error;
+  String? error;
   bool _secureText = true;
 
   @override
@@ -70,7 +70,7 @@ class _TextFormBuilderState extends State<TextFormBuilder> {
                   onChanged: (val) {
                     error = widget.validateFunction(val);
                     setState(() {});
-                    widget.onSaved(val);
+                    if(widget.onSaved!=null) widget.onSaved!(val);
                   },
                   readOnly: widget.readOnly,
                   style: TextStyle(
@@ -88,13 +88,13 @@ class _TextFormBuilderState extends State<TextFormBuilder> {
                   onSaved: (val) {
                     error = widget.validateFunction(val);
                     setState(() {});
-                    widget.onSaved(val);
+                    if(widget.onSaved!=null)  widget.onSaved!(val);
                   },
                   textInputAction: widget.textInputAction,
                   focusNode: widget.focusNode,
-                  onFieldSubmitted: (String term) {
+                  onFieldSubmitted: (String? term) {
                     if (widget.nextFocusNode != null) {
-                      widget.focusNode.unfocus();
+                      widget.focusNode?.unfocus();
                       FocusScope.of(context).requestFocus(widget.nextFocusNode);
                     } else {
                       widget.submitAction();
@@ -141,6 +141,7 @@ class _TextFormBuilderState extends State<TextFormBuilder> {
                 ),
               ),
             ),
+            onTap: (){},
           ),
           SizedBox(height: 5.0),
           Visibility(

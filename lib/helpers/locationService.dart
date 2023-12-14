@@ -9,19 +9,21 @@ import 'package:on_delivery/utils/firebase.dart';
 class LocationService with ChangeNotifier {
   bool permissionGranted = false;
   var selectedAddress;
-  static final String TAG = "LocationService";
+  static final String? TAG = "LocationService";
   static int UPDATE_INTERVAL = 4 * 1000; /* 4 secs */
   static int FASTEST_INTERVAL = 2000; /* 2 sec */
 
-  double lnt;
-  double lng;
-  Location location = new Location();
+  late double lnt;
+  late double lng;
+  late Location location;
 
-  UserModel agentLocation;
-  StreamController<UserModel> _streamController =
-      StreamController<UserModel>.broadcast();
+  late UserModel agentLocation;
+  late StreamController<UserModel> _streamController;
 
   LocationService() {
+    location = new Location();
+    _streamController = StreamController<UserModel>.broadcast();
+
     location.requestPermission().then((value) => {
           if (value != null)
             {
@@ -36,7 +38,7 @@ class LocationService with ChangeNotifier {
         });
   }
 
-  Future<String> getCurrentCoordinatesName(lnts, lngs) async {
+  Future<String?> getCurrentCoordinatesName(lnts, lngs) async {
     final coordinates = new Coordinates(lnts, lngs);
     final addresses =
         await Geocoder.local.findAddressesFromCoordinates(coordinates);

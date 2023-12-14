@@ -3,23 +3,23 @@
 <plist version="1.0">
 <dict>
 	<key>CFBundleDevelopmentRegion</key>
-	<string>$(DEVELOPMENT_LANGUAGE)</string>
+	<String?>$(DEVELOPMENT_LANGUAGE)</String?>
 	<key>CFBundleExecutable</key>
-	<string>$(EXECUTABLE_NAME)</string>
+	<String?>$(EXECUTABLE_NAME)</String?>
 	<key>CFBundleIdentifier</key>
-	<string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>
+	<String?>$(PRODUCT_BUNDLE_IDENTIFIER)</String?>
 	<key>CFBundleInfoDictionaryVersion</key>
-	<string>6.0</string>
+	<String?>6.0</String?>
 	<key>CFBundleName</key>
-	<string>on_delivery</string>
+	<String?>on_delivery</String?>
 	<key>CFBundlePackageType</key>
-	<string>APPL</string>
-	<key>CFBundleShortVersionString</key>
-	<string>$(FLUTTER_BUILD_NAME)</string>
+	<String?>APPL</String?>
+	<key>CFBundleShortVersionString?</key>
+	<String?>$(FLUTTER_BUILD_NAME)</String?>
 	<key>CFBundleSignature</key>
-	<string>????</string>
+	<String?>????</String?>
 	<key>CFBundleVersion</key>
-	<string>$(FLUTTER_BUILD_NUMBER)</string>
+	<String?>$(FLUTTER_BUILD_NUMBER)</String?>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
 
@@ -27,10 +27,10 @@
            	<array>
                   <dict>
                       <key>CFBundleTypeRole</key>
-                      <string>Editor</string>
+                      <String?>Editor</String?>
                       <key>CFBundleURLSchemes</key>
                       <array>
-                          <string>>com.googleusercontent.apps.14565634679-fdvpv41th6tr2mnqvgdej0tt6uhbucoq</string>
+                          <String?>>com.googleusercontent.apps.14565634679-fdvpv41th6tr2mnqvgdej0tt6uhbucoq</String?>
                       </array>
                   </dict>
               </array>
@@ -42,37 +42,37 @@
   <dict>
   <key>CFBundleURLSchemes</key>
   <array>
-    <string>com.ghoudan.onDelivery</string>
+    <String?>com.ghoudan.onDelivery</String?>
   </array>
   </dict>
 </array>
 <key>io.flutter.embedded_views_preview</key>
-<string>YES</string>
+<String?>YES</String?>
 <key>NSLocationWhenInUseUsageDescription</key>
-<string>This app needs access to location when open.</string>
+<String?>This app needs access to location when open.</String?>
 <key>NSLocationAlwaysUsageDescription</key>
-<string>This app needs access to location when in the background.</string>
+<String?>This app needs access to location when in the background.</String?>
 <key>FacebookAppID</key>
-<string>4148526925260646</string>
+<String?>4148526925260646</String?>
 <key>FacebookClientToken</key>
-<string>4fc2610a857c3152da6751a0025db85f</string>
+<String?>4fc2610a857c3152da6751a0025db85f</String?>
 <key>FacebookDisplayName</key>
-<string>onDelivery</string>
+<String?>onDelivery</String?>
 
 	<key>UILaunchStoryboardName</key>
-	<string>LaunchScreen</string>
+	<String?>LaunchScreen</String?>
 	<key>UIMainStoryboardFile</key>
-	<string>Main</string>
+	<String?>Main</String?>
 	<key>UISupportedInterfaceOrientations</key>
 	<array>
-		<string>UIInterfaceOrientationPortrait</string>
-		<string>UIInterfaceOrientationLandscapeLeft</string>
-		<string>UIInterfaceOrientationLandscapeRight</string>
+		<String?>UIInterfaceOrientationPortrait</String?>
+		<String?>UIInterfaceOrientationLandscapeLeft</String?>
+		<String?>UIInterfaceOrientationLandscapeRight</String?>
 	</array>
 	<key>UISupportedInterfaceOrientations~ipad</key>
 	<array>
-		<string>UIInterfaceOrientationPortrait</string>
-		<string>UIInterfaceOrientationPortraitUpsideDown</string>
+		<String?>UIInterfaceOrientationPortrait</String?>
+		<String?>UIInterfaceOrientationPortraitUpsideDown</String?>
 	</array>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<false/>

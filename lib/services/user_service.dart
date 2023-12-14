@@ -4,7 +4,7 @@ import 'package:on_delivery/services/services.dart';
 import 'package:on_delivery/utils/firebase.dart';
 
 class UserService extends Service {
-  String currentUid() {
+  String? currentUid() {
     return firebaseAuth.currentUser.uid;
   }
 
@@ -17,8 +17,8 @@ class UserService extends Service {
     }
   }
 
-  Future<String> getUserType(user) async {
-    String type;
+  Future<String?> getUserType(user) async {
+    String? type;
     if (user != null) {
       final snapShot = await usersRef.doc(user.uid).get();
       if (snapShot.exists) {

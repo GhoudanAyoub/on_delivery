@@ -1,12 +1,12 @@
 class CategorieModel {
-  String id;
-  String name;
-  String picture;
+  late String? id;
+  late String? name;
+ late String? picture;
 
   CategorieModel({
-    this.id,
-    this.name,
-    this.picture,
+    required this.id,
+    required this.name,
+   required this.picture,
   });
 
   CategorieModel.fromJson(Map<dynamic, dynamic> json) {

@@ -13,8 +13,8 @@ class AuthService extends Service {
   }
 
   Future<bool> createUser({
-    String email,
-    String password,
+    String? email,
+    String? password,
   }) async {
     var res = await firebaseAuth.createUserWithEmailAndPassword(
       email: '$email',
@@ -67,7 +67,7 @@ class AuthService extends Service {
     return user.uid;
   }
 
-  saveUserToFireStore(User user, String email, String password) async {
+  saveUserToFireStore(User user, String? email, String? password) async {
     final snapShot = await usersRef.doc(user.uid).get();
     if (!snapShot.exists) {
       await usersRef.doc(user.uid).set({
@@ -103,7 +103,7 @@ class AuthService extends Service {
     }
   }
 
-  updateUserTypeToFireStore(User user, String type) async {
+  updateUserTypeToFireStore(User user, String? type) async {
     if (user != null) {
       final snapShot = await usersRef.doc(user.uid).get();
       if (snapShot.exists) {
@@ -112,7 +112,7 @@ class AuthService extends Service {
     }
   }
 
-  updateTripsmaxWeightToFireStore(User user, String maxWeight) async {
+  updateTripsmaxWeightToFireStore(User user, String? maxWeight) async {
     if (user != null) {
       final snapShot = await usersRef.doc(user.uid).get();
       if (snapShot.exists) {
@@ -124,7 +124,7 @@ class AuthService extends Service {
   }
 
   updateTripsLocationToFireStore(
-      User user, List<HashMap<String, dynamic>> agentTripsLocationList) async {
+      User user, List<Map<String?, dynamic>> agentTripsLocationList) async {
     if (user != null) {
       final snapShot = await usersRef.doc(user.uid).get();
       if (snapShot.exists) {
@@ -136,15 +136,15 @@ class AuthService extends Service {
   }
 
   addNewTripsLocationToFireStore(
-      User user, HashMap<String, dynamic> agentTripsLocationList) async {
+      User user, HashMap<String?, dynamic> agentTripsLocationList) async {
     if (user != null) {
       final snapShot = await usersRef.doc(user.uid).get();
       if (snapShot.exists) {
         UserModel userModel = UserModel.fromJson(snapShot.data());
 
         var list = [];
-        for (int e = 0; e < userModel.agentTripsLocationList.length; e++) {
-          list.add(userModel.agentTripsLocationList[e]);
+        for (int e = 0; e < userModel.agentTripsLocationList!.length; e++) {
+          list.add(userModel.agentTripsLocationList![e]);
         }
         list.add(agentTripsLocationList);
         usersRef.doc(user.uid).update({
@@ -156,16 +156,16 @@ class AuthService extends Service {
 
   addNewBusinessLocationToFireStore(
     User user,
-    HashMap<String, dynamic> wareHouseLocationList,
-    String wareHouse,
+    HashMap<String?, dynamic> wareHouseLocationList,
+    String? wareHouse,
   ) async {
-    if (user != null) {
+    if (user != null && wareHouseLocationList.isNotEmpty) {
       final snapShot = await usersRef.doc(user.uid).get();
       if (snapShot.exists) {
         UserModel userModel = UserModel.fromJson(snapShot.data());
         var list = [];
-        for (int e = 0; e < userModel.wareHouseLocationList.length; e++) {
-          list.add(userModel.wareHouseLocationList[e]);
+        for (int e = 0; e < userModel.wareHouseLocationList!.length; e++) {
+          list.add(userModel.wareHouseLocationList![e]);
         }
         list.add(wareHouseLocationList);
         usersRef.doc(user.uid).update({
@@ -178,8 +178,8 @@ class AuthService extends Service {
 
   updateBusinessLocationToFireStore(
     User user,
-    List<HashMap<String, dynamic>> wareHouseLocationList,
-    String wareHouse,
+    List<Map<String?, dynamic>> wareHouseLocationList,
+    String? wareHouse,
   ) async {
     if (user != null) {
       final snapShot = await usersRef.doc(user.uid).get();
@@ -192,7 +192,7 @@ class AuthService extends Service {
     }
   }
 
-  updateRIBToFireStore(User user, String RIB, String bankName) async {
+  updateRIBToFireStore(User user, String? RIB, String? bankName) async {
     if (user != null) {
       final snapShot = await usersRef.doc(user.uid).get();
       if (snapShot.exists) {
@@ -205,8 +205,8 @@ class AuthService extends Service {
     }
   }
 
-  updateCompanyToFireStore(User user, String activities, String companyName,
-      String transport, String maxWeight, String unity, String price) async {
+  updateCompanyToFireStore(User user, String? activities, String? companyName,
+      String? transport, String? maxWeight, String? unity, String? price) async {
     if (user != null) {
       final snapShot = await usersRef.doc(user.uid).get();
       if (snapShot.exists) {
@@ -222,7 +222,7 @@ class AuthService extends Service {
     }
   }
 
-  updateActivitiesToFireStore(User user, String activities) async {
+  updateActivitiesToFireStore(User user, String? activities) async {
     if (user != null) {
       final snapShot = await usersRef.doc(user.uid).get();
       if (snapShot.exists) {
@@ -233,8 +233,8 @@ class AuthService extends Service {
     }
   }
 
-  updateUserDataToFireStore(User user, String fName, String lName, String city,
-      String phone, File image) async {
+  updateUserDataToFireStore(User user, String? fName, String? lName, String? city,
+      String? phone, File image) async {
     if (user != null) {
       final snapShot = await usersRef.doc(user.uid).get();
       if (snapShot.exists) {
@@ -268,7 +268,7 @@ class AuthService extends Service {
     }
   }
 
-  updateVerificationDataToFireStore(User user, String verificationType,
+  updateVerificationDataToFireStore(User user, String? verificationType,
       File side1Image, File side2Image, File passport) async {
     final snapShot = await usersRef.doc(user.uid).get();
     if (snapShot.exists) {
@@ -300,10 +300,10 @@ class AuthService extends Service {
 
   updateBusinessDataToFireStore(
     User user,
-    String businessType,
-    String businessName,
-    String transportType,
-    String wareHouse,
+    String? businessType,
+    String? businessName,
+    String? transportType,
+    String? wareHouse,
   ) async {
     if (user != null) {
       final snapShot = await usersRef.doc(user.uid).get();
@@ -318,7 +318,7 @@ class AuthService extends Service {
     }
   }
 
-  Future<String> loginUser({String email, String password}) async {
+  Future<String?> loginUser(String email, String password) async {
     var result;
     var errorType;
     try {
@@ -327,7 +327,7 @@ class AuthService extends Service {
         password: '$password',
       );
     } catch (e) {
-      switch (e.message) {
+      switch (e) {
         case 'There is no user record corresponding to this identifier. The user may have been deleted.':
           errorType = "No Account For This Email";
           break;
@@ -346,7 +346,7 @@ class AuthService extends Service {
     return result.user.uid;
   }
 
-  forgotPassword(String email) async {
+  forgotPassword(String? email) async {
     await firebaseAuth.sendPasswordResetEmail(email: email);
   }
 
@@ -354,7 +354,7 @@ class AuthService extends Service {
     await firebaseAuth.signOut();
   }
 
-  String handleFirebaseAuthError(String e) {
+  String? handleFirebaseAuthError(String e) {
     if (e.contains("ERROR_WEAK_PASSWORD")) {
       return "Password is too weak";
     } else if (e.contains("invalid-email")) {

@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 
 import 'indicators.dart';
 
-Widget cachedNetworkImage(String imgUrl) {
+Widget cachedNetworkImage(String? imgUrl) {
   return CachedNetworkImage(
     imageUrl: imgUrl,
     fit: BoxFit.cover,

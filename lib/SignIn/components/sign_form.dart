@@ -21,12 +21,12 @@ class _SignFormState extends State<SignForm> {
   TextEditingController _emailContoller = TextEditingController();
   TextEditingController _passwordController = TextEditingController();
   bool remember = false;
-  final List<String> errors = [];
+  final List<String?> errors = [];
 
   var submitted = false;
   var buttonText = "Sign In";
 
-  void addError({String error}) {
+  void addError({String? error}) {
     if (!errors.contains(error))
       setState(() {
         errors.add(error);
@@ -34,7 +34,7 @@ class _SignFormState extends State<SignForm> {
       });
   }
 
-  void removeError({String error}) {
+  void removeError({String? error}) {
     if (errors.contains(error))
       setState(() {
         errors.remove(error);
@@ -48,6 +48,7 @@ class _SignFormState extends State<SignForm> {
       hintText: "Password",
       textInputAction: TextInputAction.next,
       validateFunction: Validations.validatePassword,
+      submitAction: (){},
     );
   }
 
@@ -58,11 +59,12 @@ class _SignFormState extends State<SignForm> {
       hintText: "Email",
       textInputAction: TextInputAction.next,
       validateFunction: Validations.validateEmail,
+      submitAction: (){},
     );
   }
 
   bool _secureText = true;
-  String _passwordError;
+  String? _passwordError;
 
   @override
   Widget build(BuildContext context) {
@@ -100,25 +102,25 @@ class _SignFormState extends State<SignForm> {
               ),
               onPressed: () async {
                 AuthService auth = AuthService();
-                if (_formKey.currentState.validate()) {
+                if (_formKey.currentState!.validate()) {
                   submitted = true;
                   KeyboardUtil.hideKeyboard(context);
-                  String success;
+                  String? success;
                   try {
                     removeError(error: success);
                     success = await auth.loginUser(
-                      email: _emailContoller.text,
-                      password: _passwordController.text,
+                       _emailContoller.text,
+                      _passwordController.text,
                     );
                     if (success == firebaseAuth.currentUser.uid) {
                       final data = await usersRef.doc(success).get();
                       if (data.exists) {
                         Navigator.pushNamed(context, Base.routeName);
-                        Scaffold.of(context).showSnackBar(
+                        ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(content: Text('Welcome Back')));
                       } else {
                         Navigator.pushNamed(context, ChooseSide.routeName);
-                        Scaffold.of(context).showSnackBar(SnackBar(
+                        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                             content: Text(
                                 'You have To Finish uploading your data')));
                       }
@@ -140,8 +142,8 @@ class _SignFormState extends State<SignForm> {
     );
   }
 
-  void showInSnackBar(String value) {
-    scaffoldKey.currentState.removeCurrentSnackBar();
-    scaffoldKey.currentState.showSnackBar(SnackBar(content: Text(value)));
+  void showInSnackBar(String? value) {
+    ScaffoldMessenger.of(context).removeCurrentSnackBar();
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(value??"")));
   }
 }

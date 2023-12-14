@@ -9,7 +9,7 @@ class SelectText extends StatelessWidget {
   }) : super(key: key);
 
   final bool isSelect;
-  final String title;
+  final String? title;
 
   @override
   Widget build(BuildContext context) {

@@ -9,13 +9,13 @@ import 'package:on_delivery/utils/firebase.dart';
 import 'package:timeago/timeago.dart' as timeago;
 
 class ChatItem extends StatelessWidget {
-  final String userId;
+  final String? userId;
   final Timestamp time;
-  final String msg;
+  final String? msg;
   final int messageCount;
-  final String chatId;
+  final String? chatId;
   final MessageType type;
-  final String currentUserId;
+  final String? currentUserId;
   final bool isAgent;
 
   ChatItem(
@@ -35,8 +35,9 @@ class ChatItem extends StatelessWidget {
     return StreamBuilder(
       stream: usersRef.doc('$userId').snapshots(),
       builder: (context, snapshot) {
-        if (snapshot.hasData) {
-          DocumentSnapshot? documentSnapshot = snapshot.data;
+        Object? mapData = snapshot.data;
+        if (snapshot.hasData && mapData!=null) {
+          DocumentSnapshot? documentSnapshot = snapshot.data as DocumentSnapshot?;
           UserModel user = UserModel.fromJson(documentSnapshot!.data());
 
           return Container(
@@ -85,7 +86,7 @@ class ChatItem extends StatelessWidget {
                 ],
               ),
               title: Text(
-                '${user.firstName} ${user.lastname.toUpperCase()}',
+                '${user.firstName} ${user.lastname?.toUpperCase()}',
                 maxLines: 1,
                 style: TextStyle(
                     fontWeight: FontWeight.bold,

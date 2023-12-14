@@ -7,8 +7,8 @@ import 'package:on_delivery/utils/firebase.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
 class PaypalPayment extends StatefulWidget {
-  final String itemName;
-  final String itemPrice;
+  final String? itemName;
+  final String? itemPrice;
 
   PaypalPayment(this.itemName, this.itemPrice);
 
@@ -19,15 +19,15 @@ class PaypalPayment extends StatefulWidget {
 }
 
 class PaypalPaymentState extends State<PaypalPayment> {
-  final String itemName;
-  final String itemPrice;
+  final String? itemName;
+  final String? itemPrice;
 
   PaypalPaymentState(this.itemName, this.itemPrice);
 
   GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
-  String checkoutUrl;
-  String executeUrl;
-  String accessToken;
+  String? checkoutUrl;
+  String? executeUrl;
+  String? accessToken;
   PaypalServices services = PaypalServices();
 
   // you can change default currency according to your need
@@ -41,9 +41,9 @@ class PaypalPaymentState extends State<PaypalPayment> {
   bool isEnableShipping = false;
   bool isEnableAddress = false;
 
-  String returnURL =
+  String? returnURL =
       'https://junedr375.github.io/junedr375-payment/'; //you can add customize link
-  String cancelURL =
+  String? cancelURL =
       'https://junedr375.github.io/junedr375-payment/error.html'; //you can add customize link
 
   @override
@@ -75,14 +75,14 @@ class PaypalPaymentState extends State<PaypalPayment> {
             },
           ),
         );
-        _scaffoldKey.currentState.showSnackBar(snackBar);
+        ScaffoldMessenger.of(context).showSnackBar(snackBar);
       }
     });
   }
 
   int quantity = 1;
 
-  Map<String, dynamic> getOrderParams() {
+  Map<String?, dynamic> getOrderParams() {
     List items = [
       {
         "name": itemName,
@@ -93,20 +93,20 @@ class PaypalPaymentState extends State<PaypalPayment> {
     ];
 
     // checkout invoice details
-    String totalAmount = itemPrice; //'10';
-    String subTotalAmount = itemPrice; //'10';
-    String shippingCost = '0';
+    String? totalAmount = itemPrice; //'10';
+    String? subTotalAmount = itemPrice; //'10';
+    String? shippingCost = '0';
     int shippingDiscountCost = 0;
-    String userFirstName = 'Ayoub';
-    String userLastName = 'gh';
-    String addressCity = 'casa';
-    String addressStreet = ' road';
-    String addressZipCode = '40000';
-    String addressCountry = 'morroco';
-    String addressState = 'morroco';
-    String addressPhoneNumber = '+9199999999';
+    String? userFirstName = 'Ayoub';
+    String? userLastName = 'gh';
+    String? addressCity = 'casa';
+    String? addressStreet = ' road';
+    String? addressZipCode = '40000';
+    String? addressCountry = 'morroco';
+    String? addressState = 'morroco';
+    String? addressPhoneNumber = '+9199999999';
 
-    Map<String, dynamic> temp = {
+    Map<String?, dynamic> temp = {
       "intent": "sale",
       "payer": {"payment_method": "paypal"},
       "transactions": [
@@ -163,7 +163,7 @@ class PaypalPaymentState extends State<PaypalPayment> {
           initialUrl: checkoutUrl,
           javascriptMode: JavascriptMode.unrestricted,
           navigationDelegate: (NavigationRequest request) {
-            if (request.url.contains(returnURL)) {
+            if (request.url.contains(returnURL??'')) {
               final uri = Uri.parse(request.url);
               final payerID = uri.queryParameters['PayerID'];
               if (payerID != null) {
@@ -182,7 +182,7 @@ class PaypalPaymentState extends State<PaypalPayment> {
               }
               Navigator.of(context).pop();
             }
-            if (request.url.contains(cancelURL)) {
+            if (request.url.contains(cancelURL??"")) {
               Navigator.of(context).pop();
             }
             return NavigationDecision.navigate;

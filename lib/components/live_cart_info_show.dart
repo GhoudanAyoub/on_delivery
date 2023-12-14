@@ -3,10 +3,10 @@ import 'package:on_delivery/utils/SizeConfig.dart';
 
 class LiveCardInfoShow extends StatelessWidget {
   final String image;
-  final String name;
-  final String views;
+  final String? name;
+  final String? views;
 
-  const LiveCardInfoShow({Key? key, this.image, this.name, this.views})
+  const LiveCardInfoShow({Key? key,required this.image, this.name, this.views})
       : super(key: key);
 
   @override

@@ -11,7 +11,7 @@ class IconBtnWithCounter extends StatelessWidget {
     required this.press,
   }) : super(key: key);
 
-  final String svgSrc;
+  final String? svgSrc;
   final int numOfitem;
   final GestureTapCallback press;
 
@@ -21,7 +21,7 @@ class IconBtnWithCounter extends StatelessWidget {
       borderRadius: BorderRadius.circular(100),
       onTap: press,
       child: Stack(
-        overflow: Overflow.visible,
+        clipBehavior: Clip.none,
         children: [
           Container(
             padding: EdgeInsets.all(getProportionateScreenWidth(12)),

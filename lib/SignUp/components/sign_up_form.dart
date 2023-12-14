@@ -21,21 +21,21 @@ class _SignUpFormState extends State<SignUpForm> {
   TextEditingController _emailContoller = TextEditingController();
   TextEditingController _passwordController = TextEditingController();
   TextEditingController _passwordController2 = TextEditingController();
-  String email;
-  String password;
-  String conform_password;
+  String? email;
+  String? password;
+  String? conform_password;
   bool remember = false;
   AuthService authService = AuthService();
-  final List<String> errors = [];
+  final List<String?> errors = [];
   FirebaseAuth _auth = FirebaseAuth.instance;
-  User _user;
+  late  User _user;
   GoogleSignIn _googleSignIn = GoogleSignIn();
   FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
   static final FacebookLogin facebookSignIn = new FacebookLogin();
   bool isSignIn = false;
-  String name = '', image;
+  String? name = '', image;
 
-  void addError({String error}) {
+  void addError({String? error}) {
     if (!errors.contains(error))
       setState(() {
         errors.add(error);
@@ -43,7 +43,7 @@ class _SignUpFormState extends State<SignUpForm> {
       });
   }
 
-  void removeError({String error}) {
+  void removeError({String? error}) {
     if (errors.contains(error))
       setState(() {
         errors.remove(error);
@@ -85,7 +85,7 @@ class _SignUpFormState extends State<SignUpForm> {
               ),
               onPressed: () async {
                 try {
-                  if (_formKey.currentState.validate()) {
+                  if (_formKey.currentState!.validate()) {
                     submitted = true;
                     bool success = await authService.createUser(
                       email: _emailContoller.text,
@@ -93,7 +93,7 @@ class _SignUpFormState extends State<SignUpForm> {
                     );
                     if (success) {
                       Navigator.pushNamed(context, ChooseSide.routeName);
-                      Scaffold.of(context).showSnackBar(SnackBar(
+                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                           content:
                               Text('Congratulation Your Account Created')));
                     }
@@ -109,8 +109,8 @@ class _SignUpFormState extends State<SignUpForm> {
     );
   }
 
-  void showInSnackBar(String value) {
-    scaffoldKey.currentState.showSnackBar(SnackBar(content: Text(value)));
+  void showInSnackBar(String? value) {
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(value??"")));
   }
 
   void emailExists() {
@@ -188,6 +188,7 @@ class _SignUpFormState extends State<SignUpForm> {
       hintText: "Create a Password",
       textInputAction: TextInputAction.next,
       validateFunction: Validations.validatePassword,
+      submitAction: (){},
     );
   }
 
@@ -198,6 +199,7 @@ class _SignUpFormState extends State<SignUpForm> {
       suffix: false,
       textInputAction: TextInputAction.next,
       validateFunction: Validations.validateEmail,
+      submitAction: (){},
     );
   }
 
@@ -208,6 +210,8 @@ class _SignUpFormState extends State<SignUpForm> {
       hintText: "Re-type Password",
       textInputAction: TextInputAction.next,
       onSaved: (newValue) => conform_password = newValue,
+      submitAction: (){},
+      validateFunction: Validations.validatePassword,
     );
   }
 }

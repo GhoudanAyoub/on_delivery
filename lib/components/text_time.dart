@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 class TextTime extends StatefulWidget {
   final Widget child;
 
-  const TextTime({this.child});
+  const TextTime({required this.child});
 
   @override
   _TextTimeState createState() => _TextTimeState();

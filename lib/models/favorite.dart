@@ -1,10 +1,10 @@
 class FavoriteModel {
-  String clientId;
+  String? clientId;
   dynamic agentData;
 
   FavoriteModel({this.clientId, this.agentData});
 
-  FavoriteModel.fromJson(Map<String, dynamic> json) {
+  FavoriteModel.fromJson(Map<String?, dynamic> json) {
     clientId = json['clientId'];
     agentData = json['agentData'];
   }

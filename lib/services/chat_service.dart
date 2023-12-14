@@ -10,39 +10,39 @@ import 'package:on_delivery/utils/firebase.dart';
 class ChatService {
   FirebaseStorage storage = FirebaseStorage.instance;
 
-  sendMessage(Message message, String chatId) async {
+  sendMessage(Message message, String? chatId) async {
     await chatRef.doc("$chatId").collection("messages").add(message.toJson());
     await chatRef.doc("$chatId").update({"lastTextTime": Timestamp.now()});
   }
 
-  Future<String> sendFirstMessage(
-      Message message, String recipient, Orders order) async {
+  Future<String?> sendFirstMessage(
+      Message message, String? recipient, Orders? order) async {
     User user = firebaseAuth.currentUser;
     DocumentReference ref = await chatRef.add({
       'users': [recipient, user.uid],
-      'orders': order.toJson()
+      'orders': order?.toJson()
     });
     await sendMessage(message, ref.id);
     return ref.id;
   }
 
-  Future<String> uploadImage(File image, String chatId) async {
+  Future<String?> uploadImage(File image, String? chatId) async {
     Reference storageReference =
         storage.ref().child("chats").child(chatId).child(uuid.v4());
     UploadTask uploadTask = storageReference.putFile(image);
     await uploadTask.whenComplete(() => null);
-    String imageUrl = await storageReference.getDownloadURL();
+    String? imageUrl = await storageReference.getDownloadURL();
     return imageUrl;
   }
 
-  setUserRead(String chatId, User user, int count) async {
+  setUserRead(String? chatId, User user, int count) async {
     DocumentSnapshot snap = await chatRef.doc(chatId).get();
     Map reads = snap.data()['reads'] ?? {};
     reads[user?.uid] = count;
     await chatRef.doc(chatId).update({'reads': reads});
   }
 
-  setUserTyping(String chatId, User user, bool userTyping) async {
+  setUserTyping(String? chatId, User user, bool userTyping) async {
     DocumentSnapshot snap = await chatRef.doc(chatId).get();
     if (snap.exists) {
       Map typing = snap.data()['typing'] ?? {};

@@ -3,23 +3,23 @@
 <plist version="1.0">
 <dict>
 	<key>CLIENT_ID</key>
-	<string>14565634679-fdvpv41th6tr2mnqvgdej0tt6uhbucoq.apps.googleusercontent.com</string>
+	<String?>14565634679-fdvpv41th6tr2mnqvgdej0tt6uhbucoq.apps.googleusercontent.com</String?>
 	<key>REVERSED_CLIENT_ID</key>
-	<string>com.googleusercontent.apps.14565634679-fdvpv41th6tr2mnqvgdej0tt6uhbucoq</string>
+	<String?>com.googleusercontent.apps.14565634679-fdvpv41th6tr2mnqvgdej0tt6uhbucoq</String?>
 	<key>ANDROID_CLIENT_ID</key>
-	<string>14565634679-2nlb1v2tmghv770i7chcjputsm8pjbtg.apps.googleusercontent.com</string>
+	<String?>14565634679-2nlb1v2tmghv770i7chcjputsm8pjbtg.apps.googleusercontent.com</String?>
 	<key>API_KEY</key>
-	<string>AIzaSyDvpynTkP9xyNU8KO4UlJYWlQfn-trjeGw</string>
+	<String?>AIzaSyDvpynTkP9xyNU8KO4UlJYWlQfn-trjeGw</String?>
 	<key>GCM_SENDER_ID</key>
-	<string>14565634679</string>
+	<String?>14565634679</String?>
 	<key>PLIST_VERSION</key>
-	<string>1</string>
+	<String?>1</String?>
 	<key>BUNDLE_ID</key>
-	<string>com.ghoudan.onDelivery</string>
+	<String?>com.ghoudan.onDelivery</String?>
 	<key>PROJECT_ID</key>
-	<string>live365-live365</string>
+	<String?>live365-live365</String?>
 	<key>STORAGE_BUCKET</key>
-	<string>live365-live365.appspot.com</string>
+	<String?>live365-live365.appspot.com</String?>
 	<key>IS_ADS_ENABLED</key>
 	<false></false>
 	<key>IS_ANALYTICS_ENABLED</key>
@@ -31,8 +31,8 @@
 	<key>IS_SIGNIN_ENABLED</key>
 	<true></true>
 	<key>GOOGLE_APP_ID</key>
-	<string>1:14565634679:ios:b73c74f69b7704856b8c72</string>
+	<String?>1:14565634679:ios:b73c74f69b7704856b8c72</String?>
 	<key>DATABASE_URL</key>
-	<string>https://live365-live365-default-rtdb.firebaseio.com</string>
+	<String?>https://live365-live365-default-rtdb.firebaseio.com</String?>
 </dict>
 </plist>

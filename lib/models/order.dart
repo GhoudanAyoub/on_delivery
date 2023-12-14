@@ -1,20 +1,20 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class Orders {
-  String orderId;
-  GeoPoint startAt;
-  GeoPoint endAt;
-  String userId;
-  String agentId;
-  String price;
-  String status;
-  Timestamp date;
-  bool iceBox;
-  String brand;
-  String transport;
-  String maxWeight;
-  String numberItem;
-  bool lunchStatus;
+  String? orderId;
+  GeoPoint? startAt;
+  GeoPoint? endAt;
+  String? userId;
+  String? agentId;
+  String? price;
+  String? status = "false";
+  Timestamp? date;
+  bool? iceBox;
+  String? brand;
+  String? transport;
+  String? maxWeight;
+  String? numberItem;
+  bool? lunchStatus;
 
   Orders(
       {this.orderId,
@@ -32,7 +32,7 @@ class Orders {
       this.numberItem,
       this.lunchStatus});
 
-  Orders.fromJson(Map<String, dynamic> json) {
+  Orders.fromJson(Map<String?, dynamic> json) {
     startAt = json['startAt'];
     endAt = json['endAt'];
     userId = json['userId'];
@@ -49,8 +49,8 @@ class Orders {
     orderId = json['orderId'];
   }
 
-  Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
+  Map<String?, dynamic> toJson() {
+    final Map<String?, dynamic> data = new Map<String?, dynamic>();
     data['startAt'] = this.startAt;
     data['endAt'] = this.endAt;
     data['orderId'] = this.orderId;
@@ -74,12 +74,12 @@ class OrderContainer {
 
   OrderContainer({this.orderData});
 
-  OrderContainer.fromJson(Map<String, dynamic> json) {
+  OrderContainer.fromJson(Map<String?, dynamic> json) {
     orderData = json['orderData'];
   }
 
-  Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
+  Map<String?, dynamic> toJson() {
+    final Map<String?, dynamic> data = new Map<String?, dynamic>();
     data['orderData'] = this.orderData;
     return data;
   }

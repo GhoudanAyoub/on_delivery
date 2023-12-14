@@ -57,8 +57,8 @@ class _SearchScreenState extends State<SearchScreen> {
       corriesInt = false;
   bool locationState = false;
   LocationProvider locationData;
-  String startingPointString = "Starting Point",
-      arrivalPointString = "Arrive Point",
+  String? startingPointString? = "Starting Point",
+      arrivalPointString? = "Arrive Point",
       brand,
       transport,
       result;
@@ -203,7 +203,7 @@ class _SearchScreenState extends State<SearchScreen> {
                                                   BorderRadius.circular(10.0),
                                               boxShadow: [
                                                 BoxShadow(
-                                                  color: Colors.grey[500],
+                                                  color: Colors.grey[500]??Colors.grey??Colors.grey,
                                                   offset: Offset(0.0, 1.5),
                                                   blurRadius: 1.5,
                                                 ),
@@ -265,7 +265,7 @@ class _SearchScreenState extends State<SearchScreen> {
                                                   BorderRadius.circular(10.0),
                                               boxShadow: [
                                                 BoxShadow(
-                                                  color: Colors.grey[500],
+                                                  color: Colors.grey[500]??Colors.grey,
                                                   offset: Offset(0.0, 1.5),
                                                   blurRadius: 1.5,
                                                 ),
@@ -334,7 +334,7 @@ class _SearchScreenState extends State<SearchScreen> {
                                                   BorderRadius.circular(10.0),
                                               boxShadow: [
                                                 BoxShadow(
-                                                  color: Colors.grey[500],
+                                                  color: Colors.grey[500]??Colors.grey,
                                                   offset: Offset(0.0, 1.5),
                                                   blurRadius: 1.5,
                                                 ),
@@ -396,7 +396,7 @@ class _SearchScreenState extends State<SearchScreen> {
                                                   BorderRadius.circular(10.0),
                                               boxShadow: [
                                                 BoxShadow(
-                                                  color: Colors.grey[500],
+                                                  color: Colors.grey[500]??Colors.grey,
                                                   offset: Offset(0.0, 1.5),
                                                   blurRadius: 1.5,
                                                 ),
@@ -478,7 +478,7 @@ class _SearchScreenState extends State<SearchScreen> {
                                               BorderRadius.circular(10.0),
                                           boxShadow: [
                                             BoxShadow(
-                                              color: Colors.grey[500],
+                                              color: Colors.grey[500]??Colors.grey,
                                               offset: Offset(0.0, 1.5),
                                               blurRadius: 1.5,
                                             ),
@@ -584,7 +584,7 @@ class _SearchScreenState extends State<SearchScreen> {
                                           .getMoveCamera()
                                           .then((value) => setState(() {
                                                 locationState = state;
-                                                startingPointString = value;
+                                                startingPointString? = value;
                                               }));
                                     },
                                   ),
@@ -609,7 +609,7 @@ class _SearchScreenState extends State<SearchScreen> {
                                           ),
                                         ));
                                     setState(() {
-                                      arrivalPointString = result.split("/")[1];
+                                      arrivalPointString? = result.split("/")[1];
                                     });
                                   }
                                 },
@@ -618,7 +618,7 @@ class _SearchScreenState extends State<SearchScreen> {
                                     decoration: BoxDecoration(
                                       borderRadius: BorderRadius.circular(10.0),
                                       border: Border.all(
-                                        color: Colors.grey[400],
+                                        color: Colors.grey[400]??Colors.grey,
                                       ),
                                     ),
                                     child: Column(
@@ -652,7 +652,7 @@ class _SearchScreenState extends State<SearchScreen> {
                                                       getProportionateScreenWidth(
                                                           180),
                                                   child: Text(
-                                                    startingPointString,
+                                                    startingPointString?,
                                                     overflow:
                                                         TextOverflow.ellipsis,
                                                     style: TextStyle(
@@ -670,7 +670,7 @@ class _SearchScreenState extends State<SearchScreen> {
                                         ),
                                         Container(
                                           height: 1,
-                                          color: Colors.grey[400],
+                                          color: Colors.grey[400]??Colors.grey,
                                         ),
                                         Container(
                                           width:
@@ -703,7 +703,7 @@ class _SearchScreenState extends State<SearchScreen> {
                                                       getProportionateScreenWidth(
                                                           150),
                                                   child: Text(
-                                                    arrivalPointString,
+                                                    arrivalPointString?,
                                                     overflow:
                                                         TextOverflow.ellipsis,
                                                     style: TextStyle(
@@ -780,8 +780,8 @@ class _SearchScreenState extends State<SearchScreen> {
                                   ),
                                   width: SizeConfig.screenWidth - 150,
                                   onPressed: () async {
-                                    if (startingPointString != null &&
-                                        arrivalPointString != null) {
+                                    if (startingPointString? != null &&
+                                        arrivalPointString? != null) {
                                       Orders order = new Orders(
                                         userId: firebaseAuth.currentUser.uid,
                                         lunchStatus: true,
@@ -819,7 +819,7 @@ class _SearchScreenState extends State<SearchScreen> {
                                     borderRadius: BorderRadius.circular(10.0),
                                     boxShadow: [
                                       BoxShadow(
-                                        color: Colors.grey[500],
+                                        color: Colors.grey[500]??Colors.grey,
                                         offset: Offset(0.0, 1.5),
                                         blurRadius: 1.5,
                                       ),
@@ -925,7 +925,7 @@ class _SearchScreenState extends State<SearchScreen> {
                                           .getMoveCamera()
                                           .then((value) => setState(() {
                                                 locationState = state;
-                                                startingPointString = value;
+                                                startingPointString? = value;
                                               }));*/
 
                                         Geolocator.getCurrentPosition(
@@ -939,7 +939,7 @@ class _SearchScreenState extends State<SearchScreen> {
                                                       value.longitude))
                                               .then((value) => setState(() {
                                                     locationState = state;
-                                                    startingPointString =
+                                                    startingPointString? =
                                                         value.first.addressLine;
                                                   }));
                                         });
@@ -966,7 +966,7 @@ class _SearchScreenState extends State<SearchScreen> {
                                           ),
                                         ));
                                     setState(() {
-                                      arrivalPointString = result.split("/")[1];
+                                      arrivalPointString? = result.split("/")[1];
                                     });
                                   }
                                 },
@@ -975,7 +975,7 @@ class _SearchScreenState extends State<SearchScreen> {
                                     decoration: BoxDecoration(
                                       borderRadius: BorderRadius.circular(10.0),
                                       border: Border.all(
-                                        color: Colors.grey[400],
+                                        color: Colors.grey[400]??Colors.grey,
                                       ),
                                     ),
                                     child: Column(
@@ -1009,7 +1009,7 @@ class _SearchScreenState extends State<SearchScreen> {
                                                       getProportionateScreenWidth(
                                                           180),
                                                   child: Text(
-                                                    startingPointString,
+                                                    startingPointString?,
                                                     overflow:
                                                         TextOverflow.ellipsis,
                                                     style: TextStyle(
@@ -1027,7 +1027,7 @@ class _SearchScreenState extends State<SearchScreen> {
                                         ),
                                         Container(
                                           height: 1,
-                                          color: Colors.grey[400],
+                                          color: Colors.grey[400]??Colors.grey,
                                         ),
                                         Container(
                                           width:
@@ -1060,7 +1060,7 @@ class _SearchScreenState extends State<SearchScreen> {
                                                       getProportionateScreenWidth(
                                                           150),
                                                   child: Text(
-                                                    arrivalPointString,
+                                                    arrivalPointString?,
                                                     overflow:
                                                         TextOverflow.ellipsis,
                                                     style: TextStyle(
@@ -1125,8 +1125,8 @@ class _SearchScreenState extends State<SearchScreen> {
                                   ),
                                   width: SizeConfig.screenWidth - 150,
                                   onPressed: () async {
-                                    if (startingPointString != null &&
-                                        arrivalPointString != null) {
+                                    if (startingPointString? != null &&
+                                        arrivalPointString? != null) {
                                       Orders order = new Orders(
                                         userId: firebaseAuth.currentUser.uid,
                                         lunchStatus: true,
@@ -1164,7 +1164,7 @@ class _SearchScreenState extends State<SearchScreen> {
                                     borderRadius: BorderRadius.circular(10.0),
                                     boxShadow: [
                                       BoxShadow(
-                                        color: Colors.grey[500],
+                                        color: Colors.grey[500]??Colors.grey,
                                         offset: Offset(0.0, 1.5),
                                         blurRadius: 1.5,
                                       ),
@@ -1269,7 +1269,7 @@ class _SearchScreenState extends State<SearchScreen> {
                                           .getMoveCamera()
                                           .then((value) => setState(() {
                                                 locationState = state;
-                                                startingPointString = value;
+                                                startingPointString? = value;
                                               }));
                                     },
                                   ),
@@ -1325,7 +1325,7 @@ class _SearchScreenState extends State<SearchScreen> {
                                           ),
                                         ));
                                     setState(() {
-                                      arrivalPointString = result.split("/")[1];
+                                      arrivalPointString? = result.split("/")[1];
                                     });
                                   }
                                 },
@@ -1334,7 +1334,7 @@ class _SearchScreenState extends State<SearchScreen> {
                                     decoration: BoxDecoration(
                                       borderRadius: BorderRadius.circular(10.0),
                                       border: Border.all(
-                                        color: Colors.grey[400],
+                                        color: Colors.grey[400]??Colors.grey,
                                       ),
                                     ),
                                     child: Column(
@@ -1368,7 +1368,7 @@ class _SearchScreenState extends State<SearchScreen> {
                                                       getProportionateScreenWidth(
                                                           180),
                                                   child: Text(
-                                                    startingPointString,
+                                                    startingPointString?,
                                                     overflow:
                                                         TextOverflow.ellipsis,
                                                     style: TextStyle(
@@ -1386,7 +1386,7 @@ class _SearchScreenState extends State<SearchScreen> {
                                         ),
                                         Container(
                                           height: 1,
-                                          color: Colors.grey[400],
+                                          color: Colors.grey[400]??Colors.grey,
                                         ),
                                         Container(
                                           width:
@@ -1419,7 +1419,7 @@ class _SearchScreenState extends State<SearchScreen> {
                                                       getProportionateScreenWidth(
                                                           150),
                                                   child: Text(
-                                                    arrivalPointString,
+                                                    arrivalPointString?,
                                                     overflow:
                                                         TextOverflow.ellipsis,
                                                     style: TextStyle(
@@ -1523,8 +1523,8 @@ class _SearchScreenState extends State<SearchScreen> {
                                   ),
                                   width: SizeConfig.screenWidth - 150,
                                   onPressed: () async {
-                                    if (startingPointString != null &&
-                                        arrivalPointString != null) {
+                                    if (startingPointString? != null &&
+                                        arrivalPointString? != null) {
                                       Orders order = new Orders(
                                         userId: firebaseAuth.currentUser.uid,
                                         lunchStatus: true,
@@ -1562,7 +1562,7 @@ class _SearchScreenState extends State<SearchScreen> {
                                     borderRadius: BorderRadius.circular(10.0),
                                     boxShadow: [
                                       BoxShadow(
-                                        color: Colors.grey[500],
+                                        color: Colors.grey[500]??Colors.grey,
                                         offset: Offset(0.0, 1.5),
                                         blurRadius: 1.5,
                                       ),
@@ -1667,7 +1667,7 @@ class _SearchScreenState extends State<SearchScreen> {
                                           .getMoveCamera()
                                           .then((value) => setState(() {
                                                 locationState = state;
-                                                startingPointString = value;
+                                                startingPointString? = value;
                                               }));
                                     },
                                   ),
@@ -1692,7 +1692,7 @@ class _SearchScreenState extends State<SearchScreen> {
                                           ),
                                         ));
                                     setState(() {
-                                      arrivalPointString = result.split("/")[1];
+                                      arrivalPointString? = result.split("/")[1];
                                     });
                                   }
                                 },
@@ -1701,7 +1701,7 @@ class _SearchScreenState extends State<SearchScreen> {
                                     decoration: BoxDecoration(
                                       borderRadius: BorderRadius.circular(10.0),
                                       border: Border.all(
-                                        color: Colors.grey[400],
+                                        color: Colors.grey[400]??Colors.grey,
                                       ),
                                     ),
                                     child: Column(
@@ -1735,7 +1735,7 @@ class _SearchScreenState extends State<SearchScreen> {
                                                       getProportionateScreenWidth(
                                                           180),
                                                   child: Text(
-                                                    startingPointString,
+                                                    startingPointString?,
                                                     overflow:
                                                         TextOverflow.ellipsis,
                                                     style: TextStyle(
@@ -1753,7 +1753,7 @@ class _SearchScreenState extends State<SearchScreen> {
                                         ),
                                         Container(
                                           height: 1,
-                                          color: Colors.grey[400],
+                                          color: Colors.grey[400]??Colors.grey,
                                         ),
                                         Container(
                                           width:
@@ -1786,7 +1786,7 @@ class _SearchScreenState extends State<SearchScreen> {
                                                       getProportionateScreenWidth(
                                                           150),
                                                   child: Text(
-                                                    arrivalPointString,
+                                                    arrivalPointString?,
                                                     overflow:
                                                         TextOverflow.ellipsis,
                                                     style: TextStyle(
@@ -1916,8 +1916,8 @@ class _SearchScreenState extends State<SearchScreen> {
                                   ),
                                   width: SizeConfig.screenWidth - 150,
                                   onPressed: () async {
-                                    if (startingPointString != null &&
-                                        arrivalPointString != null) {
+                                    if (startingPointString? != null &&
+                                        arrivalPointString? != null) {
                                       Orders order = new Orders(
                                         userId: firebaseAuth.currentUser.uid,
                                         lunchStatus: true,
@@ -1955,7 +1955,7 @@ class _SearchScreenState extends State<SearchScreen> {
                                     borderRadius: BorderRadius.circular(10.0),
                                     boxShadow: [
                                       BoxShadow(
-                                        color: Colors.grey[500],
+                                        color: Colors.grey[500]??Colors.grey,
                                         offset: Offset(0.0, 1.5),
                                         blurRadius: 1.5,
                                       ),
@@ -1990,8 +1990,8 @@ class _SearchMapTripScreenState extends State<SearchMapTripScreen> {
   Completer<GoogleMapController> _controller = Completer();
   static CameraPosition _myPosition;
   static CameraPosition initPosition;
-  String startingTripLocationString = "Starting Point";
-  String arriveTripLocationString = "Arrival Point";
+  String? startingTripLocationString? = "Starting Point";
+  String? arriveTripLocationString? = "Arrival Point";
   PlacesDetailsResponse detail;
   Prediction p, p2;
   final searchScaffoldKey = GlobalKey<ScaffoldState>();
@@ -2020,7 +2020,7 @@ class _SearchMapTripScreenState extends State<SearchMapTripScreen> {
       body: WillPopScope(
         onWillPop: () async {
           Navigator.pop(
-              context, p2 != null ? p2.description : arriveTripLocationString);
+              context, p2 != null ? p2.description : arriveTripLocationString?);
           return true;
         },
         child: SafeArea(
@@ -2041,8 +2041,8 @@ class _SearchMapTripScreenState extends State<SearchMapTripScreen> {
                 onCameraIdle: () {
                   locationData.getMoveCamera().then((value) => setState(() {
                         start
-                            ? startingTripLocationString = value
-                            : arriveTripLocationString = value;
+                            ? startingTripLocationString? = value
+                            : arriveTripLocationString? = value;
                       }));
                   start
                       ? locationData.getMoveCameraLntLng().then((value) {
@@ -2070,7 +2070,7 @@ class _SearchMapTripScreenState extends State<SearchMapTripScreen> {
                                   context,
                                   p2 != null
                                       ? p2.description
-                                      : arriveTripLocationString);
+                                      : arriveTripLocationString?);
                             },
                             child: Image.asset(
                               "assets/images/Back Arrow.png",
@@ -2115,7 +2115,7 @@ class _SearchMapTripScreenState extends State<SearchMapTripScreen> {
                             Container(
                               width: 220,
                               child: Text(
-                                startingTripLocationString,
+                                startingTripLocationString?,
                                 overflow: TextOverflow.ellipsis,
                                 style: TextStyle(
                                     color: Colors.black,
@@ -2130,7 +2130,7 @@ class _SearchMapTripScreenState extends State<SearchMapTripScreen> {
                     ),
                     Container(
                       height: 1,
-                      color: Colors.grey[400],
+                      color: Colors.grey[400]??Colors.grey,
                       width: 250,
                     ),
                     Container(
@@ -2157,7 +2157,7 @@ class _SearchMapTripScreenState extends State<SearchMapTripScreen> {
                             Container(
                               width: 220,
                               child: Text(
-                                arriveTripLocationString,
+                                arriveTripLocationString?,
                                 overflow: TextOverflow.ellipsis,
                                 style: TextStyle(
                                     color: Colors.black,
@@ -2214,7 +2214,7 @@ class _SearchMapTripScreenState extends State<SearchMapTripScreen> {
                         var id = await FirebaseService()
                             .addOrder(firebaseAuth.currentUser, order);
                         Navigator.pop(context,
-                            "$id/${p2 != null ? p2.description : arriveTripLocationString}");
+                            "$id/${p2 != null ? p2.description : arriveTripLocationString?}");
                       }),
                 ),
               )
@@ -2298,7 +2298,7 @@ class _SearchMapTripScreenState extends State<SearchMapTripScreen> {
       setState(() {
         startingLocationLnt = detail.result.geometry.location.lat;
         startingLocationLng = detail.result.geometry.location.lng;
-        startingTripLocationString = p.description;
+        startingTripLocationString? = p.description;
       });
       _goToPosition(
           _controller.future, startingLocationLnt, startingLocationLng);
@@ -2317,7 +2317,7 @@ class _SearchMapTripScreenState extends State<SearchMapTripScreen> {
       setState(() {
         arrivedLocationLnt = detail.result.geometry.location.lat;
         arrivedLocationLng = detail.result.geometry.location.lng;
-        arriveTripLocationString = p2.description;
+        arriveTripLocationString? = p2.description;
       });
       _goToPosition(_controller.future, arrivedLocationLnt, arrivedLocationLng);
     }
@@ -2325,9 +2325,9 @@ class _SearchMapTripScreenState extends State<SearchMapTripScreen> {
 }
 
 class SearchMapAgentScreen extends StatefulWidget {
-  static String routeName = '/SearchMapAgentScreen';
+  static String? routeName = '/SearchMapAgentScreen';
   final User user;
-  final String orders;
+  final String? orders;
 
   const SearchMapAgentScreen({Key? key, this.user, this.orders})
       : super(key: key);
@@ -2343,8 +2343,8 @@ class _SearchMapAgentScreenState extends State<SearchMapAgentScreen> {
   Completer<GoogleMapController> _controller = Completer();
   static CameraPosition _myPosition;
   static CameraPosition initPosition;
-  String startingTripLocationString = "Starting Point";
-  String arriveTripLocationString = "Arrival Point";
+  String? startingTripLocationString? = "Starting Point";
+  String? arriveTripLocationString? = "Arrival Point";
   PlacesDetailsResponse detail;
   Prediction p, p2;
   final searchScaffoldKey = GlobalKey<ScaffoldState>();
@@ -2360,7 +2360,7 @@ class _SearchMapAgentScreenState extends State<SearchMapAgentScreen> {
   List<UserModel> userList = [];
   List<DocumentSnapshot> filteredAgents = [];
   List<DocumentSnapshot> filteredAgentsLocation = [];
-  String agentLocationId;
+  String? agentLocationId;
   Directions _info;
   Marker _origin;
   Marker _destination;
@@ -3149,15 +3149,15 @@ class _SearchMapAgentScreenState extends State<SearchMapAgentScreen> {
                       Orders orders = Orders.fromJson(snapshot.data.data());
                       locationData
                           .getCurrentCoordinatesName(
-                              orders.startAt.latitude, orders.startAt.longitude)
+                              orders.startAt?.latitude, orders.startAt?.longitude)
                           .then((value) => setState(() {
-                                startingTripLocationString = value;
+                                startingTripLocationString? = value;
                               }));
                       locationData
                           .getCurrentCoordinatesName(
-                              orders.endAt.latitude, orders.endAt.longitude)
+                              orders.endAt?.latitude, orders.endAt?.longitude)
                           .then((value) => setState(() {
-                                arriveTripLocationString = value;
+                                arriveTripLocationString? = value;
                               }));
                       return Align(
                         alignment: Alignment.topCenter,
@@ -3175,7 +3175,7 @@ class _SearchMapAgentScreenState extends State<SearchMapAgentScreen> {
                                           context,
                                           p2 != null
                                               ? p2.description
-                                              : arriveTripLocationString);
+                                              : arriveTripLocationString?);
                                     },
                                     child: Image.asset(
                                       "assets/images/Back Arrow.png",
@@ -3221,7 +3221,7 @@ class _SearchMapAgentScreenState extends State<SearchMapAgentScreen> {
                                     Container(
                                       width: 220,
                                       child: Text(
-                                        "$startingTripLocationString",
+                                        "$startingTripLocationString?",
                                         overflow: TextOverflow.ellipsis,
                                         style: TextStyle(
                                             color: Colors.black,
@@ -3237,7 +3237,7 @@ class _SearchMapAgentScreenState extends State<SearchMapAgentScreen> {
                             ),
                             Container(
                               height: 1,
-                              color: Colors.grey[400],
+                              color: Colors.grey[400]??Colors.grey,
                               width: 250,
                             ),
                             Container(
@@ -3265,7 +3265,7 @@ class _SearchMapAgentScreenState extends State<SearchMapAgentScreen> {
                                     Container(
                                       width: 220,
                                       child: Text(
-                                        "$arriveTripLocationString",
+                                        "$arriveTripLocationString?",
                                         overflow: TextOverflow.ellipsis,
                                         style: TextStyle(
                                             color: Colors.black,
@@ -3333,7 +3333,7 @@ class _SearchMapAgentScreenState extends State<SearchMapAgentScreen> {
                         borderRadius: BorderRadius.circular(10.0),
                         boxShadow: [
                           BoxShadow(
-                            color: Colors.grey[500],
+                            color: Colors.grey[500]??Colors.grey,
                             offset: Offset(0.0, 1.5),
                             blurRadius: 1.5,
                           ),
@@ -3630,15 +3630,15 @@ class _SearchMapAgentScreenState extends State<SearchMapAgentScreen> {
                     Orders orders = Orders.fromJson(snapshot.data.data());
                     locationData
                         .getCurrentCoordinatesName(
-                            orders.startAt.latitude, orders.startAt.longitude)
+                            orders.startAt?.latitude, orders.startAt?.longitude)
                         .then((value) => setState(() {
-                              startingTripLocationString = value;
+                              startingTripLocationString? = value;
                             }));
                     locationData
                         .getCurrentCoordinatesName(
-                            orders.endAt.latitude, orders.endAt.longitude)
+                            orders.endAt?.latitude, orders.endAt?.longitude)
                         .then((value) => setState(() {
-                              arriveTripLocationString = value;
+                              arriveTripLocationString? = value;
                             }));
                     return Align(
                       alignment: Alignment.topCenter,
@@ -3655,7 +3655,7 @@ class _SearchMapAgentScreenState extends State<SearchMapAgentScreen> {
                                         context,
                                         p2 != null
                                             ? p2.description
-                                            : arriveTripLocationString);
+                                            : arriveTripLocationString?);
                                   },
                                   child: Image.asset(
                                     "assets/images/Back Arrow.png",
@@ -3701,7 +3701,7 @@ class _SearchMapAgentScreenState extends State<SearchMapAgentScreen> {
                                   Container(
                                     width: 220,
                                     child: Text(
-                                      "$startingTripLocationString",
+                                      "$startingTripLocationString?",
                                       overflow: TextOverflow.ellipsis,
                                       style: TextStyle(
                                           color: Colors.black,
@@ -3717,7 +3717,7 @@ class _SearchMapAgentScreenState extends State<SearchMapAgentScreen> {
                           ),
                           Container(
                             height: 1,
-                            color: Colors.grey[400],
+                            color: Colors.grey[400]??Colors.grey,
                             width: 250,
                           ),
                           Container(
@@ -3745,7 +3745,7 @@ class _SearchMapAgentScreenState extends State<SearchMapAgentScreen> {
                                   Container(
                                     width: 220,
                                     child: Text(
-                                      "$arriveTripLocationString",
+                                      "$arriveTripLocationString?",
                                       overflow: TextOverflow.ellipsis,
                                       style: TextStyle(
                                           color: Colors.black,
@@ -3811,7 +3811,7 @@ class _SearchMapAgentScreenState extends State<SearchMapAgentScreen> {
                       borderRadius: BorderRadius.circular(10.0),
                       boxShadow: [
                         BoxShadow(
-                          color: Colors.grey[500],
+                          color: Colors.grey[500]??Colors.grey,
                           offset: Offset(0.0, 1.5),
                           blurRadius: 1.5,
                         ),
@@ -3874,7 +3874,7 @@ class _SearchMapAgentScreenState extends State<SearchMapAgentScreen> {
 class AllAgent extends StatefulWidget {
   static String routeName = '/AllAgent';
   final List<UserModel> userList;
-  final String time;
+  final String? time;
   final Orders order;
 
   const AllAgent({Key? key, this.userList, this.time, this.order})
@@ -4188,7 +4188,7 @@ class _AllAgentState extends State<AllAgent> {
                         borderRadius: BorderRadius.circular(10.0),
                         boxShadow: [
                           BoxShadow(
-                            color: Colors.grey[500],
+                            color: Colors.grey[500]??Colors.grey,
                             offset: Offset(0.0, 1.5),
                             blurRadius: 1.5,
                           ),

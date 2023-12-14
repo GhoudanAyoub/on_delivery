@@ -20,29 +20,29 @@ const double PIN_INVISIBLE_POSITION = -300;
 
 class TrackingMap extends StatefulWidget {
   static String routeName = "/TrackingMap";
-  final Orders orders;
-  final UserModel userModel;
+  final Orders? orders;
+  final UserModel? userModel;
 
-  const TrackingMap({Key? key, this.orders, this.userModel}) : super(key: key);
+  const TrackingMap({Key? key,this.orders, this.userModel}) : super(key: key);
   @override
   _TrackingMapState createState() => _TrackingMapState();
 }
 
 class _TrackingMapState extends State<TrackingMap> {
-  StreamSubscription _locationSubscription;
-  StreamSubscription _firebaseSubscription;
+  late StreamSubscription _locationSubscription;
+  late StreamSubscription _firebaseSubscription;
   Location _locationTracker = Location();
-  LatLng currentLocation;
+  late LatLng currentLocation;
   Completer<GoogleMapController> _controller = Completer();
-  GoogleMapController _mapController;
-  static CameraPosition _myPosition;
-  LocationProvider locationData;
-  UserModel locationService;
-  CameraPosition initialLocation;
+  late GoogleMapController _mapController;
+  static late CameraPosition _myPosition;
+  late LocationProvider locationData;
+  late UserModel locationService;
+  late CameraPosition initialLocation;
   Set<Marker> customMarkers = Set<Marker>();
   Set<Circle> customCircle = Set<Circle>();
-  Directions _info;
-  BitmapDescriptor arrivalpointicon;
+  late Directions _info;
+  late BitmapDescriptor arrivalpointicon;
   double pinPillPosition = PIN_VISIBLE_POSITION;
   void updateMarkerAndCircle(LatLng newLocalData) {
     this.setState(() {
@@ -110,8 +110,8 @@ class _TrackingMapState extends State<TrackingMap> {
             child: GoogleMap(
               mapType: MapType.normal,
               initialCameraPosition: CameraPosition(
-                  target: LatLng(widget.orders.startAt.latitude,
-                      widget.orders.startAt.longitude),
+                  target: LatLng(widget.orders?.startAt?.latitude,
+                      widget.orders?.startAt?.longitude),
                   zoom: 14),
               markers: customMarkers,
               circles: customCircle,
@@ -131,7 +131,7 @@ class _TrackingMapState extends State<TrackingMap> {
                     color: Colors.red,
                     width: 5,
                     points: _info.polylinePoints
-                        .map((e) => LatLng(e.latitude, e.longitude))
+                        ?.map((e) => LatLng(e.latitude, e.longitude))
                         .toList(),
                   ),
               },
@@ -144,20 +144,20 @@ class _TrackingMapState extends State<TrackingMap> {
 
                 // Get directions
                 final directions = await DirectionsRepository().getDirections(
-                    origin: LatLng(widget.orders.startAt.latitude,
-                        widget.orders.startAt.longitude),
-                    destination: LatLng(widget.orders.endAt.latitude,
-                        widget.orders.endAt.longitude));
+                    origin: LatLng(widget.orders?.startAt?.latitude,
+                        widget.orders?.startAt?.longitude),
+                    destination: LatLng(widget.orders?.endAt?.latitude,
+                        widget.orders?.endAt?.longitude));
                 setState(() {
-                  _info = directions;
+                  _info = directions!;
                   initialLocation = CameraPosition(
                       target: LatLng(locationService.Lnt, locationService.Lng));
                 });
 
                 customMarkers.add(Marker(
                     markerId: MarkerId("START"),
-                    position: LatLng(widget.orders.startAt.latitude,
-                        widget.orders.startAt.longitude),
+                    position: LatLng(widget.orders?.startAt?.latitude,
+                        widget.orders?.startAt?.longitude),
                     draggable: false,
                     zIndex: 2,
                     infoWindow: InfoWindow(title: "Start Point"),
@@ -169,13 +169,13 @@ class _TrackingMapState extends State<TrackingMap> {
                     circleId: CircleId("StartCircle"),
                     zIndex: 4,
                     strokeColor: Colors.green,
-                    center: LatLng(widget.orders.startAt.latitude,
-                        widget.orders.startAt.longitude),
+                    center: LatLng(widget.orders?.startAt?.latitude,
+                        widget.orders?.startAt?.longitude),
                     fillColor: Colors.green.withAlpha(70)));
                 customMarkers.add(Marker(
                     markerId: MarkerId("END"),
-                    position: LatLng(widget.orders.endAt.latitude,
-                        widget.orders.endAt.longitude),
+                    position: LatLng(widget.orders?.endAt?.latitude,
+                        widget.orders?.endAt?.longitude),
                     draggable: false,
                     zIndex: 2,
                     infoWindow: InfoWindow(title: "Arrival Point"),
@@ -187,8 +187,8 @@ class _TrackingMapState extends State<TrackingMap> {
                     circleId: CircleId("END"),
                     zIndex: 4,
                     strokeColor: Colors.orange,
-                    center: LatLng(widget.orders.endAt.latitude,
-                        widget.orders.endAt.longitude),
+                    center: LatLng(widget.orders?.endAt?.latitude,
+                        widget.orders?.endAt?.longitude),
                     fillColor: Colors.green.withAlpha(70)));
 
                 getagentLocation();
@@ -252,7 +252,7 @@ class _TrackingMapState extends State<TrackingMap> {
                   borderRadius: BorderRadius.circular(10.0),
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.grey[500],
+                      color: Colors.grey[500]??Colors.grey??Colors.grey,
                       offset: Offset(0.0, 1.5),
                       blurRadius: 1.5,
                     ),
@@ -270,7 +270,7 @@ class _TrackingMapState extends State<TrackingMap> {
     }
 
     _firebaseSubscription =
-        usersRef.doc(widget.userModel.id).snapshots().listen((event) {
+        usersRef.doc(widget.userModel?.id).snapshots().listen((event) {
       if (_controller != null) {
         UserModel user1 = UserModel.fromJson(event.data());
         setState(() {
@@ -304,29 +304,29 @@ class _TrackingMapState extends State<TrackingMap> {
 }
 
 class ShowOnMap extends StatefulWidget {
-  static String routeName = "/ShowOnMap";
+  static String? routeName = "/ShowOnMap";
   final Orders orders;
   final UserModel userModel;
 
-  const ShowOnMap({Key? key, this.orders, this.userModel}) : super(key: key);
+  const ShowOnMap({Key? key,required this.orders,required this.userModel}) : super(key: key);
   @override
   _ShowOnMapState createState() => _ShowOnMapState();
 }
 
 class _ShowOnMapState extends State<ShowOnMap> {
-  StreamSubscription _locationSubscription;
-  StreamSubscription _firebaseSubscription;
-  Location _locationTracker = Location();
-  LatLng currentLocation;
+  late StreamSubscription _locationSubscription;
+  late StreamSubscription _firebaseSubscription;
+  late Location _locationTracker = Location();
+  late LatLng currentLocation;
   Completer<GoogleMapController> _controller = Completer();
-  GoogleMapController _mapController;
-  static CameraPosition _myPosition;
-  LocationProvider locationData;
-  UserModel locationService;
+  late GoogleMapController _mapController;
+  static late CameraPosition _myPosition;
+  late LocationProvider locationData;
+  late UserModel locationService;
   Set<Marker> customMarkers = Set<Marker>();
   Set<Circle> customCircle = Set<Circle>();
-  Directions _info;
-  BitmapDescriptor arrivalpointicon;
+  late Directions _info;
+  late BitmapDescriptor arrivalpointicon;
   double pinPillPosition = PIN_VISIBLE_POSITION;
   bool startTrip = false;
   bool tripToEnd = false;
@@ -365,14 +365,14 @@ class _ShowOnMapState extends State<ShowOnMap> {
 
       var directions1 = await DirectionsRepository().getDirections(
           origin: LatLng(location.latitude, location.longitude),
-          destination: LatLng(
-              widget.orders.startAt.latitude, widget.orders.startAt.longitude));
+          destination: LatLng(widget.orders.startAt?.latitude, widget.orders.startAt?.longitude));
       _locationSubscription =
           _locationTracker.onLocationChanged.listen((newLocalData) async {
         setState(() {
           currentLocation =
               LatLng(newLocalData.latitude, newLocalData.longitude);
         });
+
         if (_controller != null) {
           _mapController.animateCamera(CameraUpdate.newCameraPosition(
               new CameraPosition(
@@ -380,11 +380,11 @@ class _ShowOnMapState extends State<ShowOnMap> {
                   zoom: 16.00)));
           updateMarkerAndCircle(
               LatLng(newLocalData.latitude, newLocalData.longitude));
-          if (double.parse(directions1.totalDistance.split(" ")[0]) <= 0.5) {
+          if (double.parse(directions1!.totalDistance.split(" ")[0]) <= 0.5) {
             directions1 = await DirectionsRepository().getDirections(
                 origin: LatLng(newLocalData.latitude, newLocalData.longitude),
-                destination: LatLng(widget.orders.endAt.latitude,
-                    widget.orders.endAt.longitude));
+                destination: LatLng(widget.orders.endAt?.latitude,
+                    widget.orders.endAt?.longitude));
             setState(() {
               tripToEnd = true;
             });
@@ -392,16 +392,16 @@ class _ShowOnMapState extends State<ShowOnMap> {
           if (tripToEnd)
             directions1 = await DirectionsRepository().getDirections(
                 origin: LatLng(newLocalData.latitude, newLocalData.longitude),
-                destination: LatLng(widget.orders.endAt.latitude,
-                    widget.orders.endAt.longitude));
+                destination: LatLng(widget.orders.endAt?.latitude,
+                    widget.orders.endAt?.longitude));
 
-          if (double.parse(directions1.totalDistance.split(" ")[0]) <= 0.5) {
+          if (double.parse(directions1!.totalDistance.split(" ")[0]) <= 0.5) {
             setState(() {
               tripDone = true;
             });
           }
           setState(() {
-            _info = directions1;
+            _info = directions1!;
           });
         }
       });
@@ -463,7 +463,7 @@ class _ShowOnMapState extends State<ShowOnMap> {
                     color: Colors.red,
                     width: 5,
                     points: _info.polylinePoints
-                        .map((e) => LatLng(e.latitude, e.longitude))
+                        ?.map((e) => LatLng(e.latitude, e.longitude))
                         .toList(),
                   ),
               },
@@ -476,18 +476,18 @@ class _ShowOnMapState extends State<ShowOnMap> {
 
                 // Get directions
                 final directions = await DirectionsRepository().getDirections(
-                    origin: LatLng(widget.orders.startAt.latitude,
-                        widget.orders.startAt.longitude),
-                    destination: LatLng(widget.orders.endAt.latitude,
-                        widget.orders.endAt.longitude));
+                    origin: LatLng(widget.orders.startAt?.latitude,
+                        widget.orders.startAt?.longitude),
+                    destination: LatLng(widget.orders.endAt?.latitude,
+                        widget.orders.endAt?.longitude));
                 setState(() {
-                  _info = directions;
+                  _info = directions!;
                 });
 
                 customMarkers.add(Marker(
                     markerId: MarkerId("START"),
-                    position: LatLng(widget.orders.startAt.latitude,
-                        widget.orders.startAt.longitude),
+                    position: LatLng(widget.orders.startAt?.latitude,
+                        widget.orders.startAt?.longitude),
                     draggable: false,
                     zIndex: 2,
                     infoWindow: InfoWindow(title: "Start Point"),
@@ -499,13 +499,13 @@ class _ShowOnMapState extends State<ShowOnMap> {
                     circleId: CircleId("StartCircle"),
                     zIndex: 4,
                     strokeColor: Colors.green,
-                    center: LatLng(widget.orders.startAt.latitude,
-                        widget.orders.startAt.longitude),
+                    center: LatLng(widget.orders.startAt?.latitude,
+                        widget.orders.startAt?.longitude),
                     fillColor: Colors.green.withAlpha(70)));
                 customMarkers.add(Marker(
                     markerId: MarkerId("END"),
-                    position: LatLng(widget.orders.endAt.latitude,
-                        widget.orders.endAt.longitude),
+                    position: LatLng(widget.orders.endAt?.latitude,
+                        widget.orders.endAt?.longitude),
                     draggable: false,
                     zIndex: 2,
                     infoWindow: InfoWindow(title: "Arrival Point"),
@@ -517,8 +517,8 @@ class _ShowOnMapState extends State<ShowOnMap> {
                     circleId: CircleId("END"),
                     zIndex: 4,
                     strokeColor: Colors.orange,
-                    center: LatLng(widget.orders.endAt.latitude,
-                        widget.orders.endAt.longitude),
+                    center: LatLng(widget.orders.endAt?.latitude,
+                        widget.orders.endAt?.longitude),
                     fillColor: Colors.green.withAlpha(70)));
               },
             ),
@@ -632,7 +632,7 @@ class _ShowOnMapState extends State<ShowOnMap> {
                   borderRadius: BorderRadius.circular(10.0),
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.grey[500],
+                      color: Colors.grey[500]??Colors.grey??Colors.grey,
                       offset: Offset(0.0, 1.5),
                       blurRadius: 1.5,
                     ),

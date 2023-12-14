@@ -13,32 +13,32 @@ class ConversationViewModel extends ChangeNotifier {
   ChatService chatService = ChatService();
   bool uploadingImage = false;
   final picker = ImagePicker();
-  File image;
+ late File? image;
 
-  sendMessage(String chatId, Message message) {
+  sendMessage(String? chatId, Message message) {
     chatService.sendMessage(
       message,
       chatId,
     );
   }
 
-  Future<String> sendFirstMessage(
-      String recipient, Message message, Orders orders) async {
-    String newChatId =
+  Future<String?> sendFirstMessage(
+      String? recipient, Message message, Orders? orders) async {
+    String? newChatId =
         await chatService.sendFirstMessage(message, recipient, orders);
 
     return newChatId;
   }
 
-  setReadCount(String chatId, var user, int count) {
+  setReadCount(String? chatId, var user, int count) {
     chatService.setUserRead(chatId, user, count);
   }
 
-  setUserTyping(String chatId, var user, bool typing) {
+  setUserTyping(String? chatId, var user, bool typing) {
     chatService.setUserTyping(chatId, user, typing);
   }
 
-  pickImage({int source, BuildContext context, String chatId}) async {
+  pickImage(int source, BuildContext context, String? chatId) async {
     File image = source == 0
         ? await ImagePicker.pickImage(
             source: ImageSource.camera,
@@ -48,7 +48,7 @@ class ConversationViewModel extends ChangeNotifier {
           );
 
     if (image != null) {
-      File croppedFile = await ImageCropper.cropImage(
+      File? croppedFile = await ImageCropper.cropImage(
         sourcePath: image.path,
         aspectRatioPresets: [
           CropAspectRatioPreset.square,
@@ -75,15 +75,15 @@ class ConversationViewModel extends ChangeNotifier {
         uploadingImage = true;
         image = croppedFile;
         notifyListeners();
-        showInSnackBar("Uploading image...");
-        String imageUrl = await chatService.uploadImage(croppedFile, chatId);
+        showInSnackBar("Uploading image...",context);
+        String? imageUrl = await chatService.uploadImage(croppedFile, chatId);
         return imageUrl;
       }
     }
   }
 
-  void showInSnackBar(String value) {
-    scaffoldKey.currentState.removeCurrentSnackBar();
-    scaffoldKey.currentState.showSnackBar(SnackBar(content: Text(value)));
+  void showInSnackBar(String? value,BuildContext context) {
+    ScaffoldMessenger.of(context).removeCurrentSnackBar();
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(value??"")));
   }
 }

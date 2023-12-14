@@ -148,9 +148,10 @@ class _SideBarState extends State<SideBar>
                                 .snapshots(),
                             builder: (context,
                                 AsyncSnapshot<DocumentSnapshot> snapshot) {
-                              if (snapshot.hasData) {
+                              Map<String?, dynamic>? mapData = snapshot.data?.data();
+                              if (snapshot.hasData && mapData!=null) {
                                 user1 =
-                                    UserModel.fromJson(snapshot.data.data());
+                                    UserModel.fromJson(mapData);
                                 if (user1.type == "Agent") {
                                   return Column(
                                     children: [
@@ -229,8 +230,9 @@ class _SideBarState extends State<SideBar>
                             .snapshots(),
                         builder: (context,
                             AsyncSnapshot<DocumentSnapshot> snapshot) {
-                          if (snapshot.hasData) {
-                            user1 = UserModel.fromJson(snapshot.data.data());
+                          Map<String?, dynamic>? mapData = snapshot.data?.data();
+                          if (snapshot.hasData && mapData!=null) {
+                            user1 = UserModel.fromJson(mapData);
                             if (user1.type == "Agent") {
                               return Align(
                                 alignment: Alignment.bottomCenter,
@@ -272,10 +274,11 @@ class _SideBarState extends State<SideBar>
                             .snapshots(),
                         builder: (context,
                             AsyncSnapshot<DocumentSnapshot> snapshot) {
-                          if (snapshot.hasData) {
-                            user1 = UserModel.fromJson(snapshot.data.data());
+                          Map<String?, dynamic>? mapData = snapshot.data?.data();
+                          if (snapshot.hasData && mapData!=null) {
+                            user1 = UserModel.fromJson(mapData);
                             if (user1.type == "Client" &&
-                                int.parse(user1.percentage) != 91) {
+                                int.parse(user1.percentage??"0") != 91) {
                               return Align(
                                 alignment: Alignment.bottomCenter,
                                 child: RaisedGradientButton(
@@ -303,7 +306,7 @@ class _SideBarState extends State<SideBar>
                                     }),
                               );
                             } else if (user1.type == "Client" &&
-                                int.parse(user1.percentage) == 91)
+                                int.parse(user1.percentage??"0") == 91)
                               return Align(
                                 alignment: Alignment.bottomCenter,
                                 child: RaisedGradientButton(
@@ -477,10 +480,11 @@ class _SideBarState extends State<SideBar>
               StreamBuilder(
                 stream: usersRef.doc(firebaseAuth.currentUser.uid).snapshots(),
                 builder: (context, AsyncSnapshot<DocumentSnapshot> snapshot) {
-                  if (snapshot.hasData) {
-                    user1 = UserModel.fromJson(snapshot.data.data());
-                    ribController.text = user1.RIB;
-                    bankNameController.text = user1.bankName;
+                  Map<String?, dynamic>? mapData = snapshot.data?.data();
+                  if (snapshot.hasData && mapData!=null) {
+                    user1 = UserModel.fromJson(mapData);
+                    ribController.text = user1.RIB??"";
+                    bankNameController.text = user1.bankName??"";
                     return Column(
                       children: [
                         TextFormBuilder(
@@ -490,6 +494,7 @@ class _SideBarState extends State<SideBar>
                           suffix: false,
                           textInputAction: TextInputAction.next,
                           validateFunction: Validations.validateRib,
+                          submitAction: (){},
                         ),
                         SizedBox(
                           height: 20,
@@ -501,6 +506,7 @@ class _SideBarState extends State<SideBar>
                           suffix: false,
                           textInputAction: TextInputAction.next,
                           validateFunction: Validations.validateBankName,
+                          submitAction: (){},
                         ),
                       ],
                     );

@@ -1,12 +1,12 @@
 class DataModel {
-  final String name;
-  final String likesCount;
-  final String messagesCount;
-  final String forwardCount;
-  final String description;
-  final String tags;
-  final String musicName;
-  final String profileUrl;
+  final String? name;
+  final String? likesCount;
+  final String? messagesCount;
+  final String? forwardCount;
+  final String? description;
+  final String? tags;
+  final String? musicName;
+  final String? profileUrl;
 
   DataModel(
       {this.name,

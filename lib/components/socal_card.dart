@@ -2,13 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 class SocalCard extends StatelessWidget {
-  const SocalCard({Key? key, this.icon, this.press, this.Name, this.color})
+  const SocalCard({Key? key, this.icon, required this.press, this.Name, this.color})
       : super(key: key);
 
-  final String icon;
-  final String Name;
-  final Function press;
-  final Color color;
+  final String? icon;
+  final String? Name;
+  final VoidCallback press;
+  final Color? color;
 
   @override
   Widget build(BuildContext context) {
@@ -25,7 +25,7 @@ class SocalCard extends StatelessWidget {
               width: 10,
             ),
             Text(
-              Name,
+              Name??"",
               style: TextStyle(
                   fontSize: 14,
                   fontWeight: FontWeight.bold,

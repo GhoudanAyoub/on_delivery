@@ -14,13 +14,13 @@ class EditProfileViewModel extends ChangeNotifier {
   bool loading = false;
   UserService userService = UserService();
   final picker = ImagePicker();
-  UserModel user;
-  String country;
-  String username;
-  String bio;
-  File image;
-  String imgLink;
-  bool msgAll;
+  late UserModel user;
+  String? country;
+  String? username;
+  String? bio;
+ late File? image;
+  String? imgLink;
+  late bool msgAll;
 
   setMsgAll(bool val) {
     msgAll = val;
@@ -36,31 +36,31 @@ class EditProfileViewModel extends ChangeNotifier {
     imgLink = user.photoUrl;
   }
 
-  setCountry(String val) {
+  setCountry(String? val) {
     print('SetCountry $val');
     country = val;
     notifyListeners();
   }
 
-  setBio(String val) {
+  setBio(String? val) {
     print('SetBio$val');
     bio = val;
     notifyListeners();
   }
 
-  setUsername(String val) {
+  setUsername(String? val) {
     print('SetUsername$val');
     username = val;
     notifyListeners();
   }
 
   editProfile(BuildContext context) async {
-    FormState form = formKey.currentState;
+    FormState form = formKey.currentState!;
     form.save();
     if (!form.validate()) {
       validate = true;
       notifyListeners();
-      showInSnackBar('Please fix the errors in red before submitting.');
+      showInSnackBar('Please fix the errors in red before submitting.',context);
     } else {
       try {
         loading = true;
@@ -89,14 +89,14 @@ class EditProfileViewModel extends ChangeNotifier {
     }
   }
 
-  pickImage({bool camera = false}) async {
+  pickImage(BuildContext context,{bool camera = false}) async {
     loading = true;
     notifyListeners();
     try {
       PickedFile pickedFile = await picker.getImage(
         source: camera ? ImageSource.camera : ImageSource.gallery,
       );
-      File croppedFile = await ImageCropper.cropImage(
+      File? croppedFile = await ImageCropper.cropImage(
         sourcePath: pickedFile.path,
         aspectRatioPresets: [
           CropAspectRatioPreset.square,
@@ -116,13 +116,13 @@ class EditProfileViewModel extends ChangeNotifier {
           minimumAspectRatio: 1.0,
         ),
       );
-      image = File(croppedFile.path);
+      image = File(croppedFile?.path??"");
       loading = false;
       notifyListeners();
     } catch (e) {
       loading = false;
       notifyListeners();
-      showInSnackBar('Cancelled');
+      showInSnackBar('Cancelled',context);
     }
   }
 
@@ -131,8 +131,8 @@ class EditProfileViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  void showInSnackBar(String value) {
-    scaffoldKey.currentState.removeCurrentSnackBar();
-    scaffoldKey.currentState.showSnackBar(SnackBar(content: Text(value)));
+  void showInSnackBar(String value,BuildContext context) {
+    ScaffoldMessenger.of(context).removeCurrentSnackBar();
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(value)));
   }
 }

@@ -14,9 +14,9 @@ import 'package:on_delivery/utils/firebase.dart';
 
 class AgentsDetails extends StatefulWidget with NavigationStates {
   static String routeName = "/AgentsDetails";
-  final String id;
-  final String time;
-  final Orders order;
+  final String? id;
+  final String? time;
+  final Orders? order;
 
   const AgentsDetails({Key? key, this.id, this.time, this.order})
       : super(key: key);
@@ -25,10 +25,10 @@ class AgentsDetails extends StatefulWidget with NavigationStates {
 }
 
 class _AgentsDetailsState extends State<AgentsDetails> {
-  UserModel _user;
+  late UserModel _user;
   bool show = true;
-  String ChatId;
-  double rate;
+  String? ChatId;
+ late double rate;
   int myDocs = 0;
   int doneDocs = 0;
   double i = 0;
@@ -38,7 +38,7 @@ class _AgentsDetailsState extends State<AgentsDetails> {
     orderRef.snapshots().listen((element) {
       for (DocumentSnapshot d in element.docs) {
         Orders order = Orders.fromJson(d.data());
-        if (order.agentId.contains(id)) {
+        if (order.agentId?.contains(id)==true) {
           setState(() {
             myDocs++;
           });
@@ -116,8 +116,9 @@ class _AgentsDetailsState extends State<AgentsDetails> {
                     stream: usersRef.doc(widget.id).snapshots(),
                     builder:
                         (context, AsyncSnapshot<DocumentSnapshot> snapshot) {
-                      if (snapshot.hasData) {
-                        _user = UserModel.fromJson(snapshot.data.data());
+                          Map<String?, dynamic>? mapData = snapshot.data?.data();
+                          if (snapshot.hasData && mapData != null) {
+                        _user = UserModel.fromJson(mapData);
                         getReviews2(_user.id);
                         return Container(
                           padding: EdgeInsets.only(
@@ -130,7 +131,7 @@ class _AgentsDetailsState extends State<AgentsDetails> {
                               border: Border.all(color: Colors.grey),
                               boxShadow: [
                                 BoxShadow(
-                                  color: Colors.grey[500],
+                                  color: Colors.grey[500]??Colors.grey,
                                   offset: Offset(0.0, 1.5),
                                   blurRadius: 1.5,
                                 ),
@@ -179,7 +180,7 @@ class _AgentsDetailsState extends State<AgentsDetails> {
                                                 getProportionateScreenWidth(80),
                                             child: Stack(
                                               fit: StackFit.expand,
-                                              overflow: Overflow.visible,
+                                              clipBehavior: Clip.none,
                                               children: [
                                                 Container(
                                                   decoration: BoxDecoration(
@@ -191,10 +192,7 @@ class _AgentsDetailsState extends State<AgentsDetails> {
                                                     ),
                                                     image: DecorationImage(
                                                       image: NetworkImage(_user
-                                                                  .photoUrl !=
-                                                              null
-                                                          ? _user.photoUrl
-                                                          : "https://image.similarpng.com/very-thumbnail/2020/06/Hand-drawn-delivery-man-with-scooter-royalty-free-PNG.png"),
+                                                                  .photoUrl??"https://image.similarpng.com/very-thumbnail/2020/06/Hand-drawn-delivery-man-with-scooter-royalty-free-PNG.png"),
                                                       fit: BoxFit.cover,
                                                     ),
                                                     boxShadow: [
@@ -253,7 +251,7 @@ class _AgentsDetailsState extends State<AgentsDetails> {
                                           Row(
                                             children: [
                                               Text(
-                                                  "${_user.firstName} ${_user.lastname.toUpperCase()}",
+                                                  "${_user.firstName} ${_user.lastname?.toUpperCase()}",
                                                   style: TextStyle(
                                                     fontSize: 12,
                                                     letterSpacing: 1,
@@ -401,7 +399,7 @@ class _AgentsDetailsState extends State<AgentsDetails> {
                                               color: Colors.grey,
                                             )),
                                         Text(
-                                            "${_user.price != "" ? _user.price : "??"} ${_user.unity.toLowerCase()}",
+                                            "${_user.price != "" ? _user.price : "??"} ${_user.unity?.toLowerCase()}",
                                             style: TextStyle(
                                               fontSize: 12,
                                               letterSpacing: 1,
@@ -447,13 +445,13 @@ class _AgentsDetailsState extends State<AgentsDetails> {
                                         AsyncSnapshot<QuerySnapshot> snapshot) {
                                       if (snapshot.hasData) {
                                         List favorites =
-                                            snapshot.data.documents;
+                                            snapshot.data!.docs;
                                         for (DocumentSnapshot document
                                             in favorites) {
                                           UserModel agents = UserModel.fromJson(
                                               document.data());
 
-                                          if (agents.id.contains(widget.id))
+                                          if (agents.id?.contains(widget.id!)==true)
                                             return Align(
                                               alignment: Alignment.bottomCenter,
                                               child: RaisedGradientButton(
@@ -610,7 +608,7 @@ class _AgentsDetailsState extends State<AgentsDetails> {
                           borderRadius: BorderRadius.circular(10.0),
                           boxShadow: [
                             BoxShadow(
-                              color: Colors.grey[500],
+                              color: Colors.grey[500]??Colors.grey,
                               offset: Offset(0.0, 1.5),
                               blurRadius: 1.5,
                             ),
@@ -628,14 +626,14 @@ class _AgentsDetailsState extends State<AgentsDetails> {
   getChatID() async {
     QuerySnapshot docs = await chatRef.get();
     for (QueryDocumentSnapshot doc in docs.docs) {
-      if (doc.data()["users"][0].toString().contains(widget.id) == true)
+      if (doc.data()["users"][0].toString().contains(widget.id!) == true)
         setState(() {
           ChatId = doc.id;
         });
     }
   }
 
-  Stream<QuerySnapshot> favoritzListStream(String documentId) {
+  Stream<QuerySnapshot> favoritzListStream(String? documentId) {
     return favoriteRef
         .doc(documentId)
         .collection(favoritesName)

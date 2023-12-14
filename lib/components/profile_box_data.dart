@@ -5,16 +5,19 @@ import 'package:on_delivery/utils/constants.dart';
 class ProfileBoxData extends StatelessWidget {
   const ProfileBoxData({Key? key, this.LIKES, this.FOLLOWING, this.FOLLOWERS})
       : super(key: key);
-  final String LIKES, FOLLOWING, FOLLOWERS;
+  final String? LIKES, FOLLOWING, FOLLOWERS;
 
   @override
   Widget build(BuildContext context) {
     return Padding(
       padding: EdgeInsets.fromLTRB(20, 10, 20, 0),
-      child: FlatButton(
-        padding: EdgeInsets.all(10),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
-        color: Color(0xFFF5F6F9),
+      child: TextButton(
+        style: TextButton.styleFrom(
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+          primary: kPrimaryColor,
+          onSurface: Colors.grey[400]??Colors.grey,
+          padding: EdgeInsets.all(10),
+        ),
         onPressed: () {},
         child: Row(
           children: [
@@ -32,7 +35,7 @@ class ProfileBoxData extends StatelessWidget {
                   width: 10,
                   height: 5,
                 ),
-                Text(LIKES,
+                Text(LIKES??"0",
                     style: TextStyle(
                       fontSize: getProportionateScreenWidth(20),
                       color: GBottomNav,
@@ -55,7 +58,7 @@ class ProfileBoxData extends StatelessWidget {
                   width: 10,
                   height: 5,
                 ),
-                Text(FOLLOWING,
+                Text(FOLLOWING??"0",
                     style: TextStyle(
                       fontSize: getProportionateScreenWidth(20),
                       color: GBottomNav,
@@ -78,7 +81,7 @@ class ProfileBoxData extends StatelessWidget {
                   width: 10,
                   height: 5,
                 ),
-                Text(FOLLOWERS,
+                Text(FOLLOWERS??"0",
                     style: TextStyle(
                       fontSize: getProportionateScreenWidth(20),
                       color: GBottomNav,

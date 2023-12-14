@@ -7,7 +7,7 @@ import 'package:stripe_payment/stripe_payment.dart';
 
 class Cards extends StatefulWidget {
   static String routeName = "/cards";
-  final String amount;
+  final String? amount;
 
   const Cards({Key? key, this.amount}) : super(key: key);
   @override
@@ -126,7 +126,7 @@ class _CardsState extends State<Cards> {
                       borderRadius: BorderRadius.circular(10.0),
                       boxShadow: [
                         BoxShadow(
-                          color: Colors.grey[500],
+                          color: Colors.grey[500]??Colors.grey,
                           offset: Offset(0.0, 1.5),
                           blurRadius: 1.5,
                         ),

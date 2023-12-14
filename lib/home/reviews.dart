@@ -7,8 +7,8 @@ import 'package:on_delivery/utils/SizeConfig.dart';
 import 'package:on_delivery/utils/firebase.dart';
 
 class Review extends StatefulWidget {
-  static String routeName = "/Review";
-  final String id;
+  static String? routeName = "/Review";
+  final String? id;
 
   const Review({Key? key, this.id}) : super(key: key);
   @override
@@ -93,7 +93,7 @@ class _ReviewState extends State<Review> {
                           borderRadius: BorderRadius.circular(10.0),
                           boxShadow: [
                             BoxShadow(
-                              color: Colors.grey[500],
+                              color: Colors.grey[500]??Colors.grey,
                               offset: Offset(0.0, 1.5),
                               blurRadius: 1.5,
                             ),
@@ -129,7 +129,7 @@ class _ReviewState extends State<Review> {
             itemBuilder: (BuildContext context, int index) {
               DocumentSnapshot doc = rateList[index];
               RateModel rate = RateModel.fromJson(doc.data());
-              if (rate.agentId.contains(widget.id))
+              if (rate.agentId?.contains(widget.id!)==true)
                 return RateLayout(
                   id: widget.id,
                   rateModel: rate,

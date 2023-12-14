@@ -28,15 +28,16 @@ import 'package:on_delivery/utils/validation.dart';
 import 'package:pinput/pin_put/pin_put.dart';
 import 'package:provider/provider.dart';
 
-String kGoogleApiKey = Platform.isAndroid
+String? kGoogleApiKey = Platform.isAndroid
     ? "AIzaSyD3exTbi5W-6kYICekpUEslE3gIcSF5weI"
     : "AIzaSyDvpynTkP9xyNU8KO4UlJYWlQfn-trjeGw";
 
 class UpdateProfiles extends StatefulWidget {
   static String routeName = "/UpdateProfiles";
-  final bool Type;
+  final bool? Type;
 
-  const UpdateProfiles({Key? key, this.Type}) : super(key: key);
+  const UpdateProfiles({Key? key,this.Type}) : super(key: key);
+
   @override
   _UpdateProfilesState createState() => _UpdateProfilesState();
 }
@@ -62,23 +63,29 @@ class _UpdateProfilesState extends State<UpdateProfiles> {
   bool activityInt = false;
   bool tripLocationInt = false;
   bool ribBankInt = false;
-  bool moto = false, car = false;
-  bool warehouseNo = true, warehouseYes = false;
-  bool food = false, move = false, ecom = false, courier = false;
+  bool moto = false,
+      car = false;
+  bool warehouseNo = true,
+      warehouseYes = false;
+  bool food = false,
+      move = false,
+      ecom = false,
+      courier = false;
   bool locationState = false;
   bool validate = false;
   bool loading = false,
       loadingSide1 = false,
       loadingSide2 = false,
       loadingPassprot = false;
-  bool _serviceEnabled;
+  late bool _serviceEnabled;
 
-  File userImage;
-  File side1Image;
-  File side2Image;
-  File passportImage;
-  String userImgLink,
-      startingPointString = "Starting Point",
+  late File userImage;
+  late File side1Image;
+  late File side2Image;
+  late File passportImage;
+  String? userImgLink,
+      startingPointString
+      = "Starting Point",
       arrivalPointString = "Arrive Point";
 
   GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
@@ -92,11 +99,11 @@ class _UpdateProfilesState extends State<UpdateProfiles> {
   TextEditingController arrivalPointController = TextEditingController();
   TextEditingController ribController = TextEditingController();
   TextEditingController bankNameController = TextEditingController();
-  String _verificationCode;
-  String _verificationSelected, _businessSelected, _unitiSelected;
+  String? _verificationCode;
+  String? _verificationSelected, _businessSelected, _unitiSelected;
   final TextEditingController _pinPutController = TextEditingController();
   final FocusNode _pinPutFocusNode = FocusNode();
-  LocationProvider locationData;
+  late LocationProvider locationData;
   final picker = ImagePicker();
   final BoxDecoration pinPutDecoration = BoxDecoration(
     color: Color.fromRGBO(239, 240, 246, 1),
@@ -108,7 +115,6 @@ class _UpdateProfilesState extends State<UpdateProfiles> {
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
   }
 
@@ -119,8 +125,8 @@ class _UpdateProfilesState extends State<UpdateProfiles> {
     return Stack(
       children: [
         if (valid) validPhone(),
-        if (widget.Type && agentInt) agentInterface(),
-        if (!widget.Type) clientInterface(),
+        if (widget?.Type==true && agentInt) agentInterface(),
+        if (widget?.Type==false) clientInterface(),
         if (verificationMth) verificationMethod(),
         if (businessInt) businessInterface(),
         if (activityInt) activityInterface(),
@@ -136,7 +142,7 @@ class _UpdateProfilesState extends State<UpdateProfiles> {
       PickedFile pickedFile = await picker.getImage(
         source: camera ? ImageSource.camera : ImageSource.gallery,
       );
-      File croppedFile = await ImageCropper.cropImage(
+      File? croppedFile = await ImageCropper.cropImage(
         sourcePath: pickedFile.path,
         aspectRatioPresets: [
           CropAspectRatioPreset.square,
@@ -157,7 +163,7 @@ class _UpdateProfilesState extends State<UpdateProfiles> {
         ),
       );
       setState(() {
-        userImage = File(croppedFile.path);
+        userImage = File(croppedFile?.path ?? "");
         loading = false;
       });
     } catch (e) {
@@ -173,7 +179,7 @@ class _UpdateProfilesState extends State<UpdateProfiles> {
       PickedFile pickedFile = await picker.getImage(
         source: camera ? ImageSource.camera : ImageSource.gallery,
       );
-      File croppedFile = await ImageCropper.cropImage(
+      File? croppedFile = await ImageCropper.cropImage(
         sourcePath: pickedFile.path,
         aspectRatioPresets: [
           CropAspectRatioPreset.square,
@@ -194,7 +200,7 @@ class _UpdateProfilesState extends State<UpdateProfiles> {
         ),
       );
       setState(() {
-        side1Image = File(croppedFile.path);
+        side1Image = File(croppedFile?.path ?? "");
         loadingSide1 = true;
       });
     } catch (e) {
@@ -210,7 +216,7 @@ class _UpdateProfilesState extends State<UpdateProfiles> {
       PickedFile pickedFile = await picker.getImage(
         source: camera ? ImageSource.camera : ImageSource.gallery,
       );
-      File croppedFile = await ImageCropper.cropImage(
+      File? croppedFile = await ImageCropper.cropImage(
         sourcePath: pickedFile.path,
         aspectRatioPresets: [
           CropAspectRatioPreset.square,
@@ -231,7 +237,7 @@ class _UpdateProfilesState extends State<UpdateProfiles> {
         ),
       );
       setState(() {
-        side2Image = File(croppedFile.path);
+        side2Image = File(croppedFile?.path ?? "");
         loadingSide2 = true;
       });
     } catch (e) {
@@ -247,7 +253,7 @@ class _UpdateProfilesState extends State<UpdateProfiles> {
       PickedFile pickedFile = await picker.getImage(
         source: camera ? ImageSource.camera : ImageSource.gallery,
       );
-      File croppedFile = await ImageCropper.cropImage(
+      File? croppedFile = await ImageCropper.cropImage(
         sourcePath: pickedFile.path,
         aspectRatioPresets: [
           CropAspectRatioPreset.square,
@@ -268,7 +274,7 @@ class _UpdateProfilesState extends State<UpdateProfiles> {
         ),
       );
       setState(() {
-        passportImage = File(croppedFile.path);
+        passportImage = File(croppedFile?.path ?? "");
         loadingPassprot = true;
       });
     } catch (e) {
@@ -279,9 +285,10 @@ class _UpdateProfilesState extends State<UpdateProfiles> {
     }
   }
 
-  void showInSnackBar(String value) {
-    scaffoldKey.currentState.removeCurrentSnackBar();
-    scaffoldKey.currentState.showSnackBar(SnackBar(content: Text(value)));
+  void showInSnackBar(String? value) {
+    ScaffoldMessenger.of(context).removeCurrentSnackBar();
+    ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(value ?? "")));
   }
 
   agentInterface() {
@@ -291,7 +298,7 @@ class _UpdateProfilesState extends State<UpdateProfiles> {
               toolbarHeight: 50,
               leading: IconButton(
                 icon:
-                    Icon(Icons.arrow_back, color: Color.fromRGBO(5, 151, 0, 1)),
+                Icon(Icons.arrow_back, color: Color.fromRGBO(5, 151, 0, 1)),
                 onPressed: () => Navigator.of(context).pop(),
               ),
               title: Align(
@@ -326,103 +333,106 @@ class _UpdateProfilesState extends State<UpdateProfiles> {
                       children: [
                         Expanded(
                             child: ListView(
-                          children: [
-                            Center(
-                                child: Row(
                               children: [
-                                GestureDetector(
-                                  onTap: () => pickImage(),
-                                  child: Container(
-                                    decoration: BoxDecoration(
-                                      color: Colors.white,
-                                      shape: BoxShape.circle,
-                                      border: Border.all(
-                                        color: Colors.transparent,
-                                      ),
-                                      boxShadow: [
-                                        BoxShadow(
-                                          color: Colors.grey.withOpacity(0.3),
-                                          offset: new Offset(0.0, 0.0),
-                                          blurRadius: 2.0,
-                                          spreadRadius: 0.0,
-                                        ),
-                                      ],
-                                    ),
-                                    child: userImgLink != null
-                                        ? Padding(
-                                            padding: const EdgeInsets.all(1.0),
-                                            child: CircleAvatar(
-                                              radius: 30.0,
-                                              backgroundColor: Color.fromRGBO(
-                                                  239, 240, 246, 1),
-                                              backgroundImage:
-                                                  NetworkImage(userImgLink),
-                                            ),
-                                          )
-                                        : userImage == null
-                                            ? Padding(
-                                                padding:
-                                                    const EdgeInsets.all(1.0),
-                                                child: CircleAvatar(
-                                                  backgroundColor:
-                                                      Color.fromRGBO(
-                                                          239, 240, 246, 1),
-                                                  radius: 30.0,
-                                                  backgroundImage: NetworkImage(
-                                                      FirebaseService
-                                                          .getProfileImage()),
-                                                ),
-                                              )
-                                            : Padding(
-                                                padding:
-                                                    const EdgeInsets.all(1.0),
-                                                child: CircleAvatar(
-                                                  radius: 30.0,
-                                                  backgroundColor:
-                                                      Color.fromRGBO(
-                                                          239, 240, 246, 1),
-                                                  backgroundImage:
-                                                      FileImage(userImage),
-                                                ),
+                                Center(
+                                    child: Row(
+                                      children: [
+                                        GestureDetector(
+                                          onTap: () => pickImage(),
+                                          child: Container(
+                                            decoration: BoxDecoration(
+                                              color: Colors.white,
+                                              shape: BoxShape.circle,
+                                              border: Border.all(
+                                                color: Colors.transparent,
                                               ),
-                                  ),
-                                ),
-                                SizedBox(
-                                  width: 10,
-                                ),
-                                Container(
-                                  width: getProportionateScreenWidth(150),
-                                  child: Text(
-                                      "Add your profile picture.\nMake sure it doesn't pass the\nsize of 1mo.",
-                                      textAlign: TextAlign.start,
-                                      overflow: TextOverflow.ellipsis,
-                                      style: TextStyle(
-                                        fontSize: 10,
-                                        letterSpacing: 1,
-                                        fontWeight: FontWeight.normal,
-                                        color: Colors.grey[800],
-                                      )),
-                                )
+                                              boxShadow: [
+                                                BoxShadow(
+                                                  color: Colors.grey
+                                                      .withOpacity(0.3),
+                                                  offset: new Offset(0.0, 0.0),
+                                                  blurRadius: 2.0,
+                                                  spreadRadius: 0.0,
+                                                ),
+                                              ],
+                                            ),
+                                            child: userImgLink != null
+                                                ? Padding(
+                                              padding: const EdgeInsets.all(
+                                                  1.0),
+                                              child: CircleAvatar(
+                                                radius: 30.0,
+                                                backgroundColor: Color.fromRGBO(
+                                                    239, 240, 246, 1),
+                                                backgroundImage:
+                                                NetworkImage(userImgLink ?? ""),
+                                              ),
+                                            )
+                                                : userImage == null
+                                                ? Padding(
+                                              padding:
+                                              const EdgeInsets.all(1.0),
+                                              child: CircleAvatar(
+                                                backgroundColor:
+                                                Color.fromRGBO(
+                                                    239, 240, 246, 1),
+                                                radius: 30.0,
+                                                backgroundImage: NetworkImage(
+                                                    FirebaseService
+                                                        .getProfileImage()),
+                                              ),
+                                            )
+                                                : Padding(
+                                              padding:
+                                              const EdgeInsets.all(1.0),
+                                              child: CircleAvatar(
+                                                radius: 30.0,
+                                                backgroundColor:
+                                                Color.fromRGBO(
+                                                    239, 240, 246, 1),
+                                                backgroundImage:
+                                                FileImage(userImage),
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                        SizedBox(
+                                          width: 10,
+                                        ),
+                                        Container(
+                                          width: getProportionateScreenWidth(
+                                              150),
+                                          child: Text(
+                                              "Add your profile picture.\nMake sure it doesn't pass the\nsize of 1mo.",
+                                              textAlign: TextAlign.start,
+                                              overflow: TextOverflow.ellipsis,
+                                              style: TextStyle(
+                                                fontSize: 10,
+                                                letterSpacing: 1,
+                                                fontWeight: FontWeight.normal,
+                                                color: Colors.grey[800],
+                                              )),
+                                        )
+                                      ],
+                                    )),
+                                SizedBox(height: 40),
+                                buildFNameFormField(),
+                                SizedBox(height: 30),
+                                buildLNameFormField(),
+                                SizedBox(height: 30),
+                                buildCityFormField(),
+                                SizedBox(height: 30),
+                                buildPhoneFormField(),
+                                SizedBox(height: 50),
                               ],
                             )),
-                            SizedBox(height: 40),
-                            buildFNameFormField(),
-                            SizedBox(height: 30),
-                            buildLNameFormField(),
-                            SizedBox(height: 30),
-                            buildCityFormField(),
-                            SizedBox(height: 30),
-                            buildPhoneFormField(),
-                            SizedBox(height: 50),
-                          ],
-                        )),
                         Align(
                           alignment: Alignment.bottomCenter,
                           child: Column(
                             children: [
                               Row(
                                 mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
+                                MainAxisAlignment.spaceBetween,
                                 children: [
                                   Container(
                                     width: 40,
@@ -435,10 +445,11 @@ class _UpdateProfilesState extends State<UpdateProfiles> {
                                           ],
                                         ),
                                         borderRadius:
-                                            BorderRadius.circular(10.0),
+                                        BorderRadius.circular(10.0),
                                         boxShadow: [
                                           BoxShadow(
-                                            color: Colors.grey[500],
+                                            color: Colors.grey[500] ??
+                                                Colors.grey,
                                             offset: Offset(0.0, 1.5),
                                             blurRadius: 1.5,
                                           ),
@@ -455,10 +466,11 @@ class _UpdateProfilesState extends State<UpdateProfiles> {
                                           ],
                                         ),
                                         borderRadius:
-                                            BorderRadius.circular(10.0),
+                                        BorderRadius.circular(10.0),
                                         boxShadow: [
                                           BoxShadow(
-                                            color: Colors.grey[500],
+                                            color: Colors.grey[500] ??
+                                                Colors.grey,
                                             offset: Offset(0.0, 1.5),
                                             blurRadius: 1.5,
                                           ),
@@ -475,10 +487,11 @@ class _UpdateProfilesState extends State<UpdateProfiles> {
                                           ],
                                         ),
                                         borderRadius:
-                                            BorderRadius.circular(10.0),
+                                        BorderRadius.circular(10.0),
                                         boxShadow: [
                                           BoxShadow(
-                                            color: Colors.grey[500],
+                                            color: Colors.grey[500] ??
+                                                Colors.grey,
                                             offset: Offset(0.0, 1.5),
                                             blurRadius: 1.5,
                                           ),
@@ -495,10 +508,11 @@ class _UpdateProfilesState extends State<UpdateProfiles> {
                                           ],
                                         ),
                                         borderRadius:
-                                            BorderRadius.circular(10.0),
+                                        BorderRadius.circular(10.0),
                                         boxShadow: [
                                           BoxShadow(
-                                            color: Colors.grey[500],
+                                            color: Colors.grey[500] ??
+                                                Colors.grey,
                                             offset: Offset(0.0, 1.5),
                                             blurRadius: 1.5,
                                           ),
@@ -515,10 +529,11 @@ class _UpdateProfilesState extends State<UpdateProfiles> {
                                           ],
                                         ),
                                         borderRadius:
-                                            BorderRadius.circular(10.0),
+                                        BorderRadius.circular(10.0),
                                         boxShadow: [
                                           BoxShadow(
-                                            color: Colors.grey[500],
+                                            color: Colors.grey[500] ??
+                                                Colors.grey,
                                             offset: Offset(0.0, 1.5),
                                             blurRadius: 1.5,
                                           ),
@@ -535,10 +550,11 @@ class _UpdateProfilesState extends State<UpdateProfiles> {
                                           ],
                                         ),
                                         borderRadius:
-                                            BorderRadius.circular(10.0),
+                                        BorderRadius.circular(10.0),
                                         boxShadow: [
                                           BoxShadow(
-                                            color: Colors.grey[500],
+                                            color: Colors.grey[500] ??
+                                                Colors.grey,
                                             offset: Offset(0.0, 1.5),
                                             blurRadius: 1.5,
                                           ),
@@ -563,7 +579,8 @@ class _UpdateProfilesState extends State<UpdateProfiles> {
                                   ),
                                   width: SizeConfig.screenWidth - 150,
                                   onPressed: () async {
-                                    if (_formKey.currentState.validate()) {
+                                    if (_formKey.currentState?.validate() ==
+                                        true) {
                                       authService.updateUserDataToFireStore(
                                           firebaseAuth.currentUser,
                                           _fNameController.text,
@@ -590,7 +607,7 @@ class _UpdateProfilesState extends State<UpdateProfiles> {
                                     borderRadius: BorderRadius.circular(10.0),
                                     boxShadow: [
                                       BoxShadow(
-                                        color: Colors.grey[500],
+                                        color: Colors.grey[500] ?? Colors.grey,
                                         offset: Offset(0.0, 1.5),
                                         blurRadius: 1.5,
                                       ),
@@ -666,26 +683,29 @@ class _UpdateProfilesState extends State<UpdateProfiles> {
                         ),
                         Expanded(
                             child: ListView(
-                          children: [
-                            TextFormBuilder(
-                              controller: ribController,
-                              hintText: "RIB",
-                              suffix: false,
-                              textInputAction: TextInputAction.next,
-                              validateFunction: Validations.validateRib,
-                            ),
-                            SizedBox(
-                              height: 20,
-                            ),
-                            TextFormBuilder(
-                              controller: bankNameController,
-                              hintText: "Bank Name",
-                              suffix: false,
-                              textInputAction: TextInputAction.next,
-                              validateFunction: Validations.validateBankName,
-                            ),
-                          ],
-                        )),
+                              children: [
+                                TextFormBuilder(
+                                  controller: ribController,
+                                  hintText: "RIB",
+                                  suffix: false,
+                                  textInputAction: TextInputAction.next,
+                                  validateFunction: Validations.validateRib,
+                                  submitAction: () {},
+                                ),
+                                SizedBox(
+                                  height: 20,
+                                ),
+                                TextFormBuilder(
+                                  controller: bankNameController,
+                                  hintText: "Bank Name",
+                                  suffix: false,
+                                  textInputAction: TextInputAction.next,
+                                  validateFunction: Validations
+                                      .validateBankName,
+                                  submitAction: () {},
+                                ),
+                              ],
+                            )),
                         SizedBox(
                           height: 20,
                         ),
@@ -695,7 +715,7 @@ class _UpdateProfilesState extends State<UpdateProfiles> {
                             children: [
                               Row(
                                 mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
+                                MainAxisAlignment.spaceBetween,
                                 children: [
                                   Container(
                                     width: 40,
@@ -708,10 +728,11 @@ class _UpdateProfilesState extends State<UpdateProfiles> {
                                           ],
                                         ),
                                         borderRadius:
-                                            BorderRadius.circular(10.0),
+                                        BorderRadius.circular(10.0),
                                         boxShadow: [
                                           BoxShadow(
-                                            color: Colors.grey[500],
+                                            color: Colors.grey[500] ??
+                                                Colors.grey,
                                             offset: Offset(0.0, 1.5),
                                             blurRadius: 1.5,
                                           ),
@@ -728,10 +749,11 @@ class _UpdateProfilesState extends State<UpdateProfiles> {
                                           ],
                                         ),
                                         borderRadius:
-                                            BorderRadius.circular(10.0),
+                                        BorderRadius.circular(10.0),
                                         boxShadow: [
                                           BoxShadow(
-                                            color: Colors.grey[500],
+                                            color: Colors.grey[500] ??
+                                                Colors.grey,
                                             offset: Offset(0.0, 1.5),
                                             blurRadius: 1.5,
                                           ),
@@ -748,10 +770,11 @@ class _UpdateProfilesState extends State<UpdateProfiles> {
                                           ],
                                         ),
                                         borderRadius:
-                                            BorderRadius.circular(10.0),
+                                        BorderRadius.circular(10.0),
                                         boxShadow: [
                                           BoxShadow(
-                                            color: Colors.grey[500],
+                                            color: Colors.grey[500] ??
+                                                Colors.grey,
                                             offset: Offset(0.0, 1.5),
                                             blurRadius: 1.5,
                                           ),
@@ -768,10 +791,11 @@ class _UpdateProfilesState extends State<UpdateProfiles> {
                                           ],
                                         ),
                                         borderRadius:
-                                            BorderRadius.circular(10.0),
+                                        BorderRadius.circular(10.0),
                                         boxShadow: [
                                           BoxShadow(
-                                            color: Colors.grey[500],
+                                            color: Colors.grey[500] ??
+                                                Colors.grey,
                                             offset: Offset(0.0, 1.5),
                                             blurRadius: 1.5,
                                           ),
@@ -788,10 +812,11 @@ class _UpdateProfilesState extends State<UpdateProfiles> {
                                           ],
                                         ),
                                         borderRadius:
-                                            BorderRadius.circular(10.0),
+                                        BorderRadius.circular(10.0),
                                         boxShadow: [
                                           BoxShadow(
-                                            color: Colors.grey[500],
+                                            color: Colors.grey[500] ??
+                                                Colors.grey,
                                             offset: Offset(0.0, 1.5),
                                             blurRadius: 1.5,
                                           ),
@@ -808,10 +833,11 @@ class _UpdateProfilesState extends State<UpdateProfiles> {
                                           ],
                                         ),
                                         borderRadius:
-                                            BorderRadius.circular(10.0),
+                                        BorderRadius.circular(10.0),
                                         boxShadow: [
                                           BoxShadow(
-                                            color: Colors.grey[500],
+                                            color: Colors.grey[500] ??
+                                                Colors.grey,
                                             offset: Offset(0.0, 1.5),
                                             blurRadius: 1.5,
                                           ),
@@ -854,7 +880,7 @@ class _UpdateProfilesState extends State<UpdateProfiles> {
                                     borderRadius: BorderRadius.circular(10.0),
                                     boxShadow: [
                                       BoxShadow(
-                                        color: Colors.grey[500],
+                                        color: Colors.grey[500] ?? Colors.grey,
                                         offset: Offset(0.0, 1.5),
                                         blurRadius: 1.5,
                                       ),
@@ -930,39 +956,41 @@ class _UpdateProfilesState extends State<UpdateProfiles> {
                         ),
                         Expanded(
                             child: ListView(
-                          children: [
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
-                                Align(
-                                  alignment: Alignment.topLeft,
-                                  child: Text("Turn on my gps",
-                                      textAlign: TextAlign.center,
-                                      style: TextStyle(
-                                        fontSize: 14,
-                                        fontWeight: FontWeight.normal,
-                                        color: Colors.grey[800],
-                                      )),
-                                ),
-                                Container(
-                                  height: 30,
-                                  width: getProportionateScreenWidth(70),
-                                  child: CustomSwitch(
-                                    value: locationState,
-                                    activeColor: Colors.green,
-                                    onChanged: (state) {
-                                      if (state)
-                                        locationData.getCurrentPosition();
-                                      locationData
-                                          .getMoveCamera()
-                                          .then((value) => setState(() {
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment
+                                      .spaceBetween,
+                                  children: [
+                                    Align(
+                                      alignment: Alignment.topLeft,
+                                      child: Text("Turn on my gps",
+                                          textAlign: TextAlign.center,
+                                          style: TextStyle(
+                                            fontSize: 14,
+                                            fontWeight: FontWeight.normal,
+                                            color: Colors.grey[800],
+                                          )),
+                                    ),
+                                    Container(
+                                      height: 30,
+                                      width: getProportionateScreenWidth(70),
+                                      child: CustomSwitch(
+                                        value: locationState,
+                                        activeColor: Colors.green,
+                                        onChanged: (state) {
+                                          if (state)
+                                            locationData.getCurrentPosition();
+                                          locationData
+                                              .getMoveCamera()
+                                              .then((value) =>
+                                              setState(() {
                                                 locationState = state;
                                                 startingPointString = value;
                                               }));
-                                    },
-                                  ),
+                                        },
+                                      ),
 
-                                  /* LiteRollingSwitch(
+                                      /* LiteRollingSwitch(
                                       value: locationState,
                                       textOn: 'GPS',
                                       textOff: 'Off',
@@ -978,325 +1006,352 @@ class _UpdateProfilesState extends State<UpdateProfiles> {
                                           locationState = state;
                                         });
                                       }),*/
-                                )
-                              ],
-                            ),
-                            SizedBox(
-                              height: 40,
-                            ),
-                            StreamBuilder(
-                              stream: usersRef
-                                  .doc(firebaseAuth.currentUser.uid)
-                                  .snapshots(),
-                              builder: (context,
-                                  AsyncSnapshot<DocumentSnapshot> snapshot) {
-                                if (snapshot.hasData) {
-                                  UserModel userModel =
-                                      UserModel.fromJson(snapshot.data.data());
+                                    )
+                                  ],
+                                ),
+                                SizedBox(
+                                  height: 40,
+                                ),
+                                StreamBuilder(
+                                  stream: usersRef
+                                      .doc(firebaseAuth.currentUser.uid)
+                                      .snapshots(),
+                                  builder: (context,
+                                      AsyncSnapshot<
+                                          DocumentSnapshot> snapshot) {
+                                    Map<String?, dynamic>? mapData = snapshot
+                                        .data?.data();
+                                    if (snapshot.hasData && mapData != null) {
+                                      UserModel userModel =
+                                      UserModel.fromJson(mapData);
 
-                                  List<Widget> list = new List<Widget>();
-                                  if (userModel.agentTripsLocationList !=
-                                      null) {
-                                    for (int e = 0;
-                                        e <
-                                            userModel
-                                                .agentTripsLocationList.length;
-                                        e++) {
-                                      list.add(Container(
-                                          padding: EdgeInsets.all(10),
-                                          decoration: BoxDecoration(
-                                            borderRadius:
+                                      List<Widget> list = <Widget>[];
+                                      if (userModel.agentTripsLocationList !=
+                                          null &&
+                                          userModel.agentTripsLocationList
+                                              ?.isNotEmpty == true) {
+                                        for (int e = 0; e <
+                                            userModel.agentTripsLocationList!
+                                                .length; e++) {
+                                          list.add(Container(
+                                              padding: EdgeInsets.all(10),
+                                              decoration: BoxDecoration(
+                                                borderRadius:
                                                 BorderRadius.circular(10.0),
-                                            border: Border.all(
-                                              color: Colors.grey[400],
-                                            ),
-                                          ),
-                                          child: Column(
-                                            children: [
-                                              Container(
-                                                width:
-                                                    getProportionateScreenWidth(
-                                                        250),
-                                                height: 50,
-                                                child: ElevatedButton(
-                                                  style:
-                                                      ElevatedButton.styleFrom(
-                                                    onSurface: Colors.white,
-                                                    primary: Colors.transparent,
-                                                    onPrimary: Colors.white,
-                                                    elevation: 4,
-                                                    shape:
-                                                        RoundedRectangleBorder(
-                                                      borderRadius:
-                                                          BorderRadius.only(
-                                                        topRight:
-                                                            Radius.circular(10),
-                                                        topLeft:
-                                                            Radius.circular(10),
-                                                      ),
-                                                    ),
-                                                    minimumSize: Size(
-                                                        100, 40), //////// HERE
-                                                  ),
-                                                  child: Row(
-                                                    mainAxisAlignment:
-                                                        MainAxisAlignment
-                                                            .spaceBetween,
-                                                    children: [
-                                                      Container(
-                                                        width:
-                                                            getProportionateScreenWidth(
-                                                                200),
-                                                        child: Text(
-                                                          userModel.agentTripsLocationList[
-                                                                  e][
-                                                              "startingPointString"],
-                                                          overflow: TextOverflow
-                                                              .ellipsis,
-                                                          style: TextStyle(
-                                                              color:
-                                                                  Colors.black,
-                                                              fontSize: 14,
-                                                              fontWeight:
-                                                                  FontWeight
-                                                                      .normal),
-                                                        ),
-                                                      ),
-                                                      Image.asset(
-                                                          'assets/images/starting point.png')
-                                                    ],
-                                                  ),
+                                                border: Border.all(
+                                                  color: Colors.grey[400] ??
+                                                      Colors.grey ??
+                                                      Colors.grey,
                                                 ),
                                               ),
-                                              Container(
-                                                height: 1,
-                                                color: Colors.grey[400],
-                                              ),
-                                              Container(
-                                                width:
+                                              child: Column(
+                                                children: [
+                                                  Container(
+                                                    width:
                                                     getProportionateScreenWidth(
                                                         250),
-                                                height: 50,
-                                                child: ElevatedButton(
-                                                  style:
+                                                    height: 50,
+                                                    child: ElevatedButton(
+                                                      style:
                                                       ElevatedButton.styleFrom(
-                                                    elevation: 4,
-                                                    onSurface: Colors.white,
-                                                    primary: Colors.transparent,
-                                                    onPrimary: Colors.white,
-                                                    shape:
+                                                        onSurface: Colors.white,
+                                                        primary: Colors
+                                                            .transparent,
+                                                        onPrimary: Colors.white,
+                                                        elevation: 4,
+                                                        shape:
                                                         RoundedRectangleBorder(
-                                                      borderRadius:
+                                                          borderRadius:
                                                           BorderRadius.only(
-                                                        bottomLeft:
+                                                            topRight:
                                                             Radius.circular(10),
-                                                        bottomRight:
+                                                            topLeft:
                                                             Radius.circular(10),
+                                                          ),
+                                                        ),
+                                                        minimumSize: Size(
+                                                            100,
+                                                            40), //////// HERE
                                                       ),
-                                                    ),
-                                                    minimumSize: Size(
-                                                        100, 40), //////// HERE
-                                                  ),
-                                                  child: Row(
-                                                    mainAxisAlignment:
+                                                      onPressed: () {},
+                                                      child: Row(
+                                                        mainAxisAlignment:
                                                         MainAxisAlignment
                                                             .spaceBetween,
-                                                    children: [
-                                                      Container(
-                                                        width:
+                                                        children: [
+                                                          Container(
+                                                            width:
                                                             getProportionateScreenWidth(
                                                                 200),
-                                                        child: Text(
-                                                          userModel.agentTripsLocationList[
-                                                                  e][
-                                                              "arrivalPointString"],
-                                                          overflow: TextOverflow
-                                                              .ellipsis,
-                                                          style: TextStyle(
-                                                              color:
+                                                            child: Text(
+                                                              userModel
+                                                                  .agentTripsLocationList![e][
+                                                              "startingPointString?"],
+                                                              overflow: TextOverflow
+                                                                  .ellipsis,
+                                                              style: TextStyle(
+                                                                  color:
                                                                   Colors.black,
-                                                              fontSize: 14,
-                                                              fontWeight:
+                                                                  fontSize: 14,
+                                                                  fontWeight:
                                                                   FontWeight
                                                                       .normal),
-                                                        ),
+                                                            ),
+                                                          ),
+                                                          Image.asset(
+                                                              'assets/images/starting point.png')
+                                                        ],
                                                       ),
-                                                      Image.asset(
-                                                          'assets/images/arrival point.png')
-                                                    ],
+                                                    ),
                                                   ),
-                                                ),
-                                              ),
-                                            ],
-                                          )));
-                                    }
+                                                  Container(
+                                                    height: 1,
+                                                    color: Colors.grey[400] ??
+                                                        Colors.grey,
+                                                  ),
+                                                  Container(
+                                                    width:
+                                                    getProportionateScreenWidth(
+                                                        250),
+                                                    height: 50,
+                                                    child: ElevatedButton(
+                                                      style:
+                                                      ElevatedButton.styleFrom(
+                                                        elevation: 4,
+                                                        onSurface: Colors.white,
+                                                        primary: Colors
+                                                            .transparent,
+                                                        onPrimary: Colors.white,
+                                                        shape:
+                                                        RoundedRectangleBorder(
+                                                          borderRadius:
+                                                          BorderRadius.only(
+                                                            bottomLeft:
+                                                            Radius.circular(10),
+                                                            bottomRight:
+                                                            Radius.circular(10),
+                                                          ),
+                                                        ),
+                                                        minimumSize: Size(
+                                                            100,
+                                                            40), //////// HERE
+                                                      ),
+                                                      onPressed: () {},
+                                                      child: Row(
+                                                        mainAxisAlignment:
+                                                        MainAxisAlignment
+                                                            .spaceBetween,
+                                                        children: [
+                                                          Container(
+                                                            width:
+                                                            getProportionateScreenWidth(
+                                                                200),
+                                                            child: Text(
+                                                              userModel
+                                                                  .agentTripsLocationList![e]["arrivalPointString?"],
+                                                              overflow: TextOverflow
+                                                                  .ellipsis,
+                                                              style: TextStyle(
+                                                                  color:
+                                                                  Colors.black,
+                                                                  fontSize: 14,
+                                                                  fontWeight:
+                                                                  FontWeight
+                                                                      .normal),
+                                                            ),
+                                                          ),
+                                                          Image.asset(
+                                                              'assets/images/arrival point.png')
+                                                        ],
+                                                      ),
+                                                    ),
+                                                  ),
+                                                ],
+                                              )));
+                                        }
 
-                                    return Column(
-                                      children: list,
-                                    );
-                                  } else
-                                    return Container(
-                                        padding: EdgeInsets.all(10),
-                                        decoration: BoxDecoration(
-                                          borderRadius:
+                                        return Column(
+                                          children: list,
+                                        );
+                                      } else
+                                        return Container(
+                                            padding: EdgeInsets.all(10),
+                                            decoration: BoxDecoration(
+                                              borderRadius:
                                               BorderRadius.circular(10.0),
-                                          border: Border.all(
-                                            color: Colors.grey[400],
-                                          ),
-                                        ),
-                                        child: Column(
-                                          children: [
-                                            Container(
-                                              width: 300,
-                                              height: 50,
-                                              child: ElevatedButton(
-                                                style: ElevatedButton.styleFrom(
-                                                  onSurface: Colors.white,
-                                                  primary: Colors.transparent,
-                                                  onPrimary: Colors.white,
-                                                  elevation: 4,
-                                                  shape: RoundedRectangleBorder(
-                                                    borderRadius:
-                                                        BorderRadius.only(
-                                                      topRight:
-                                                          Radius.circular(10),
-                                                      topLeft:
-                                                          Radius.circular(10),
-                                                    ),
-                                                  ),
-                                                  minimumSize: Size(
-                                                      100, 40), //////// HERE
-                                                ),
-                                                child: Row(
-                                                  mainAxisAlignment:
-                                                      MainAxisAlignment
-                                                          .spaceBetween,
-                                                  children: [
-                                                    Container(
-                                                      width: 220,
-                                                      child: Text(
-                                                        startingPointString,
-                                                        overflow: TextOverflow
-                                                            .ellipsis,
-                                                        style: TextStyle(
-                                                            color: Colors.black,
-                                                            fontSize: 14,
-                                                            fontWeight:
-                                                                FontWeight
-                                                                    .normal),
-                                                      ),
-                                                    ),
-                                                    Image.asset(
-                                                        'assets/images/starting point.png')
-                                                  ],
-                                                ),
+                                              border: Border.all(
+                                                color: Colors.grey[400] ??
+                                                    Colors.grey,
                                               ),
                                             ),
-                                            Container(
-                                              height: 1,
-                                              color: Colors.grey[400],
-                                            ),
-                                            Container(
-                                              width: 300,
-                                              height: 50,
-                                              child: ElevatedButton(
-                                                style: ElevatedButton.styleFrom(
-                                                  elevation: 4,
-                                                  onSurface: Colors.white,
-                                                  primary: Colors.transparent,
-                                                  onPrimary: Colors.white,
-                                                  shape: RoundedRectangleBorder(
-                                                    borderRadius:
+                                            child: Column(
+                                              children: [
+                                                Container(
+                                                  width: 300,
+                                                  height: 50,
+                                                  child: ElevatedButton(
+                                                    style: ElevatedButton
+                                                        .styleFrom(
+                                                      onSurface: Colors.white,
+                                                      primary: Colors
+                                                          .transparent,
+                                                      onPrimary: Colors.white,
+                                                      elevation: 4,
+                                                      shape: RoundedRectangleBorder(
+                                                        borderRadius:
                                                         BorderRadius.only(
-                                                      bottomLeft:
+                                                          topRight:
                                                           Radius.circular(10),
-                                                      bottomRight:
+                                                          topLeft:
                                                           Radius.circular(10),
+                                                        ),
+                                                      ),
+                                                      minimumSize: Size(
+                                                          100,
+                                                          40), //////// HERE
                                                     ),
-                                                  ),
-                                                  minimumSize: Size(
-                                                      100, 40), //////// HERE
-                                                ),
-                                                child: Row(
-                                                  mainAxisAlignment:
+                                                    onPressed: () {},
+                                                    child: Row(
+                                                      mainAxisAlignment:
                                                       MainAxisAlignment
                                                           .spaceBetween,
-                                                  children: [
-                                                    Container(
-                                                      width: 220,
-                                                      child: Text(
-                                                        arrivalPointString,
-                                                        overflow: TextOverflow
-                                                            .ellipsis,
-                                                        style: TextStyle(
-                                                            color: Colors.black,
-                                                            fontSize: 14,
-                                                            fontWeight:
+                                                      children: [
+                                                        Container(
+                                                          width: 220,
+                                                          child: Text(
+                                                            startingPointString
+                                                                ?? "",
+                                                            overflow: TextOverflow
+                                                                .ellipsis,
+                                                            style: TextStyle(
+                                                                color: Colors
+                                                                    .black,
+                                                                fontSize: 14,
+                                                                fontWeight:
                                                                 FontWeight
                                                                     .normal),
-                                                      ),
+                                                          ),
+                                                        ),
+                                                        Image.asset(
+                                                            'assets/images/starting point.png')
+                                                      ],
                                                     ),
-                                                    Image.asset(
-                                                        'assets/images/arrival point.png')
-                                                  ],
+                                                  ),
                                                 ),
-                                              ),
-                                            ),
-                                          ],
-                                        ));
-                                }
-                                return Container(
-                                  height: 0,
-                                );
-                              },
-                            ),
-                            SizedBox(
-                              height: 40,
-                            ),
-                            GestureDetector(
-                              onTap: () async {
-                                await locationData.getCurrentPosition();
-                                if (locationData.permissionGranted) {
-                                  Navigator.pushNamed(
-                                      context, MapTripScreen.routeName);
-                                }
-                              },
-                              child: Row(
-                                children: [
-                                  Image.asset(
-                                      'assets/images/add another one.png'),
-                                  SizedBox(
-                                    width: 5,
+                                                Container(
+                                                  height: 1,
+                                                  color: Colors.grey[400] ??
+                                                      Colors.grey,
+                                                ),
+                                                Container(
+                                                  width: 300,
+                                                  height: 50,
+                                                  child: ElevatedButton(
+                                                    style: ElevatedButton
+                                                        .styleFrom(
+                                                      elevation: 4,
+                                                      onSurface: Colors.white,
+                                                      primary: Colors
+                                                          .transparent,
+                                                      onPrimary: Colors.white,
+                                                      shape: RoundedRectangleBorder(
+                                                        borderRadius:
+                                                        BorderRadius.only(
+                                                          bottomLeft:
+                                                          Radius.circular(10),
+                                                          bottomRight:
+                                                          Radius.circular(10),
+                                                        ),
+                                                      ),
+                                                      minimumSize: Size(
+                                                          100,
+                                                          40), //////// HERE
+                                                    ),
+                                                    onPressed: () {},
+                                                    child: Row(
+                                                      mainAxisAlignment:
+                                                      MainAxisAlignment
+                                                          .spaceBetween,
+                                                      children: [
+                                                        Container(
+                                                          width: 220,
+                                                          child: Text(
+                                                            arrivalPointString
+                                                                ?? "",
+                                                            overflow: TextOverflow
+                                                                .ellipsis,
+                                                            style: TextStyle(
+                                                                color: Colors
+                                                                    .black,
+                                                                fontSize: 14,
+                                                                fontWeight:
+                                                                FontWeight
+                                                                    .normal),
+                                                          ),
+                                                        ),
+                                                        Image.asset(
+                                                            'assets/images/arrival point.png')
+                                                      ],
+                                                    ),
+                                                  ),
+                                                ),
+                                              ],
+                                            ));
+                                    }
+                                    return Container(
+                                      height: 0,
+                                    );
+                                  },
+                                ),
+                                SizedBox(
+                                  height: 40,
+                                ),
+                                GestureDetector(
+                                  onTap: () async {
+                                    await locationData.getCurrentPosition();
+                                    if (locationData.permissionGranted) {
+                                      Navigator.pushNamed(
+                                          context, MapTripScreen.routeName);
+                                    }
+                                  },
+                                  child: Row(
+                                    children: [
+                                      Image.asset(
+                                          'assets/images/add another one.png'),
+                                      SizedBox(
+                                        width: 5,
+                                      ),
+                                      Text("Add another trip",
+                                          textAlign: TextAlign.center,
+                                          style: TextStyle(
+                                            fontSize: 14,
+                                            letterSpacing: 1,
+                                            fontWeight: FontWeight.normal,
+                                            foreground: Paint()
+                                              ..shader = greenLinearGradient,
+                                          )),
+                                    ],
                                   ),
-                                  Text("Add another trip",
-                                      textAlign: TextAlign.center,
-                                      style: TextStyle(
-                                        fontSize: 14,
-                                        letterSpacing: 1,
-                                        fontWeight: FontWeight.normal,
-                                        foreground: Paint()
-                                          ..shader = greenLinearGradient,
-                                      )),
-                                ],
-                              ),
-                            ),
-                            SizedBox(
-                              height: 20,
-                            ),
-                            Container(
-                              child: TextFormBuilder(
-                                controller: maxWeightController,
-                                hintText: "Max Weight",
-                                suffix: false,
-                                prefix: CupertinoIcons.arrow_up_down,
-                                textInputAction: TextInputAction.next,
-                                validateFunction: Validations.validateNumber,
-                              ),
-                              height: 100,
-                              width: 150,
-                            ),
-                          ],
-                        )),
+                                ),
+                                SizedBox(
+                                  height: 20,
+                                ),
+                                Container(
+                                  child: TextFormBuilder(
+                                    controller: maxWeightController,
+                                    hintText: "Max Weight",
+                                    suffix: false,
+                                    prefix: CupertinoIcons.arrow_up_down,
+                                    textInputAction: TextInputAction.next,
+                                    validateFunction: Validations
+                                        .validateNumber,
+                                    submitAction: (){},
+                                  ),
+                                  height: 100,
+                                  width: 150,
+                                ),
+                              ],
+                            )),
                         SizedBox(
                           height: 20,
                         ),
@@ -1306,7 +1361,7 @@ class _UpdateProfilesState extends State<UpdateProfiles> {
                             children: [
                               Row(
                                 mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
+                                MainAxisAlignment.spaceBetween,
                                 children: [
                                   Container(
                                     width: 40,
@@ -1319,10 +1374,11 @@ class _UpdateProfilesState extends State<UpdateProfiles> {
                                           ],
                                         ),
                                         borderRadius:
-                                            BorderRadius.circular(10.0),
+                                        BorderRadius.circular(10.0),
                                         boxShadow: [
                                           BoxShadow(
-                                            color: Colors.grey[500],
+                                            color: Colors.grey[500] ??
+                                                Colors.grey,
                                             offset: Offset(0.0, 1.5),
                                             blurRadius: 1.5,
                                           ),
@@ -1339,10 +1395,11 @@ class _UpdateProfilesState extends State<UpdateProfiles> {
                                           ],
                                         ),
                                         borderRadius:
-                                            BorderRadius.circular(10.0),
+                                        BorderRadius.circular(10.0),
                                         boxShadow: [
                                           BoxShadow(
-                                            color: Colors.grey[500],
+                                            color: Colors.grey[500] ??
+                                                Colors.grey,
                                             offset: Offset(0.0, 1.5),
                                             blurRadius: 1.5,
                                           ),
@@ -1359,10 +1416,11 @@ class _UpdateProfilesState extends State<UpdateProfiles> {
                                           ],
                                         ),
                                         borderRadius:
-                                            BorderRadius.circular(10.0),
+                                        BorderRadius.circular(10.0),
                                         boxShadow: [
                                           BoxShadow(
-                                            color: Colors.grey[500],
+                                            color: Colors.grey[500] ??
+                                                Colors.grey,
                                             offset: Offset(0.0, 1.5),
                                             blurRadius: 1.5,
                                           ),
@@ -1379,10 +1437,11 @@ class _UpdateProfilesState extends State<UpdateProfiles> {
                                           ],
                                         ),
                                         borderRadius:
-                                            BorderRadius.circular(10.0),
+                                        BorderRadius.circular(10.0),
                                         boxShadow: [
                                           BoxShadow(
-                                            color: Colors.grey[500],
+                                            color: Colors.grey[500] ??
+                                                Colors.grey,
                                             offset: Offset(0.0, 1.5),
                                             blurRadius: 1.5,
                                           ),
@@ -1399,10 +1458,11 @@ class _UpdateProfilesState extends State<UpdateProfiles> {
                                           ],
                                         ),
                                         borderRadius:
-                                            BorderRadius.circular(10.0),
+                                        BorderRadius.circular(10.0),
                                         boxShadow: [
                                           BoxShadow(
-                                            color: Colors.grey[500],
+                                            color: Colors.grey[500] ??
+                                                Colors.grey,
                                             offset: Offset(0.0, 1.5),
                                             blurRadius: 1.5,
                                           ),
@@ -1419,10 +1479,11 @@ class _UpdateProfilesState extends State<UpdateProfiles> {
                                           ],
                                         ),
                                         borderRadius:
-                                            BorderRadius.circular(10.0),
+                                        BorderRadius.circular(10.0),
                                         boxShadow: [
                                           BoxShadow(
-                                            color: Colors.grey[500],
+                                            color: Colors.grey[500] ??
+                                                Colors.grey,
                                             offset: Offset(0.0, 1.5),
                                             blurRadius: 1.5,
                                           ),
@@ -1470,7 +1531,7 @@ class _UpdateProfilesState extends State<UpdateProfiles> {
                                     borderRadius: BorderRadius.circular(10.0),
                                     boxShadow: [
                                       BoxShadow(
-                                        color: Colors.grey[500],
+                                        color: Colors.grey[500] ?? Colors.grey,
                                         offset: Offset(0.0, 1.5),
                                         blurRadius: 1.5,
                                       ),
@@ -1533,14 +1594,14 @@ class _UpdateProfilesState extends State<UpdateProfiles> {
                         Align(
                           alignment: Alignment.topCenter,
                           child:
-                              Text("What activity/activities do you provide?",
-                                  textAlign: TextAlign.center,
-                                  style: TextStyle(
-                                    letterSpacing: 1,
-                                    fontSize: 14,
-                                    fontWeight: FontWeight.normal,
-                                    color: Colors.grey[700],
-                                  )),
+                          Text("What activity/activities do you provide?",
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                letterSpacing: 1,
+                                fontSize: 14,
+                                fontWeight: FontWeight.normal,
+                                color: Colors.grey[700],
+                              )),
                         ),
                         SizedBox(
                           height: 5,
@@ -1560,260 +1621,264 @@ class _UpdateProfilesState extends State<UpdateProfiles> {
                         ),
                         Expanded(
                             child: ListView(
-                          padding: EdgeInsets.all(10),
-                          children: [
-                            SizedBox(
-                              height: 20,
-                            ),
-                            Row(
+                              padding: EdgeInsets.all(10),
                               children: [
-                                GestureDetector(
-                                    onTap: () {
-                                      setState(() {
-                                        food = !food;
-                                      });
-                                    },
-                                    child: Card(
-                                        elevation: 8,
-                                        shape: RoundedRectangleBorder(
-                                            borderRadius:
+                                SizedBox(
+                                  height: 20,
+                                ),
+                                Row(
+                                  children: [
+                                    GestureDetector(
+                                        onTap: () {
+                                          setState(() {
+                                            food = !food;
+                                          });
+                                        },
+                                        child: Card(
+                                            elevation: 8,
+                                            shape: RoundedRectangleBorder(
+                                                borderRadius:
                                                 BorderRadius.circular(10)),
-                                        child: Container(
-                                          height: 120,
-                                          width:
+                                            child: Container(
+                                              height: 120,
+                                              width:
                                               getProportionateScreenWidth(120),
-                                          padding: EdgeInsets.all(10),
-                                          decoration: BoxDecoration(
-                                              gradient: LinearGradient(
-                                                colors: food
-                                                    ? [
-                                                        Color.fromRGBO(
-                                                            255, 182, 40, 1),
-                                                        Color.fromRGBO(
-                                                            238, 71, 0, 1),
-                                                      ]
-                                                    : [
-                                                        Color.fromRGBO(
-                                                            239, 240, 246, 1),
-                                                        Color.fromRGBO(
-                                                            239, 240, 246, 1)
-                                                      ],
-                                              ),
-                                              borderRadius:
+                                              padding: EdgeInsets.all(10),
+                                              decoration: BoxDecoration(
+                                                  gradient: LinearGradient(
+                                                    colors: food
+                                                        ? [
+                                                      Color.fromRGBO(
+                                                          255, 182, 40, 1),
+                                                      Color.fromRGBO(
+                                                          238, 71, 0, 1),
+                                                    ]
+                                                        : [
+                                                      Color.fromRGBO(
+                                                          239, 240, 246, 1),
+                                                      Color.fromRGBO(
+                                                          239, 240, 246, 1)
+                                                    ],
+                                                  ),
+                                                  borderRadius:
                                                   BorderRadius.circular(10.0),
-                                              boxShadow: [
-                                                BoxShadow(
-                                                  color: Colors.grey[500],
-                                                  offset: Offset(0.0, 1.5),
-                                                  blurRadius: 1.5,
-                                                ),
-                                              ]),
-                                          child: Row(
-                                            mainAxisAlignment:
+                                                  boxShadow: [
+                                                    BoxShadow(
+                                                      color: Colors.grey[500] ??
+                                                          Colors.grey,
+                                                      offset: Offset(0.0, 1.5),
+                                                      blurRadius: 1.5,
+                                                    ),
+                                                  ]),
+                                              child: Row(
+                                                mainAxisAlignment:
                                                 MainAxisAlignment.center,
-                                            children: [
-                                              Text(
-                                                'FOOD',
-                                                style: TextStyle(
-                                                    color: food
-                                                        ? Colors.white
-                                                        : Colors.black,
-                                                    fontWeight:
+                                                children: [
+                                                  Text(
+                                                    'FOOD',
+                                                    style: TextStyle(
+                                                        color: food
+                                                            ? Colors.white
+                                                            : Colors.black,
+                                                        fontWeight:
                                                         FontWeight.normal,
-                                                    letterSpacing: 1,
-                                                    fontSize: 16),
-                                              )
-                                            ],
-                                          ),
-                                        ))),
-                                GestureDetector(
-                                    onTap: () {
-                                      setState(() {
-                                        move = !move;
-                                      });
-                                    },
-                                    child: Card(
-                                        elevation: 8,
-                                        shape: RoundedRectangleBorder(
-                                            borderRadius:
+                                                        letterSpacing: 1,
+                                                        fontSize: 16),
+                                                  )
+                                                ],
+                                              ),
+                                            ))),
+                                    GestureDetector(
+                                        onTap: () {
+                                          setState(() {
+                                            move = !move;
+                                          });
+                                        },
+                                        child: Card(
+                                            elevation: 8,
+                                            shape: RoundedRectangleBorder(
+                                                borderRadius:
                                                 BorderRadius.circular(10)),
-                                        child: Container(
-                                          height: 120,
-                                          width:
+                                            child: Container(
+                                              height: 120,
+                                              width:
                                               getProportionateScreenWidth(120),
-                                          padding: EdgeInsets.all(10),
-                                          decoration: BoxDecoration(
-                                              gradient: LinearGradient(
-                                                colors: move
-                                                    ? [
-                                                        Color.fromRGBO(
-                                                            255, 182, 40, 1),
-                                                        Color.fromRGBO(
-                                                            238, 71, 0, 1),
-                                                      ]
-                                                    : [
-                                                        Color.fromRGBO(
-                                                            239, 240, 246, 1),
-                                                        Color.fromRGBO(
-                                                            239, 240, 246, 1)
-                                                      ],
-                                              ),
-                                              borderRadius:
+                                              padding: EdgeInsets.all(10),
+                                              decoration: BoxDecoration(
+                                                  gradient: LinearGradient(
+                                                    colors: move
+                                                        ? [
+                                                      Color.fromRGBO(
+                                                          255, 182, 40, 1),
+                                                      Color.fromRGBO(
+                                                          238, 71, 0, 1),
+                                                    ]
+                                                        : [
+                                                      Color.fromRGBO(
+                                                          239, 240, 246, 1),
+                                                      Color.fromRGBO(
+                                                          239, 240, 246, 1)
+                                                    ],
+                                                  ),
+                                                  borderRadius:
                                                   BorderRadius.circular(10.0),
-                                              boxShadow: [
-                                                BoxShadow(
-                                                  color: Colors.grey[500],
-                                                  offset: Offset(0.0, 1.5),
-                                                  blurRadius: 1.5,
-                                                ),
-                                              ]),
-                                          child: Row(
-                                            mainAxisAlignment:
+                                                  boxShadow: [
+                                                    BoxShadow(
+                                                      color: Colors.grey[500] ??
+                                                          Colors.grey,
+                                                      offset: Offset(0.0, 1.5),
+                                                      blurRadius: 1.5,
+                                                    ),
+                                                  ]),
+                                              child: Row(
+                                                mainAxisAlignment:
                                                 MainAxisAlignment.center,
-                                            children: [
-                                              Text(
-                                                'MOVE',
-                                                style: TextStyle(
-                                                    color: move
-                                                        ? Colors.white
-                                                        : Colors.black,
-                                                    fontWeight:
+                                                children: [
+                                                  Text(
+                                                    'MOVE',
+                                                    style: TextStyle(
+                                                        color: move
+                                                            ? Colors.white
+                                                            : Colors.black,
+                                                        fontWeight:
                                                         FontWeight.normal,
-                                                    letterSpacing: 1,
-                                                    fontSize: 16),
-                                              )
-                                            ],
-                                          ),
-                                        ))),
+                                                        letterSpacing: 1,
+                                                        fontSize: 16),
+                                                  )
+                                                ],
+                                              ),
+                                            ))),
+                                  ],
+                                ),
+                                SizedBox(
+                                  height: 20,
+                                ),
+                                Row(
+                                  children: [
+                                    GestureDetector(
+                                        onTap: () {
+                                          setState(() {
+                                            ecom = !ecom;
+                                          });
+                                        },
+                                        child: Card(
+                                            elevation: 8,
+                                            shape: RoundedRectangleBorder(
+                                                borderRadius:
+                                                BorderRadius.circular(10)),
+                                            child: Container(
+                                              height: 120,
+                                              width:
+                                              getProportionateScreenWidth(120),
+                                              padding: EdgeInsets.all(10),
+                                              decoration: BoxDecoration(
+                                                  gradient: LinearGradient(
+                                                    colors: ecom
+                                                        ? [
+                                                      Color.fromRGBO(
+                                                          255, 182, 40, 1),
+                                                      Color.fromRGBO(
+                                                          238, 71, 0, 1),
+                                                    ]
+                                                        : [
+                                                      Color.fromRGBO(
+                                                          239, 240, 246, 1),
+                                                      Color.fromRGBO(
+                                                          239, 240, 246, 1)
+                                                    ],
+                                                  ),
+                                                  borderRadius:
+                                                  BorderRadius.circular(10.0),
+                                                  boxShadow: [
+                                                    BoxShadow(
+                                                      color: Colors.grey[500] ??
+                                                          Colors.grey,
+                                                      offset: Offset(0.0, 1.5),
+                                                      blurRadius: 1.5,
+                                                    ),
+                                                  ]),
+                                              child: Row(
+                                                mainAxisAlignment:
+                                                MainAxisAlignment.center,
+                                                children: [
+                                                  Text(
+                                                    'E-commerce',
+                                                    style: TextStyle(
+                                                        color: ecom
+                                                            ? Colors.white
+                                                            : Colors.black,
+                                                        fontWeight:
+                                                        FontWeight.normal,
+                                                        letterSpacing: 1,
+                                                        fontSize: 16),
+                                                  )
+                                                ],
+                                              ),
+                                            ))),
+                                    GestureDetector(
+                                        onTap: () {
+                                          setState(() {
+                                            courier = !courier;
+                                          });
+                                        },
+                                        child: Card(
+                                            elevation: 8,
+                                            shape: RoundedRectangleBorder(
+                                                borderRadius:
+                                                BorderRadius.circular(10)),
+                                            child: Container(
+                                              height: 120,
+                                              width:
+                                              getProportionateScreenWidth(120),
+                                              padding: EdgeInsets.all(10),
+                                              decoration: BoxDecoration(
+                                                  gradient: LinearGradient(
+                                                    colors: courier
+                                                        ? [
+                                                      Color.fromRGBO(
+                                                          255, 182, 40, 1),
+                                                      Color.fromRGBO(
+                                                          238, 71, 0, 1),
+                                                    ]
+                                                        : [
+                                                      Color.fromRGBO(
+                                                          239, 240, 246, 1),
+                                                      Color.fromRGBO(
+                                                          239, 240, 246, 1)
+                                                    ],
+                                                  ),
+                                                  borderRadius:
+                                                  BorderRadius.circular(10.0),
+                                                  boxShadow: [
+                                                    BoxShadow(
+                                                      color: Colors.grey[500] ??
+                                                          Colors.grey,
+                                                      offset: Offset(0.0, 1.5),
+                                                      blurRadius: 1.5,
+                                                    ),
+                                                  ]),
+                                              child: Row(
+                                                mainAxisAlignment:
+                                                MainAxisAlignment.center,
+                                                children: [
+                                                  Text(
+                                                    'COURIER',
+                                                    style: TextStyle(
+                                                        color: courier
+                                                            ? Colors.white
+                                                            : Colors.black,
+                                                        fontWeight:
+                                                        FontWeight.normal,
+                                                        letterSpacing: 1,
+                                                        fontSize: 16),
+                                                  )
+                                                ],
+                                              ),
+                                            ))),
+                                  ],
+                                ),
                               ],
-                            ),
-                            SizedBox(
-                              height: 20,
-                            ),
-                            Row(
-                              children: [
-                                GestureDetector(
-                                    onTap: () {
-                                      setState(() {
-                                        ecom = !ecom;
-                                      });
-                                    },
-                                    child: Card(
-                                        elevation: 8,
-                                        shape: RoundedRectangleBorder(
-                                            borderRadius:
-                                                BorderRadius.circular(10)),
-                                        child: Container(
-                                          height: 120,
-                                          width:
-                                              getProportionateScreenWidth(120),
-                                          padding: EdgeInsets.all(10),
-                                          decoration: BoxDecoration(
-                                              gradient: LinearGradient(
-                                                colors: ecom
-                                                    ? [
-                                                        Color.fromRGBO(
-                                                            255, 182, 40, 1),
-                                                        Color.fromRGBO(
-                                                            238, 71, 0, 1),
-                                                      ]
-                                                    : [
-                                                        Color.fromRGBO(
-                                                            239, 240, 246, 1),
-                                                        Color.fromRGBO(
-                                                            239, 240, 246, 1)
-                                                      ],
-                                              ),
-                                              borderRadius:
-                                                  BorderRadius.circular(10.0),
-                                              boxShadow: [
-                                                BoxShadow(
-                                                  color: Colors.grey[500],
-                                                  offset: Offset(0.0, 1.5),
-                                                  blurRadius: 1.5,
-                                                ),
-                                              ]),
-                                          child: Row(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.center,
-                                            children: [
-                                              Text(
-                                                'E-commerce',
-                                                style: TextStyle(
-                                                    color: ecom
-                                                        ? Colors.white
-                                                        : Colors.black,
-                                                    fontWeight:
-                                                        FontWeight.normal,
-                                                    letterSpacing: 1,
-                                                    fontSize: 16),
-                                              )
-                                            ],
-                                          ),
-                                        ))),
-                                GestureDetector(
-                                    onTap: () {
-                                      setState(() {
-                                        courier = !courier;
-                                      });
-                                    },
-                                    child: Card(
-                                        elevation: 8,
-                                        shape: RoundedRectangleBorder(
-                                            borderRadius:
-                                                BorderRadius.circular(10)),
-                                        child: Container(
-                                          height: 120,
-                                          width:
-                                              getProportionateScreenWidth(120),
-                                          padding: EdgeInsets.all(10),
-                                          decoration: BoxDecoration(
-                                              gradient: LinearGradient(
-                                                colors: courier
-                                                    ? [
-                                                        Color.fromRGBO(
-                                                            255, 182, 40, 1),
-                                                        Color.fromRGBO(
-                                                            238, 71, 0, 1),
-                                                      ]
-                                                    : [
-                                                        Color.fromRGBO(
-                                                            239, 240, 246, 1),
-                                                        Color.fromRGBO(
-                                                            239, 240, 246, 1)
-                                                      ],
-                                              ),
-                                              borderRadius:
-                                                  BorderRadius.circular(10.0),
-                                              boxShadow: [
-                                                BoxShadow(
-                                                  color: Colors.grey[500],
-                                                  offset: Offset(0.0, 1.5),
-                                                  blurRadius: 1.5,
-                                                ),
-                                              ]),
-                                          child: Row(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.center,
-                                            children: [
-                                              Text(
-                                                'COURIER',
-                                                style: TextStyle(
-                                                    color: courier
-                                                        ? Colors.white
-                                                        : Colors.black,
-                                                    fontWeight:
-                                                        FontWeight.normal,
-                                                    letterSpacing: 1,
-                                                    fontSize: 16),
-                                              )
-                                            ],
-                                          ),
-                                        ))),
-                              ],
-                            ),
-                          ],
-                        )),
+                            )),
                         SizedBox(
                           height: 20,
                         ),
@@ -1823,7 +1888,7 @@ class _UpdateProfilesState extends State<UpdateProfiles> {
                             children: [
                               Row(
                                 mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
+                                MainAxisAlignment.spaceBetween,
                                 children: [
                                   Container(
                                     width: 40,
@@ -1836,10 +1901,11 @@ class _UpdateProfilesState extends State<UpdateProfiles> {
                                           ],
                                         ),
                                         borderRadius:
-                                            BorderRadius.circular(10.0),
+                                        BorderRadius.circular(10.0),
                                         boxShadow: [
                                           BoxShadow(
-                                            color: Colors.grey[500],
+                                            color: Colors.grey[500] ??
+                                                Colors.grey,
                                             offset: Offset(0.0, 1.5),
                                             blurRadius: 1.5,
                                           ),
@@ -1856,10 +1922,11 @@ class _UpdateProfilesState extends State<UpdateProfiles> {
                                           ],
                                         ),
                                         borderRadius:
-                                            BorderRadius.circular(10.0),
+                                        BorderRadius.circular(10.0),
                                         boxShadow: [
                                           BoxShadow(
-                                            color: Colors.grey[500],
+                                            color: Colors.grey[500] ??
+                                                Colors.grey,
                                             offset: Offset(0.0, 1.5),
                                             blurRadius: 1.5,
                                           ),
@@ -1876,10 +1943,11 @@ class _UpdateProfilesState extends State<UpdateProfiles> {
                                           ],
                                         ),
                                         borderRadius:
-                                            BorderRadius.circular(10.0),
+                                        BorderRadius.circular(10.0),
                                         boxShadow: [
                                           BoxShadow(
-                                            color: Colors.grey[500],
+                                            color: Colors.grey[500] ??
+                                                Colors.grey,
                                             offset: Offset(0.0, 1.5),
                                             blurRadius: 1.5,
                                           ),
@@ -1896,10 +1964,11 @@ class _UpdateProfilesState extends State<UpdateProfiles> {
                                           ],
                                         ),
                                         borderRadius:
-                                            BorderRadius.circular(10.0),
+                                        BorderRadius.circular(10.0),
                                         boxShadow: [
                                           BoxShadow(
-                                            color: Colors.grey[500],
+                                            color: Colors.grey[500] ??
+                                                Colors.grey,
                                             offset: Offset(0.0, 1.5),
                                             blurRadius: 1.5,
                                           ),
@@ -1916,10 +1985,11 @@ class _UpdateProfilesState extends State<UpdateProfiles> {
                                           ],
                                         ),
                                         borderRadius:
-                                            BorderRadius.circular(10.0),
+                                        BorderRadius.circular(10.0),
                                         boxShadow: [
                                           BoxShadow(
-                                            color: Colors.grey[500],
+                                            color: Colors.grey[500] ??
+                                                Colors.grey,
                                             offset: Offset(0.0, 1.5),
                                             blurRadius: 1.5,
                                           ),
@@ -1936,10 +2006,11 @@ class _UpdateProfilesState extends State<UpdateProfiles> {
                                           ],
                                         ),
                                         borderRadius:
-                                            BorderRadius.circular(10.0),
+                                        BorderRadius.circular(10.0),
                                         boxShadow: [
                                           BoxShadow(
-                                            color: Colors.grey[500],
+                                            color: Colors.grey[500] ??
+                                                Colors.grey,
                                             offset: Offset(0.0, 1.5),
                                             blurRadius: 1.5,
                                           ),
@@ -1966,7 +2037,11 @@ class _UpdateProfilesState extends State<UpdateProfiles> {
                                   onPressed: () async {
                                     authService.updateActivitiesToFireStore(
                                         firebaseAuth.currentUser,
-                                        "${food ? "FOOD," : ""}${move ? "MOVE," : ""}${courier ? "COURIER," : ""}${ecom ? "E-COMMERCE" : ""}");
+                                        "${food ? "FOOD," : ""}${move
+                                            ? "MOVE,"
+                                            : ""}${courier
+                                            ? "COURIER,"
+                                            : ""}${ecom ? "E-COMMERCE" : ""}");
                                     setState(() {
                                       valid = false;
                                       agentInt = false;
@@ -1986,7 +2061,7 @@ class _UpdateProfilesState extends State<UpdateProfiles> {
                                     borderRadius: BorderRadius.circular(10.0),
                                     boxShadow: [
                                       BoxShadow(
-                                        color: Colors.grey[500],
+                                        color: Colors.grey[500] ?? Colors.grey,
                                         offset: Offset(0.0, 1.5),
                                         blurRadius: 1.5,
                                       ),
@@ -2062,591 +2137,607 @@ class _UpdateProfilesState extends State<UpdateProfiles> {
                         ),
                         Expanded(
                             child: ListView(
-                          children: [
-                            SizedBox(
-                              height: 20,
-                            ),
-                            Container(
-                              padding: EdgeInsets.all(15),
-                              decoration: BoxDecoration(
-                                  color: Color.fromRGBO(239, 240, 246, 1),
-                                  border:
+                              children: [
+                                SizedBox(
+                                  height: 20,
+                                ),
+                                Container(
+                                  padding: EdgeInsets.all(15),
+                                  decoration: BoxDecoration(
+                                      color: Color.fromRGBO(239, 240, 246, 1),
+                                      border:
                                       Border.all(width: 1, color: Colors.grey),
-                                  borderRadius: BorderRadius.circular(10)),
-                              child: Row(
-                                mainAxisAlignment:
+                                      borderRadius: BorderRadius.circular(10)),
+                                  child: Row(
+                                    mainAxisAlignment:
                                     MainAxisAlignment.spaceBetween,
-                                children: <Widget>[
-                                  Expanded(
-                                    child: DropdownButtonHideUnderline(
-                                      child: ButtonTheme(
-                                        alignedDropdown: true,
-                                        child: DropdownButton<String>(
-                                          isDense: true,
-                                          hint: new Text("Company,person "),
-                                          value: _businessSelected,
-                                          onChanged: (String newValue) {
-                                            setState(() {
-                                              _businessSelected = newValue;
-                                            });
-                                          },
-                                          items: ["Company", "Person"]
-                                              .map((e) => new DropdownMenuItem(
-                                                    value: e.toString(),
-                                                    // value: _mySelection,
-                                                    child: Row(
-                                                      children: <Widget>[
-                                                        Icon(
-                                                            CupertinoIcons
-                                                                .keyboard_chevron_compact_down,
-                                                            size: 20,
-                                                            color:
-                                                                Colors.black87),
-                                                        Container(
-                                                            margin:
-                                                                EdgeInsets.only(
-                                                                    left: 10),
-                                                            child: Text(
-                                                              e,
-                                                              style: TextStyle(
-                                                                fontSize: 14,
-                                                                color: Colors
-                                                                    .black,
-                                                                letterSpacing:
-                                                                    1,
-                                                                fontWeight:
-                                                                    FontWeight
-                                                                        .normal,
-                                                              ),
-                                                            )),
-                                                      ],
-                                                    ),
-                                                  ))
-                                              .toList(),
+                                    children: <Widget>[
+                                      Expanded(
+                                        child: DropdownButtonHideUnderline(
+                                          child: ButtonTheme(
+                                            alignedDropdown: true,
+                                            child: DropdownButton<String?>(
+                                              isDense: true,
+                                              hint: new Text("Company,person "),
+                                              value: _businessSelected,
+                                              onChanged: (String? newValue) {
+                                                setState(() {
+                                                  _businessSelected = newValue;
+                                                });
+                                              },
+                                              items: ["Company", "Person"]
+                                                  .map((e) =>
+                                              new DropdownMenuItem(
+                                                value: e.toString(),
+                                                // value: _mySelection,
+                                                child: Row(
+                                                  children: <Widget>[
+                                                    Icon(
+                                                        CupertinoIcons
+                                                            .keyboard_chevron_compact_down,
+                                                        size: 20,
+                                                        color:
+                                                        Colors.black87),
+                                                    Container(
+                                                        margin:
+                                                        EdgeInsets.only(
+                                                            left: 10),
+                                                        child: Text(
+                                                          e,
+                                                          style: TextStyle(
+                                                            fontSize: 14,
+                                                            color: Colors
+                                                                .black,
+                                                            letterSpacing:
+                                                            1,
+                                                            fontWeight:
+                                                            FontWeight
+                                                                .normal,
+                                                          ),
+                                                        )),
+                                                  ],
+                                                ),
+                                              )).toList(),
+                                            ),
+                                          ),
                                         ),
                                       ),
-                                    ),
+                                    ],
                                   ),
-                                ],
-                              ),
-                            ),
-                            SizedBox(
-                              height: 20,
-                            ),
-                            TextFormBuilder(
-                              controller: _businessController,
-                              hintText: "Business name",
-                              suffix: false,
-                              textInputAction: TextInputAction.next,
-                              validateFunction:
+                                ),
+                                SizedBox(
+                                  height: 20,
+                                ),
+                                TextFormBuilder(
+                                  controller: _businessController,
+                                  hintText: "Business name",
+                                  suffix: false,
+                                  textInputAction: TextInputAction.next,
+                                  validateFunction:
                                   Validations.validateBusinessName,
-                            ),
-                            SizedBox(
-                              height: 20,
-                            ),
-                            Column(
-                              children: [
-                                Align(
-                                  alignment: Alignment.topLeft,
-                                  child: Text("Means of transport",
-                                      textAlign: TextAlign.center,
-                                      style: TextStyle(
-                                        fontSize: 14,
-                                        fontWeight: FontWeight.normal,
-                                        color: Colors.grey[800],
-                                      )),
+                                  submitAction: (){},
                                 ),
                                 SizedBox(
                                   height: 20,
                                 ),
-                                Row(
+                                Column(
                                   children: [
-                                    GestureDetector(
-                                        onTap: () {
-                                          setState(() {
-                                            moto = false;
-                                            car = true;
-                                          });
-                                        },
-                                        child: Card(
-                                            elevation: 8,
-                                            shape: RoundedRectangleBorder(
-                                                borderRadius:
-                                                    BorderRadius.circular(10)),
-                                            child: Container(
-                                              height: 65,
-                                              width: 75,
-                                              padding: EdgeInsets.all(10),
-                                              decoration: BoxDecoration(
-                                                  gradient: LinearGradient(
-                                                    colors: car
-                                                        ? [
-                                                            Color.fromRGBO(
-                                                                82, 238, 79, 1),
-                                                            Color.fromRGBO(
-                                                                5, 151, 0, 1),
-                                                          ]
-                                                        : [
-                                                            Color.fromRGBO(239,
-                                                                240, 246, 1),
-                                                            Color.fromRGBO(239,
-                                                                240, 246, 1)
-                                                          ],
-                                                  ),
-                                                  borderRadius:
-                                                      BorderRadius.circular(
-                                                          10.0),
-                                                  boxShadow: [
-                                                    BoxShadow(
-                                                      color: Colors.grey[500],
-                                                      offset: Offset(0.0, 1.5),
-                                                      blurRadius: 1.5,
-                                                    ),
-                                                  ]),
-                                              child: Row(
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment.center,
-                                                children: [
-                                                  Text(
-                                                    'Car',
-                                                    style: TextStyle(
-                                                        color: car
-                                                            ? Colors.white
-                                                            : Colors.black,
-                                                        fontWeight:
-                                                            FontWeight.normal,
-                                                        letterSpacing: 1,
-                                                        fontSize: 16),
-                                                  )
-                                                ],
-                                              ),
-                                            ))),
-                                    GestureDetector(
-                                        onTap: () {
-                                          setState(() {
-                                            moto = true;
-                                            car = false;
-                                          });
-                                        },
-                                        child: Card(
-                                            elevation: 8,
-                                            shape: RoundedRectangleBorder(
-                                                borderRadius:
-                                                    BorderRadius.circular(10)),
-                                            child: Container(
-                                              height: 65,
-                                              width: 75,
-                                              padding: EdgeInsets.all(10),
-                                              decoration: BoxDecoration(
-                                                  gradient: LinearGradient(
-                                                    colors: moto
-                                                        ? [
-                                                            Color.fromRGBO(
-                                                                82, 238, 79, 1),
-                                                            Color.fromRGBO(
-                                                                5, 151, 0, 1),
-                                                          ]
-                                                        : [
-                                                            Color.fromRGBO(239,
-                                                                240, 246, 1),
-                                                            Color.fromRGBO(239,
-                                                                240, 246, 1)
-                                                          ],
-                                                  ),
-                                                  borderRadius:
-                                                      BorderRadius.circular(
-                                                          10.0),
-                                                  boxShadow: [
-                                                    BoxShadow(
-                                                      color: Colors.grey[500],
-                                                      offset: Offset(0.0, 1.5),
-                                                      blurRadius: 1.5,
-                                                    ),
-                                                  ]),
-                                              child: Row(
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment.center,
-                                                children: [
-                                                  Text(
-                                                    'Moto',
-                                                    style: TextStyle(
-                                                        color: moto
-                                                            ? Colors.white
-                                                            : Colors.black,
-                                                        fontWeight:
-                                                            FontWeight.normal,
-                                                        letterSpacing: 1,
-                                                        fontSize: 16),
-                                                  )
-                                                ],
-                                              ),
-                                            ))),
-                                    GestureDetector(
-                                        onTap: () {
-                                          setState(() {});
-                                        },
-                                        child: Card(
-                                            elevation: 8,
-                                            shape: RoundedRectangleBorder(
-                                                borderRadius:
-                                                    BorderRadius.circular(10)),
-                                            child: Container(
-                                              height: 65,
-                                              width: 75,
-                                              padding: EdgeInsets.all(10),
-                                              decoration: BoxDecoration(
-                                                  color: Colors.white,
-                                                  border: Border.all(
-                                                      width: 1,
-                                                      color: Colors.green),
-                                                  borderRadius:
-                                                      BorderRadius.circular(10),
-                                                  boxShadow: [
-                                                    BoxShadow(
-                                                      color: Colors.grey[500],
-                                                      offset: Offset(0.0, 1.5),
-                                                      blurRadius: 1.5,
-                                                    ),
-                                                  ]),
-                                              child: Row(
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment.center,
-                                                children: [
-                                                  Icon(
-                                                    CupertinoIcons.plus,
-                                                    size: 30,
-                                                    color: Colors.green,
-                                                  ),
-                                                ],
-                                              ),
-                                            )))
-                                  ],
-                                ),
-                                SizedBox(
-                                  height: 20,
-                                ),
-                                Align(
-                                  alignment: Alignment.topLeft,
-                                  child: Text("You have a warehouse?",
-                                      textAlign: TextAlign.center,
-                                      style: TextStyle(
-                                        fontSize: 14,
-                                        fontWeight: FontWeight.normal,
-                                        color: Colors.grey[800],
-                                      )),
-                                ),
-                                SizedBox(
-                                  height: 20,
-                                ),
-                                Row(
-                                  children: [
-                                    InkWell(
-                                      onTap: () {
-                                        setState(() {
-                                          warehouseYes = !warehouseYes;
-                                          warehouseNo = !warehouseNo;
-                                        });
-                                      },
-                                      child: Row(
-                                        children: [
-                                          Container(
-                                            decoration: BoxDecoration(
-                                              color: warehouseYes
-                                                  ? Colors.white
-                                                  : Colors.grey
-                                                      .withOpacity(0.3),
-                                              border: Border.all(
-                                                  color: warehouseYes
-                                                      ? Colors.green
-                                                      : Colors.grey
-                                                          .withOpacity(0.3),
-                                                  width: warehouseYes ? 3 : 2),
-                                              borderRadius:
-                                                  BorderRadius.circular(10),
-                                            ),
-                                            child: Icon(
-                                              null,
-                                              size: 15.0,
-                                            ),
-                                          ),
-                                          SizedBox(
-                                            width: 5,
-                                          ),
-                                          Text(
-                                            'Yes',
-                                            style:
-                                                TextStyle(color: Colors.black),
-                                          )
-                                        ],
-                                      ),
+                                    Align(
+                                      alignment: Alignment.topLeft,
+                                      child: Text("Means of transport",
+                                          textAlign: TextAlign.center,
+                                          style: TextStyle(
+                                            fontSize: 14,
+                                            fontWeight: FontWeight.normal,
+                                            color: Colors.grey[800],
+                                          )),
                                     ),
                                     SizedBox(
-                                      width: 20,
+                                      height: 20,
                                     ),
-                                    InkWell(
-                                      onTap: () {
-                                        setState(() {
-                                          warehouseYes = !warehouseYes;
-                                          warehouseNo = !warehouseNo;
-                                        });
-                                      },
-                                      child: Row(
-                                        children: [
-                                          Container(
-                                            decoration: BoxDecoration(
-                                              color: warehouseNo
-                                                  ? Colors.white
-                                                  : Colors.grey
-                                                      .withOpacity(0.3),
-                                              border: Border.all(
-                                                  color: warehouseNo
-                                                      ? Colors.green
-                                                      : Colors.grey
-                                                          .withOpacity(0.3),
-                                                  width: warehouseNo ? 3 : 2),
-                                              borderRadius:
-                                                  BorderRadius.circular(10),
-                                            ),
-                                            child: Icon(
-                                              null,
-                                              size: 15.0,
-                                            ),
-                                          ),
-                                          SizedBox(
-                                            width: 5,
-                                          ),
-                                          Text(
-                                            'No',
-                                            style:
-                                                TextStyle(color: Colors.black),
-                                          )
-                                        ],
-                                      ),
+                                    Row(
+                                      children: [
+                                        GestureDetector(
+                                            onTap: () {
+                                              setState(() {
+                                                moto = false;
+                                                car = true;
+                                              });
+                                            },
+                                            child: Card(
+                                                elevation: 8,
+                                                shape: RoundedRectangleBorder(
+                                                    borderRadius:
+                                                    BorderRadius.circular(10)),
+                                                child: Container(
+                                                  height: 65,
+                                                  width: 75,
+                                                  padding: EdgeInsets.all(10),
+                                                  decoration: BoxDecoration(
+                                                      gradient: LinearGradient(
+                                                        colors: car
+                                                            ? [
+                                                          Color.fromRGBO(
+                                                              82, 238, 79, 1),
+                                                          Color.fromRGBO(
+                                                              5, 151, 0, 1),
+                                                        ]
+                                                            : [
+                                                          Color.fromRGBO(239,
+                                                              240, 246, 1),
+                                                          Color.fromRGBO(239,
+                                                              240, 246, 1)
+                                                        ],
+                                                      ),
+                                                      borderRadius:
+                                                      BorderRadius.circular(
+                                                          10.0),
+                                                      boxShadow: [
+                                                        BoxShadow(
+                                                          color: Colors
+                                                              .grey[500] ??
+                                                              Colors.grey,
+                                                          offset: Offset(
+                                                              0.0, 1.5),
+                                                          blurRadius: 1.5,
+                                                        ),
+                                                      ]),
+                                                  child: Row(
+                                                    mainAxisAlignment:
+                                                    MainAxisAlignment.center,
+                                                    children: [
+                                                      Text(
+                                                        'Car',
+                                                        style: TextStyle(
+                                                            color: car
+                                                                ? Colors.white
+                                                                : Colors.black,
+                                                            fontWeight:
+                                                            FontWeight.normal,
+                                                            letterSpacing: 1,
+                                                            fontSize: 16),
+                                                      )
+                                                    ],
+                                                  ),
+                                                ))),
+                                        GestureDetector(
+                                            onTap: () {
+                                              setState(() {
+                                                moto = true;
+                                                car = false;
+                                              });
+                                            },
+                                            child: Card(
+                                                elevation: 8,
+                                                shape: RoundedRectangleBorder(
+                                                    borderRadius:
+                                                    BorderRadius.circular(10)),
+                                                child: Container(
+                                                  height: 65,
+                                                  width: 75,
+                                                  padding: EdgeInsets.all(10),
+                                                  decoration: BoxDecoration(
+                                                      gradient: LinearGradient(
+                                                        colors: moto
+                                                            ? [
+                                                          Color.fromRGBO(
+                                                              82, 238, 79, 1),
+                                                          Color.fromRGBO(
+                                                              5, 151, 0, 1),
+                                                        ]
+                                                            : [
+                                                          Color.fromRGBO(239,
+                                                              240, 246, 1),
+                                                          Color.fromRGBO(239,
+                                                              240, 246, 1)
+                                                        ],
+                                                      ),
+                                                      borderRadius:
+                                                      BorderRadius.circular(
+                                                          10.0),
+                                                      boxShadow: [
+                                                        BoxShadow(
+                                                          color: Colors
+                                                              .grey[500] ??
+                                                              Colors.grey,
+                                                          offset: Offset(
+                                                              0.0, 1.5),
+                                                          blurRadius: 1.5,
+                                                        ),
+                                                      ]),
+                                                  child: Row(
+                                                    mainAxisAlignment:
+                                                    MainAxisAlignment.center,
+                                                    children: [
+                                                      Text(
+                                                        'Moto',
+                                                        style: TextStyle(
+                                                            color: moto
+                                                                ? Colors.white
+                                                                : Colors.black,
+                                                            fontWeight:
+                                                            FontWeight.normal,
+                                                            letterSpacing: 1,
+                                                            fontSize: 16),
+                                                      )
+                                                    ],
+                                                  ),
+                                                ))),
+                                        GestureDetector(
+                                            onTap: () {
+                                              setState(() {});
+                                            },
+                                            child: Card(
+                                                elevation: 8,
+                                                shape: RoundedRectangleBorder(
+                                                    borderRadius:
+                                                    BorderRadius.circular(10)),
+                                                child: Container(
+                                                  height: 65,
+                                                  width: 75,
+                                                  padding: EdgeInsets.all(10),
+                                                  decoration: BoxDecoration(
+                                                      color: Colors.white,
+                                                      border: Border.all(
+                                                          width: 1,
+                                                          color: Colors.green),
+                                                      borderRadius:
+                                                      BorderRadius.circular(10),
+                                                      boxShadow: [
+                                                        BoxShadow(
+                                                          color: Colors
+                                                              .grey[500] ??
+                                                              Colors.grey,
+                                                          offset: Offset(
+                                                              0.0, 1.5),
+                                                          blurRadius: 1.5,
+                                                        ),
+                                                      ]),
+                                                  child: Row(
+                                                    mainAxisAlignment:
+                                                    MainAxisAlignment.center,
+                                                    children: [
+                                                      Icon(
+                                                        CupertinoIcons.plus,
+                                                        size: 30,
+                                                        color: Colors.green,
+                                                      ),
+                                                    ],
+                                                  ),
+                                                )))
+                                      ],
                                     ),
-                                  ],
-                                ),
-                                SizedBox(
-                                  height: 20,
-                                ),
-                                StreamBuilder(
-                                  stream: usersRef
-                                      .doc(firebaseAuth.currentUser.uid)
-                                      .snapshots(),
-                                  builder: (context,
-                                      AsyncSnapshot<DocumentSnapshot>
-                                          snapshot) {
-                                    if (snapshot.hasData) {
-                                      UserModel userModel = UserModel.fromJson(
-                                          snapshot.data.data());
-
-                                      List<Widget> list = new List<Widget>();
-                                      if (userModel.wareHouseLocationList !=
-                                          null) {
-                                        for (int e = 0;
-                                            e <
-                                                userModel.wareHouseLocationList
-                                                    .length;
-                                            e++) {
-                                          list.add(Column(
+                                    SizedBox(
+                                      height: 20,
+                                    ),
+                                    Align(
+                                      alignment: Alignment.topLeft,
+                                      child: Text("You have a warehouse?",
+                                          textAlign: TextAlign.center,
+                                          style: TextStyle(
+                                            fontSize: 14,
+                                            fontWeight: FontWeight.normal,
+                                            color: Colors.grey[800],
+                                          )),
+                                    ),
+                                    SizedBox(
+                                      height: 20,
+                                    ),
+                                    Row(
+                                      children: [
+                                        InkWell(
+                                          onTap: () {
+                                            setState(() {
+                                              warehouseYes = !warehouseYes;
+                                              warehouseNo = !warehouseNo;
+                                            });
+                                          },
+                                          child: Row(
                                             children: [
-                                              warehouseYes
-                                                  ? Column(
-                                                      children: [
-                                                        Container(
-                                                          height: 50.0,
-                                                          padding:
-                                                              EdgeInsets.all(
-                                                                  10),
-                                                          decoration:
-                                                              BoxDecoration(
-                                                            border: Border.all(
-                                                                width: 1,
-                                                                color: Colors
-                                                                    .grey),
-                                                            color: Colors.white,
-                                                            borderRadius:
-                                                                BorderRadius
-                                                                    .circular(
-                                                                        10.0),
-                                                          ),
-                                                          child: Material(
-                                                            color: Colors
-                                                                .transparent,
-                                                            child: Center(
-                                                              child: Row(
-                                                                mainAxisAlignment:
-                                                                    MainAxisAlignment
-                                                                        .spaceAround,
-                                                                crossAxisAlignment:
-                                                                    CrossAxisAlignment
-                                                                        .center,
-                                                                children: [
-                                                                  Container(
-                                                                    child: Text(
-                                                                      userModel.wareHouseLocationList[
-                                                                              e]
-                                                                          [
-                                                                          "wareHouseAddress"],
-                                                                      overflow:
-                                                                          TextOverflow
-                                                                              .ellipsis,
-                                                                      style:
-                                                                          TextStyle(
-                                                                        fontSize:
-                                                                            14,
-                                                                        color: Colors
-                                                                            .grey[800],
-                                                                        letterSpacing:
-                                                                            1,
-                                                                        fontWeight:
-                                                                            FontWeight.normal,
-                                                                      ),
+                                              Container(
+                                                decoration: BoxDecoration(
+                                                  color: warehouseYes
+                                                      ? Colors.white
+                                                      : Colors.grey
+                                                      .withOpacity(0.3),
+                                                  border: Border.all(
+                                                      color: warehouseYes
+                                                          ? Colors.green
+                                                          : Colors.grey
+                                                          .withOpacity(0.3),
+                                                      width: warehouseYes
+                                                          ? 3
+                                                          : 2),
+                                                  borderRadius:
+                                                  BorderRadius.circular(10),
+                                                ),
+                                                child: Icon(
+                                                  null,
+                                                  size: 15.0,
+                                                ),
+                                              ),
+                                              SizedBox(
+                                                width: 5,
+                                              ),
+                                              Text(
+                                                'Yes',
+                                                style:
+                                                TextStyle(color: Colors.black),
+                                              )
+                                            ],
+                                          ),
+                                        ),
+                                        SizedBox(
+                                          width: 20,
+                                        ),
+                                        InkWell(
+                                          onTap: () {
+                                            setState(() {
+                                              warehouseYes = !warehouseYes;
+                                              warehouseNo = !warehouseNo;
+                                            });
+                                          },
+                                          child: Row(
+                                            children: [
+                                              Container(
+                                                decoration: BoxDecoration(
+                                                  color: warehouseNo
+                                                      ? Colors.white
+                                                      : Colors.grey
+                                                      .withOpacity(0.3),
+                                                  border: Border.all(
+                                                      color: warehouseNo
+                                                          ? Colors.green
+                                                          : Colors.grey
+                                                          .withOpacity(0.3),
+                                                      width: warehouseNo
+                                                          ? 3
+                                                          : 2),
+                                                  borderRadius:
+                                                  BorderRadius.circular(10),
+                                                ),
+                                                child: Icon(
+                                                  null,
+                                                  size: 15.0,
+                                                ),
+                                              ),
+                                              SizedBox(
+                                                width: 5,
+                                              ),
+                                              Text(
+                                                'No',
+                                                style:
+                                                TextStyle(color: Colors.black),
+                                              )
+                                            ],
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                    SizedBox(
+                                      height: 20,
+                                    ),
+                                    StreamBuilder(
+                                      stream: usersRef
+                                          .doc(firebaseAuth.currentUser.uid)
+                                          .snapshots(),
+                                      builder: (context,
+                                          AsyncSnapshot<DocumentSnapshot>
+                                          snapshot) {
+                                        Map<String?, dynamic>? mapData = snapshot.data?.data();
+                                        if (snapshot.hasData && mapData != null) {
+                                          UserModel userModel = UserModel
+                                              .fromJson(mapData);
+
+                                          List<Widget> list = <Widget>[];
+                                          if (userModel.wareHouseLocationList !=
+                                              null && userModel.wareHouseLocationList?.isNotEmpty==true) {
+                                            for (int e = 0;
+                                            e <
+                                                userModel.wareHouseLocationList!.length;
+                                            e++) {
+                                              list.add(Column(
+                                                children: [
+                                                  warehouseYes
+                                                      ? Column(
+                                                    children: [
+                                                      Container(
+                                                        height: 50.0,
+                                                        padding:
+                                                        EdgeInsets.all(
+                                                            10),
+                                                        decoration:
+                                                        BoxDecoration(
+                                                          border: Border.all(
+                                                              width: 1,
+                                                              color: Colors
+                                                                  .grey),
+                                                          color: Colors.white,
+                                                          borderRadius:
+                                                          BorderRadius
+                                                              .circular(
+                                                              10.0),
+                                                        ),
+                                                        child: Material(
+                                                          color: Colors
+                                                              .transparent,
+                                                          child: Center(
+                                                            child: Row(
+                                                              mainAxisAlignment:
+                                                              MainAxisAlignment
+                                                                  .spaceAround,
+                                                              crossAxisAlignment:
+                                                              CrossAxisAlignment
+                                                                  .center,
+                                                              children: [
+                                                                Container(
+                                                                  child: Text(
+                                                                    userModel
+                                                                        .wareHouseLocationList![e]
+                                                                    [
+                                                                    "wareHouseAddress"],
+                                                                    overflow:
+                                                                    TextOverflow
+                                                                        .ellipsis,
+                                                                    style:
+                                                                    TextStyle(
+                                                                      fontSize:
+                                                                      14,
+                                                                      color: Colors
+                                                                          .grey[800],
+                                                                      letterSpacing:
+                                                                      1,
+                                                                      fontWeight:
+                                                                      FontWeight
+                                                                          .normal,
                                                                     ),
-                                                                    width: 250,
                                                                   ),
-                                                                  Icon(
-                                                                    CupertinoIcons
-                                                                        .house,
-                                                                    size: 20,
-                                                                    color: Colors
-                                                                        .green,
-                                                                  ),
-                                                                ],
-                                                              ),
+                                                                  width: 250,
+                                                                ),
+                                                                Icon(
+                                                                  CupertinoIcons
+                                                                      .house,
+                                                                  size: 20,
+                                                                  color: Colors
+                                                                      .green,
+                                                                ),
+                                                              ],
                                                             ),
                                                           ),
                                                         ),
-                                                        SizedBox(
-                                                          height: 20,
-                                                        ),
-                                                        Align(
-                                                          alignment:
-                                                              Alignment.topLeft,
-                                                          child: Row(
-                                                            children: [
-                                                              Image.asset(
-                                                                "assets/images/add another one.png",
-                                                              ),
-                                                              SizedBox(
-                                                                width: 10,
-                                                              ),
-                                                              GestureDetector(
-                                                                onTap:
-                                                                    () async {
-                                                                  await locationData
-                                                                      .getCurrentPosition();
-                                                                  if (locationData
-                                                                      .permissionGranted) {
-                                                                    Navigator.pushNamed(
-                                                                        context,
-                                                                        MapScreen
-                                                                            .routeName);
-                                                                  }
-                                                                },
-                                                                child: Text(
-                                                                    "Update warehouse Address",
-                                                                    textAlign:
-                                                                        TextAlign
-                                                                            .center,
-                                                                    style:
-                                                                        TextStyle(
-                                                                      fontSize:
-                                                                          14,
-                                                                      letterSpacing:
-                                                                          1,
-                                                                      fontWeight:
-                                                                          FontWeight
-                                                                              .normal,
-                                                                      color: Color
-                                                                          .fromRGBO(
-                                                                              5,
-                                                                              151,
-                                                                              0,
-                                                                              1),
-                                                                    )),
-                                                              ),
-                                                            ],
-                                                          ),
-                                                        )
-                                                      ],
-                                                    )
-                                                  : Container(
-                                                      height: 0,
-                                                      width: 0,
-                                                    ),
-                                            ],
-                                          ));
-                                        }
-
-                                        return Column(
-                                          children: list,
-                                        );
-                                      } else
-                                        return Column(
-                                          children: [
-                                            warehouseYes
-                                                ? Align(
-                                                    alignment:
+                                                      ),
+                                                      SizedBox(
+                                                        height: 20,
+                                                      ),
+                                                      Align(
+                                                        alignment:
                                                         Alignment.topLeft,
-                                                    child: Row(
-                                                      children: [
-                                                        Image.asset(
-                                                          "assets/images/add another one.png",
-                                                        ),
-                                                        SizedBox(
-                                                          width: 10,
-                                                        ),
-                                                        GestureDetector(
-                                                          onTap: () async {
-                                                            await locationData
-                                                                .getCurrentPosition();
-                                                            if (locationData
-                                                                .permissionGranted) {
-                                                              Navigator.pushNamed(
-                                                                  context,
-                                                                  MapScreen
-                                                                      .routeName);
-                                                            }
-                                                          },
-                                                          child: Text(
-                                                              "Add warehouse Address",
-                                                              textAlign:
+                                                        child: Row(
+                                                          children: [
+                                                            Image.asset(
+                                                              "assets/images/add another one.png",
+                                                            ),
+                                                            SizedBox(
+                                                              width: 10,
+                                                            ),
+                                                            GestureDetector(
+                                                              onTap:
+                                                                  () async {
+                                                                await locationData
+                                                                    .getCurrentPosition();
+                                                                if (locationData
+                                                                    .permissionGranted) {
+                                                                  Navigator
+                                                                      .pushNamed(
+                                                                      context,
+                                                                      MapScreen
+                                                                          .routeName);
+                                                                }
+                                                              },
+                                                              child: Text(
+                                                                  "Update warehouse Address",
+                                                                  textAlign:
                                                                   TextAlign
                                                                       .center,
-                                                              style: TextStyle(
-                                                                fontSize: 14,
-                                                                letterSpacing:
+                                                                  style:
+                                                                  TextStyle(
+                                                                    fontSize:
+                                                                    14,
+                                                                    letterSpacing:
                                                                     1,
-                                                                fontWeight:
+                                                                    fontWeight:
                                                                     FontWeight
                                                                         .normal,
-                                                                color: Color
-                                                                    .fromRGBO(
+                                                                    color: Color
+                                                                        .fromRGBO(
                                                                         5,
                                                                         151,
                                                                         0,
                                                                         1),
-                                                              )),
+                                                                  )),
+                                                            ),
+                                                          ],
                                                         ),
-                                                      ],
-                                                    ),
+                                                      )
+                                                    ],
                                                   )
-                                                : Container(
+                                                      : Container(
                                                     height: 0,
                                                     width: 0,
                                                   ),
-                                          ],
+                                                ],
+                                              ));
+                                            }
+
+                                            return Column(
+                                              children: list,
+                                            );
+                                          } else
+                                            return Column(
+                                              children: [
+                                                warehouseYes
+                                                    ? Align(
+                                                  alignment:
+                                                  Alignment.topLeft,
+                                                  child: Row(
+                                                    children: [
+                                                      Image.asset(
+                                                        "assets/images/add another one.png",
+                                                      ),
+                                                      SizedBox(
+                                                        width: 10,
+                                                      ),
+                                                      GestureDetector(
+                                                        onTap: () async {
+                                                          await locationData
+                                                              .getCurrentPosition();
+                                                          if (locationData
+                                                              .permissionGranted) {
+                                                            Navigator.pushNamed(
+                                                                context,
+                                                                MapScreen
+                                                                    .routeName);
+                                                          }
+                                                        },
+                                                        child: Text(
+                                                            "Add warehouse Address",
+                                                            textAlign:
+                                                            TextAlign
+                                                                .center,
+                                                            style: TextStyle(
+                                                              fontSize: 14,
+                                                              letterSpacing:
+                                                              1,
+                                                              fontWeight:
+                                                              FontWeight
+                                                                  .normal,
+                                                              color: Color
+                                                                  .fromRGBO(
+                                                                  5,
+                                                                  151,
+                                                                  0,
+                                                                  1),
+                                                            )),
+                                                      ),
+                                                    ],
+                                                  ),
+                                                )
+                                                    : Container(
+                                                  height: 0,
+                                                  width: 0,
+                                                ),
+                                              ],
+                                            );
+                                        }
+                                        return Container(
+                                          height: 0,
                                         );
-                                    }
-                                    return Container(
-                                      height: 0,
-                                    );
-                                  },
+                                      },
+                                    ),
+                                  ],
                                 ),
                               ],
-                            ),
-                          ],
-                        )),
+                            )),
                         SizedBox(
                           height: 20,
                         ),
@@ -2656,7 +2747,7 @@ class _UpdateProfilesState extends State<UpdateProfiles> {
                             children: [
                               Row(
                                 mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
+                                MainAxisAlignment.spaceBetween,
                                 children: [
                                   Container(
                                     width: 40,
@@ -2669,10 +2760,11 @@ class _UpdateProfilesState extends State<UpdateProfiles> {
                                           ],
                                         ),
                                         borderRadius:
-                                            BorderRadius.circular(10.0),
+                                        BorderRadius.circular(10.0),
                                         boxShadow: [
                                           BoxShadow(
-                                            color: Colors.grey[500],
+                                            color: Colors.grey[500] ??
+                                                Colors.grey,
                                             offset: Offset(0.0, 1.5),
                                             blurRadius: 1.5,
                                           ),
@@ -2689,10 +2781,11 @@ class _UpdateProfilesState extends State<UpdateProfiles> {
                                           ],
                                         ),
                                         borderRadius:
-                                            BorderRadius.circular(10.0),
+                                        BorderRadius.circular(10.0),
                                         boxShadow: [
                                           BoxShadow(
-                                            color: Colors.grey[500],
+                                            color: Colors.grey[500] ??
+                                                Colors.grey,
                                             offset: Offset(0.0, 1.5),
                                             blurRadius: 1.5,
                                           ),
@@ -2709,10 +2802,11 @@ class _UpdateProfilesState extends State<UpdateProfiles> {
                                           ],
                                         ),
                                         borderRadius:
-                                            BorderRadius.circular(10.0),
+                                        BorderRadius.circular(10.0),
                                         boxShadow: [
                                           BoxShadow(
-                                            color: Colors.grey[500],
+                                            color: Colors.grey[500] ??
+                                                Colors.grey,
                                             offset: Offset(0.0, 1.5),
                                             blurRadius: 1.5,
                                           ),
@@ -2729,10 +2823,11 @@ class _UpdateProfilesState extends State<UpdateProfiles> {
                                           ],
                                         ),
                                         borderRadius:
-                                            BorderRadius.circular(10.0),
+                                        BorderRadius.circular(10.0),
                                         boxShadow: [
                                           BoxShadow(
-                                            color: Colors.grey[500],
+                                            color: Colors.grey[500] ??
+                                                Colors.grey,
                                             offset: Offset(0.0, 1.5),
                                             blurRadius: 1.5,
                                           ),
@@ -2749,10 +2844,11 @@ class _UpdateProfilesState extends State<UpdateProfiles> {
                                           ],
                                         ),
                                         borderRadius:
-                                            BorderRadius.circular(10.0),
+                                        BorderRadius.circular(10.0),
                                         boxShadow: [
                                           BoxShadow(
-                                            color: Colors.grey[500],
+                                            color: Colors.grey[500] ??
+                                                Colors.grey,
                                             offset: Offset(0.0, 1.5),
                                             blurRadius: 1.5,
                                           ),
@@ -2769,10 +2865,11 @@ class _UpdateProfilesState extends State<UpdateProfiles> {
                                           ],
                                         ),
                                         borderRadius:
-                                            BorderRadius.circular(10.0),
+                                        BorderRadius.circular(10.0),
                                         boxShadow: [
                                           BoxShadow(
-                                            color: Colors.grey[500],
+                                            color: Colors.grey[500] ??
+                                                Colors.grey,
                                             offset: Offset(0.0, 1.5),
                                             blurRadius: 1.5,
                                           ),
@@ -2822,7 +2919,7 @@ class _UpdateProfilesState extends State<UpdateProfiles> {
                                     borderRadius: BorderRadius.circular(10.0),
                                     boxShadow: [
                                       BoxShadow(
-                                        color: Colors.grey[500],
+                                        color: Colors.grey[500] ?? Colors.grey,
                                         offset: Offset(0.0, 1.5),
                                         blurRadius: 1.5,
                                       ),
@@ -2885,318 +2982,323 @@ class _UpdateProfilesState extends State<UpdateProfiles> {
                       children: [
                         Expanded(
                             child: ListView(
-                          children: [
-                            Align(
-                              alignment: Alignment.topCenter,
-                              child: Text(
-                                  "To protect everyone from fraud and scam and to have a better chance working with client please provide your id",
-                                  textAlign: TextAlign.center,
-                                  style: TextStyle(
-                                    fontSize: 14,
-                                    fontWeight: FontWeight.normal,
-                                    color: Colors.grey[700],
-                                  )),
-                            ),
-                            SizedBox(height: 40),
-                            Container(
-                              padding: EdgeInsets.only(
-                                  left: getProportionateScreenWidth(10),
-                                  right: getProportionateScreenWidth(10),
-                                  top: 15,
-                                  bottom: 15),
-                              decoration: BoxDecoration(
-                                  color: Color.fromRGBO(239, 240, 246, 1),
-                                  border:
+                              children: [
+                                Align(
+                                  alignment: Alignment.topCenter,
+                                  child: Text(
+                                      "To protect everyone from fraud and scam and to have a better chance working with client please provide your id",
+                                      textAlign: TextAlign.center,
+                                      style: TextStyle(
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.normal,
+                                        color: Colors.grey[700],
+                                      )),
+                                ),
+                                SizedBox(height: 40),
+                                Container(
+                                  padding: EdgeInsets.only(
+                                      left: getProportionateScreenWidth(10),
+                                      right: getProportionateScreenWidth(10),
+                                      top: 15,
+                                      bottom: 15),
+                                  decoration: BoxDecoration(
+                                      color: Color.fromRGBO(239, 240, 246, 1),
+                                      border:
                                       Border.all(width: 1, color: Colors.grey),
-                                  borderRadius: BorderRadius.circular(10)),
-                              child: Row(
-                                mainAxisAlignment:
+                                      borderRadius: BorderRadius.circular(10)),
+                                  child: Row(
+                                    mainAxisAlignment:
                                     MainAxisAlignment.spaceBetween,
-                                children: <Widget>[
-                                  Expanded(
-                                    child: DropdownButtonHideUnderline(
-                                      child: ButtonTheme(
-                                        alignedDropdown: true,
-                                        child: DropdownButton<String>(
-                                          isDense: true,
-                                          hint: new Text(
-                                            "Choose your verification methode",
-                                            overflow: TextOverflow.ellipsis,
+                                    children: <Widget>[
+                                      Expanded(
+                                        child: DropdownButtonHideUnderline(
+                                          child: ButtonTheme(
+                                            alignedDropdown: true,
+                                            child: DropdownButton<String?>(
+                                              isDense: true,
+                                              hint: new Text(
+                                                "Choose your verification methode",
+                                                overflow: TextOverflow.ellipsis,
+                                              ),
+                                              value: _verificationSelected,
+                                              onChanged: (String? newValue) {
+                                                if (newValue
+                                                    ?.contains("Identity card")==true)
+                                                  setState(() {
+                                                    _verificationSelected =
+                                                        newValue;
+                                                    identityCard = true;
+                                                    passport = false;
+                                                  });
+                                                else {
+                                                  setState(() {
+                                                    _verificationSelected =
+                                                        newValue;
+                                                    identityCard = false;
+                                                    passport = true;
+                                                  });
+                                                }
+                                              },
+                                              items: [
+                                                "Identity card ",
+                                                "Passport"
+                                              ].map((e) =>
+                                              new DropdownMenuItem(
+                                                value: e.toString() ,
+                                                // value: _mySelection,
+                                                child: Row(
+                                                  children: <Widget>[
+                                                    Icon(CupertinoIcons.cloud_upload,
+                                                        size: 20,
+                                                        color: Colors.black87),
+                                                    Container(
+                                                        margin: EdgeInsets.only(left: 10),
+                                                        child: Text(e,
+                                                          style: TextStyle(
+                                                            fontSize: 14,
+                                                            color: Colors.black,
+                                                            letterSpacing: 1,
+                                                            fontWeight: FontWeight.normal,
+                                                          ),
+                                                        )),
+                                                  ],
+                                                ),
+                                              )).toList(),
+                                            ),
                                           ),
-                                          value: _verificationSelected,
-                                          onChanged: (String newValue) {
-                                            if (newValue
-                                                .contains("Identity card"))
-                                              setState(() {
-                                                _verificationSelected =
-                                                    newValue;
-                                                identityCard = true;
-                                                passport = false;
-                                              });
-                                            else {
-                                              setState(() {
-                                                _verificationSelected =
-                                                    newValue;
-                                                identityCard = false;
-                                                passport = true;
-                                              });
-                                            }
-                                          },
-                                          items: ["Identity card ", "Passport"]
-                                              .map((e) => new DropdownMenuItem(
-                                                    value: e.toString(),
-                                                    // value: _mySelection,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                SizedBox(height: 40),
+                                Column(
+                                  children: [
+                                    if (passport)
+                                      Container(
+                                        width: SizeConfig.screenWidth,
+                                        height: 50.0,
+                                        padding: EdgeInsets.all(10),
+                                        decoration: BoxDecoration(
+                                            gradient: LinearGradient(
+                                              colors: <Color>[
+                                                Color.fromRGBO(
+                                                    239, 240, 246, 1),
+                                                Color.fromRGBO(239, 240, 246, 1)
+                                              ],
+                                            ),
+                                            borderRadius:
+                                            BorderRadius.circular(10.0),
+                                            boxShadow: [
+                                              BoxShadow(
+                                                color: Colors.grey[500] ??
+                                                    Colors.grey,
+                                                offset: Offset(0.0, 1.5),
+                                                blurRadius: 1.5,
+                                              ),
+                                            ]),
+                                        child: Material(
+                                          color: Colors.transparent,
+                                          child: InkWell(
+                                              onTap: () => pickImagePassport(),
+                                              child: Center(
+                                                child: Row(
+                                                  children: <Widget>[
+                                                    Icon(
+                                                        CupertinoIcons
+                                                            .cloud_upload,
+                                                        size: 20,
+                                                        color: Colors.black87),
+                                                    Container(
+                                                        margin: EdgeInsets.only(
+                                                            left: 10),
+                                                        child: Text(
+                                                          "Upload Passport",
+                                                          style: TextStyle(
+                                                            fontSize: 14,
+                                                            color: Colors.black,
+                                                            letterSpacing: 1,
+                                                            fontWeight:
+                                                            FontWeight.normal,
+                                                          ),
+                                                        )),
+                                                    SizedBox(
+                                                      width: 10,
+                                                    ),
+                                                    loadingPassprot
+                                                        ? Icon(
+                                                        CupertinoIcons
+                                                            .check_mark,
+                                                        size: 20,
+                                                        color: Colors.green)
+                                                        : Container(
+                                                      height: 0,
+                                                      width: 0,
+                                                    ),
+                                                  ],
+                                                ),
+                                              )),
+                                        ),
+                                      ),
+                                    if (identityCard)
+                                      Column(
+                                        children: [
+                                          Container(
+                                            width: SizeConfig.screenWidth,
+                                            height: 50.0,
+                                            padding: EdgeInsets.all(10),
+                                            decoration: BoxDecoration(
+                                                gradient: LinearGradient(
+                                                  colors: <Color>[
+                                                    Color.fromRGBO(
+                                                        239, 240, 246, 1),
+                                                    Color.fromRGBO(
+                                                        239, 240, 246, 1)
+                                                  ],
+                                                ),
+                                                borderRadius:
+                                                BorderRadius.circular(10.0),
+                                                boxShadow: [
+                                                  BoxShadow(
+                                                    color: Colors.grey[500] ??
+                                                        Colors.grey,
+                                                    offset: Offset(0.0, 1.5),
+                                                    blurRadius: 1.5,
+                                                  ),
+                                                ]),
+                                            child: Material(
+                                              color: Colors.transparent,
+                                              child: InkWell(
+                                                  onTap: () => pickImageSide1(),
+                                                  child: Center(
                                                     child: Row(
                                                       children: <Widget>[
                                                         Icon(
                                                             CupertinoIcons
                                                                 .cloud_upload,
                                                             size: 20,
-                                                            color:
-                                                                Colors.black87),
+                                                            color: Colors
+                                                                .black87),
                                                         Container(
-                                                            margin:
-                                                                EdgeInsets.only(
-                                                                    left: 10),
+                                                            margin: EdgeInsets
+                                                                .only(
+                                                                left: 10),
                                                             child: Text(
-                                                              e,
+                                                              "Upload identity card Side1",
                                                               style: TextStyle(
                                                                 fontSize: 14,
                                                                 color: Colors
                                                                     .black,
-                                                                letterSpacing:
-                                                                    1,
+                                                                letterSpacing: 1,
                                                                 fontWeight:
-                                                                    FontWeight
-                                                                        .normal,
+                                                                FontWeight
+                                                                    .normal,
                                                               ),
                                                             )),
+                                                        SizedBox(
+                                                          width: 10,
+                                                        ),
+                                                        loadingSide1
+                                                            ? Icon(
+                                                            CupertinoIcons
+                                                                .check_mark,
+                                                            size: 20,
+                                                            color: Colors.green)
+                                                            : Container(
+                                                          height: 0,
+                                                          width: 0,
+                                                        ),
                                                       ],
                                                     ),
-                                                  ))
-                                              .toList(),
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                            SizedBox(height: 40),
-                            Column(
-                              children: [
-                                if (passport)
-                                  Container(
-                                    width: SizeConfig.screenWidth,
-                                    height: 50.0,
-                                    padding: EdgeInsets.all(10),
-                                    decoration: BoxDecoration(
-                                        gradient: LinearGradient(
-                                          colors: <Color>[
-                                            Color.fromRGBO(239, 240, 246, 1),
-                                            Color.fromRGBO(239, 240, 246, 1)
-                                          ],
-                                        ),
-                                        borderRadius:
-                                            BorderRadius.circular(10.0),
-                                        boxShadow: [
-                                          BoxShadow(
-                                            color: Colors.grey[500],
-                                            offset: Offset(0.0, 1.5),
-                                            blurRadius: 1.5,
+                                                  )),
+                                            ),
                                           ),
-                                        ]),
-                                    child: Material(
-                                      color: Colors.transparent,
-                                      child: InkWell(
-                                          onTap: () => pickImagePassport(),
-                                          child: Center(
-                                            child: Row(
-                                              children: <Widget>[
-                                                Icon(
-                                                    CupertinoIcons.cloud_upload,
-                                                    size: 20,
-                                                    color: Colors.black87),
-                                                Container(
-                                                    margin: EdgeInsets.only(
-                                                        left: 10),
-                                                    child: Text(
-                                                      "Upload Passport",
-                                                      style: TextStyle(
-                                                        fontSize: 14,
-                                                        color: Colors.black,
-                                                        letterSpacing: 1,
-                                                        fontWeight:
-                                                            FontWeight.normal,
-                                                      ),
-                                                    )),
-                                                SizedBox(
-                                                  width: 10,
+                                          SizedBox(
+                                            height: 20,
+                                          ),
+                                          Container(
+                                            width: SizeConfig.screenWidth,
+                                            height: 50.0,
+                                            padding: EdgeInsets.all(10),
+                                            decoration: BoxDecoration(
+                                                gradient: LinearGradient(
+                                                  colors: <Color>[
+                                                    Color.fromRGBO(
+                                                        239, 240, 246, 1),
+                                                    Color.fromRGBO(
+                                                        239, 240, 246, 1)
+                                                  ],
                                                 ),
-                                                loadingPassprot
-                                                    ? Icon(
-                                                        CupertinoIcons
-                                                            .check_mark,
-                                                        size: 20,
-                                                        color: Colors.green)
-                                                    : Container(
-                                                        height: 0,
-                                                        width: 0,
-                                                      ),
-                                              ],
-                                            ),
-                                          )),
-                                    ),
-                                  ),
-                                if (identityCard)
-                                  Column(
-                                    children: [
-                                      Container(
-                                        width: SizeConfig.screenWidth,
-                                        height: 50.0,
-                                        padding: EdgeInsets.all(10),
-                                        decoration: BoxDecoration(
-                                            gradient: LinearGradient(
-                                              colors: <Color>[
-                                                Color.fromRGBO(
-                                                    239, 240, 246, 1),
-                                                Color.fromRGBO(239, 240, 246, 1)
-                                              ],
-                                            ),
-                                            borderRadius:
+                                                borderRadius:
                                                 BorderRadius.circular(10.0),
-                                            boxShadow: [
-                                              BoxShadow(
-                                                color: Colors.grey[500],
-                                                offset: Offset(0.0, 1.5),
-                                                blurRadius: 1.5,
-                                              ),
-                                            ]),
-                                        child: Material(
-                                          color: Colors.transparent,
-                                          child: InkWell(
-                                              onTap: () => pickImageSide1(),
-                                              child: Center(
-                                                child: Row(
-                                                  children: <Widget>[
-                                                    Icon(
-                                                        CupertinoIcons
-                                                            .cloud_upload,
-                                                        size: 20,
-                                                        color: Colors.black87),
-                                                    Container(
-                                                        margin: EdgeInsets.only(
-                                                            left: 10),
-                                                        child: Text(
-                                                          "Upload identity card Side1",
-                                                          style: TextStyle(
-                                                            fontSize: 14,
-                                                            color: Colors.black,
-                                                            letterSpacing: 1,
-                                                            fontWeight:
+                                                boxShadow: [
+                                                  BoxShadow(
+                                                    color: Colors.grey[500] ??
+                                                        Colors.grey,
+                                                    offset: Offset(0.0, 1.5),
+                                                    blurRadius: 1.5,
+                                                  ),
+                                                ]),
+                                            child: Material(
+                                              color: Colors.transparent,
+                                              child: InkWell(
+                                                  onTap: () => pickImageSide2(),
+                                                  child: Center(
+                                                    child: Row(
+                                                      children: <Widget>[
+                                                        Icon(
+                                                            CupertinoIcons
+                                                                .cloud_upload,
+                                                            size: 20,
+                                                            color: Colors
+                                                                .black87),
+                                                        Container(
+                                                            margin: EdgeInsets
+                                                                .only(
+                                                                left: 10),
+                                                            child: Text(
+                                                              "Upload identity card Side2",
+                                                              style: TextStyle(
+                                                                fontSize: 14,
+                                                                color: Colors
+                                                                    .black,
+                                                                letterSpacing: 1,
+                                                                fontWeight:
                                                                 FontWeight
                                                                     .normal,
-                                                          ),
-                                                        )),
-                                                    SizedBox(
-                                                      width: 10,
-                                                    ),
-                                                    loadingSide1
-                                                        ? Icon(
+                                                              ),
+                                                            )),
+                                                        SizedBox(
+                                                          width: 10,
+                                                        ),
+                                                        loadingSide2
+                                                            ? Icon(
                                                             CupertinoIcons
                                                                 .check_mark,
                                                             size: 20,
                                                             color: Colors.green)
-                                                        : Container(
-                                                            height: 0,
-                                                            width: 0,
-                                                          ),
-                                                  ],
-                                                ),
-                                              )),
-                                        ),
-                                      ),
-                                      SizedBox(
-                                        height: 20,
-                                      ),
-                                      Container(
-                                        width: SizeConfig.screenWidth,
-                                        height: 50.0,
-                                        padding: EdgeInsets.all(10),
-                                        decoration: BoxDecoration(
-                                            gradient: LinearGradient(
-                                              colors: <Color>[
-                                                Color.fromRGBO(
-                                                    239, 240, 246, 1),
-                                                Color.fromRGBO(239, 240, 246, 1)
-                                              ],
-                                            ),
-                                            borderRadius:
-                                                BorderRadius.circular(10.0),
-                                            boxShadow: [
-                                              BoxShadow(
-                                                color: Colors.grey[500],
-                                                offset: Offset(0.0, 1.5),
-                                                blurRadius: 1.5,
-                                              ),
-                                            ]),
-                                        child: Material(
-                                          color: Colors.transparent,
-                                          child: InkWell(
-                                              onTap: () => pickImageSide2(),
-                                              child: Center(
-                                                child: Row(
-                                                  children: <Widget>[
-                                                    Icon(
-                                                        CupertinoIcons
-                                                            .cloud_upload,
-                                                        size: 20,
-                                                        color: Colors.black87),
-                                                    Container(
-                                                        margin: EdgeInsets.only(
-                                                            left: 10),
-                                                        child: Text(
-                                                          "Upload identity card Side2",
-                                                          style: TextStyle(
-                                                            fontSize: 14,
-                                                            color: Colors.black,
-                                                            letterSpacing: 1,
-                                                            fontWeight:
-                                                                FontWeight
-                                                                    .normal,
-                                                          ),
-                                                        )),
-                                                    SizedBox(
-                                                      width: 10,
+                                                            : Container(
+                                                          height: 0,
+                                                          width: 0,
+                                                        ),
+                                                      ],
                                                     ),
-                                                    loadingSide2
-                                                        ? Icon(
-                                                            CupertinoIcons
-                                                                .check_mark,
-                                                            size: 20,
-                                                            color: Colors.green)
-                                                        : Container(
-                                                            height: 0,
-                                                            width: 0,
-                                                          ),
-                                                  ],
-                                                ),
-                                              )),
-                                        ),
-                                      )
-                                    ],
-                                  ),
+                                                  )),
+                                            ),
+                                          )
+                                        ],
+                                      ),
+                                  ],
+                                ),
                               ],
-                            ),
-                          ],
-                        )),
+                            )),
                         Align(
                           alignment: Alignment.bottomCenter,
                           child: Column(
                             children: [
                               Row(
                                 mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
+                                MainAxisAlignment.spaceBetween,
                                 children: [
                                   Container(
                                     width: 40,
@@ -3209,10 +3311,11 @@ class _UpdateProfilesState extends State<UpdateProfiles> {
                                           ],
                                         ),
                                         borderRadius:
-                                            BorderRadius.circular(10.0),
+                                        BorderRadius.circular(10.0),
                                         boxShadow: [
                                           BoxShadow(
-                                            color: Colors.grey[500],
+                                            color: Colors.grey[500] ??
+                                                Colors.grey,
                                             offset: Offset(0.0, 1.5),
                                             blurRadius: 1.5,
                                           ),
@@ -3229,10 +3332,11 @@ class _UpdateProfilesState extends State<UpdateProfiles> {
                                           ],
                                         ),
                                         borderRadius:
-                                            BorderRadius.circular(10.0),
+                                        BorderRadius.circular(10.0),
                                         boxShadow: [
                                           BoxShadow(
-                                            color: Colors.grey[500],
+                                            color: Colors.grey[500] ??
+                                                Colors.grey,
                                             offset: Offset(0.0, 1.5),
                                             blurRadius: 1.5,
                                           ),
@@ -3249,10 +3353,11 @@ class _UpdateProfilesState extends State<UpdateProfiles> {
                                           ],
                                         ),
                                         borderRadius:
-                                            BorderRadius.circular(10.0),
+                                        BorderRadius.circular(10.0),
                                         boxShadow: [
                                           BoxShadow(
-                                            color: Colors.grey[500],
+                                            color: Colors.grey[500] ??
+                                                Colors.grey,
                                             offset: Offset(0.0, 1.5),
                                             blurRadius: 1.5,
                                           ),
@@ -3269,10 +3374,11 @@ class _UpdateProfilesState extends State<UpdateProfiles> {
                                           ],
                                         ),
                                         borderRadius:
-                                            BorderRadius.circular(10.0),
+                                        BorderRadius.circular(10.0),
                                         boxShadow: [
                                           BoxShadow(
-                                            color: Colors.grey[500],
+                                            color: Colors.grey[500] ??
+                                                Colors.grey,
                                             offset: Offset(0.0, 1.5),
                                             blurRadius: 1.5,
                                           ),
@@ -3289,10 +3395,11 @@ class _UpdateProfilesState extends State<UpdateProfiles> {
                                           ],
                                         ),
                                         borderRadius:
-                                            BorderRadius.circular(10.0),
+                                        BorderRadius.circular(10.0),
                                         boxShadow: [
                                           BoxShadow(
-                                            color: Colors.grey[500],
+                                            color: Colors.grey[500] ??
+                                                Colors.grey,
                                             offset: Offset(0.0, 1.5),
                                             blurRadius: 1.5,
                                           ),
@@ -3309,10 +3416,11 @@ class _UpdateProfilesState extends State<UpdateProfiles> {
                                           ],
                                         ),
                                         borderRadius:
-                                            BorderRadius.circular(10.0),
+                                        BorderRadius.circular(10.0),
                                         boxShadow: [
                                           BoxShadow(
-                                            color: Colors.grey[500],
+                                            color: Colors.grey[500] ??
+                                                Colors.grey,
                                             offset: Offset(0.0, 1.5),
                                             blurRadius: 1.5,
                                           ),
@@ -3342,12 +3450,12 @@ class _UpdateProfilesState extends State<UpdateProfiles> {
                                             loadingSide2 == true)) {
                                       authService
                                           .updateVerificationDataToFireStore(
-                                              firebaseAuth.currentUser,
-                                              _verificationSelected
-                                                  .toLowerCase(),
-                                              side1Image,
-                                              side2Image,
-                                              passportImage);
+                                          firebaseAuth.currentUser,
+                                          _verificationSelected
+                                              ?.toLowerCase(),
+                                          side1Image,
+                                          side2Image,
+                                          passportImage);
                                       setState(() {
                                         valid = false;
                                         agentInt = false;
@@ -3366,7 +3474,7 @@ class _UpdateProfilesState extends State<UpdateProfiles> {
                                     borderRadius: BorderRadius.circular(10.0),
                                     boxShadow: [
                                       BoxShadow(
-                                        color: Colors.grey[500],
+                                        color: Colors.grey[500] ?? Colors.grey,
                                         offset: Offset(0.0, 1.5),
                                         blurRadius: 1.5,
                                       ),
@@ -3428,7 +3536,8 @@ class _UpdateProfilesState extends State<UpdateProfiles> {
                             left: 10,
                             child: Container(
                               child: Text(
-                                "We sent SMS verification code\non number : ${_phoneController.text.toLowerCase()}",
+                                "We sent SMS verification code\non number : ${_phoneController
+                                    .text.toLowerCase()}",
                                 textAlign: TextAlign.center,
                               ),
                             )),
@@ -3462,9 +3571,9 @@ class _UpdateProfilesState extends State<UpdateProfiles> {
                                   }
                                 });*/
                                 AuthCredential _credential =
-                                    PhoneAuthProvider.credential(
-                                        verificationId: _verificationCode,
-                                        smsCode: pin);
+                                PhoneAuthProvider.credential(
+                                    verificationId: _verificationCode,
+                                    smsCode: pin);
 
                                 if (_credential != null) {
                                   setState(() {
@@ -3476,7 +3585,7 @@ class _UpdateProfilesState extends State<UpdateProfiles> {
                                   verificationMth = true;
                                 });
                                 FocusScope.of(context).unfocus();
-                                _scaffoldkey.currentState.showSnackBar(
+                                ScaffoldMessenger.of(context).showSnackBar(
                                     SnackBar(content: Text('invalid OTP')));
                               }
                             },
@@ -3488,47 +3597,51 @@ class _UpdateProfilesState extends State<UpdateProfiles> {
                           left: 10,
                           child: Container(
                               child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Container(
-                                margin: EdgeInsets.fromLTRB(0, 0, 13, 0),
-                                child: GestureDetector(
-                                  onTap: () => {
-                                    setState(() {
-                                      valid = false;
-                                      agentInt = true;
-                                    })
-                                  },
-                                  child: Text(
-                                    "Change Number?",
-                                    style: TextStyle(
-                                        fontSize: 12,
-                                        decoration: TextDecoration.underline,
-                                        fontWeight: FontWeight.bold,
-                                        letterSpacing: 1,
-                                        color: Color.fromRGBO(0, 0, 0, 0.25)),
-                                  ),
-                                ),
-                              ),
-                              Container(
-                                margin: EdgeInsets.fromLTRB(0, 0, 13, 0),
-                                child: GestureDetector(
-                                  onTap: () => _verifyPhone(),
-                                  child: Text(
-                                    "Resend the code",
-                                    style: TextStyle(
-                                      fontSize: 12,
-                                      fontWeight: FontWeight.bold,
-                                      decoration: TextDecoration.underline,
-                                      letterSpacing: 1,
-                                      foreground: Paint()
-                                        ..shader = greenLinearGradient,
+                                mainAxisAlignment: MainAxisAlignment
+                                    .spaceBetween,
+                                children: [
+                                  Container(
+                                    margin: EdgeInsets.fromLTRB(0, 0, 13, 0),
+                                    child: GestureDetector(
+                                      onTap: () =>
+                                      {
+                                        setState(() {
+                                          valid = false;
+                                          agentInt = true;
+                                        })
+                                      },
+                                      child: Text(
+                                        "Change Number?",
+                                        style: TextStyle(
+                                            fontSize: 12,
+                                            decoration: TextDecoration
+                                                .underline,
+                                            fontWeight: FontWeight.bold,
+                                            letterSpacing: 1,
+                                            color: Color.fromRGBO(
+                                                0, 0, 0, 0.25)),
+                                      ),
                                     ),
                                   ),
-                                ),
-                              ),
-                            ],
-                          )),
+                                  Container(
+                                    margin: EdgeInsets.fromLTRB(0, 0, 13, 0),
+                                    child: GestureDetector(
+                                      onTap: () => _verifyPhone(),
+                                      child: Text(
+                                        "Resend the code",
+                                        style: TextStyle(
+                                          fontSize: 12,
+                                          fontWeight: FontWeight.bold,
+                                          decoration: TextDecoration.underline,
+                                          letterSpacing: 1,
+                                          foreground: Paint()
+                                            ..shader = greenLinearGradient,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              )),
                         )
                       ],
                     ),
@@ -3543,12 +3656,12 @@ class _UpdateProfilesState extends State<UpdateProfiles> {
         verificationFailed: (FirebaseAuthException e) {
           print(e.message);
         },
-        codeSent: (String verficationID, int resendToken) {
+        codeSent: (String? verficationID, int resendToken) {
           setState(() {
             _verificationCode = verficationID;
           });
         },
-        codeAutoRetrievalTimeout: (String verificationID) {
+        codeAutoRetrievalTimeout: (String? verificationID) {
           setState(() {
             _verificationCode = verificationID;
           });
@@ -3563,7 +3676,7 @@ class _UpdateProfilesState extends State<UpdateProfiles> {
               toolbarHeight: 80,
               leading: IconButton(
                 icon:
-                    Icon(Icons.arrow_back, color: Color.fromRGBO(5, 151, 0, 1)),
+                Icon(Icons.arrow_back, color: Color.fromRGBO(5, 151, 0, 1)),
                 onPressed: () => Navigator.of(context).pop(),
               ),
               title: Align(
@@ -3610,44 +3723,44 @@ class _UpdateProfilesState extends State<UpdateProfiles> {
                                     ),
                                     child: userImgLink != null
                                         ? Padding(
-                                            padding: const EdgeInsets.all(1.0),
-                                            child: CircleAvatar(
-                                              radius: 65.0,
-                                              backgroundColor: Color.fromRGBO(
-                                                  239, 240, 246, 1),
-                                              backgroundImage:
-                                                  NetworkImage(userImgLink),
-                                            ),
-                                          )
+                                      padding: const EdgeInsets.all(1.0),
+                                      child: CircleAvatar(
+                                        radius: 65.0,
+                                        backgroundColor: Color.fromRGBO(
+                                            239, 240, 246, 1),
+                                        backgroundImage:
+                                        NetworkImage(userImgLink ?? ""),
+                                      ),
+                                    )
                                         : userImage == null
-                                            ? Padding(
-                                                padding:
-                                                    const EdgeInsets.all(1.0),
-                                                child: CircleAvatar(
-                                                  backgroundColor:
-                                                      Color.fromRGBO(
-                                                          239, 240, 246, 1),
-                                                  radius: 65.0,
-                                                  backgroundImage: NetworkImage(
-                                                      firebaseAuth.currentUser !=
-                                                              null
-                                                          ? FirebaseService
-                                                              .getProfileImage()
-                                                          : ""),
-                                                ),
-                                              )
-                                            : Padding(
-                                                padding:
-                                                    const EdgeInsets.all(1.0),
-                                                child: CircleAvatar(
-                                                  radius: 65.0,
-                                                  backgroundColor:
-                                                      Color.fromRGBO(
-                                                          239, 240, 246, 1),
-                                                  backgroundImage:
-                                                      FileImage(userImage),
-                                                ),
-                                              ),
+                                        ? Padding(
+                                      padding:
+                                      const EdgeInsets.all(1.0),
+                                      child: CircleAvatar(
+                                        backgroundColor:
+                                        Color.fromRGBO(
+                                            239, 240, 246, 1),
+                                        radius: 65.0,
+                                        backgroundImage: NetworkImage(
+                                            firebaseAuth.currentUser !=
+                                                null
+                                                ? FirebaseService
+                                                .getProfileImage()
+                                                : ""),
+                                      ),
+                                    )
+                                        : Padding(
+                                      padding:
+                                      const EdgeInsets.all(1.0),
+                                      child: CircleAvatar(
+                                        radius: 65.0,
+                                        backgroundColor:
+                                        Color.fromRGBO(
+                                            239, 240, 246, 1),
+                                        backgroundImage:
+                                        FileImage(userImage),
+                                      ),
+                                    ),
                                   ),
                                 ),
                               ),
@@ -3683,7 +3796,7 @@ class _UpdateProfilesState extends State<UpdateProfiles> {
                                   ),
                                   width: SizeConfig.screenWidth - 150,
                                   onPressed: () async {
-                                    if (_formKey.currentState.validate()) {
+                                    if (_formKey.currentState!.validate()) {
                                       authService.updateUserDataToFireStore(
                                           firebaseAuth.currentUser,
                                           _fNameController.text,
@@ -3706,7 +3819,7 @@ class _UpdateProfilesState extends State<UpdateProfiles> {
                                     borderRadius: BorderRadius.circular(10.0),
                                     boxShadow: [
                                       BoxShadow(
-                                        color: Colors.grey[500],
+                                        color: Colors.grey[500] ?? Colors.grey,
                                         offset: Offset(0.0, 1.5),
                                         blurRadius: 1.5,
                                       ),
@@ -3728,6 +3841,7 @@ class _UpdateProfilesState extends State<UpdateProfiles> {
       suffix: false,
       textInputAction: TextInputAction.next,
       validateFunction: Validations.validateName,
+      submitAction: () {},
     );
   }
 
@@ -3738,6 +3852,7 @@ class _UpdateProfilesState extends State<UpdateProfiles> {
       suffix: false,
       textInputAction: TextInputAction.next,
       validateFunction: Validations.validateName,
+      submitAction: () {},
     );
   }
 
@@ -3748,6 +3863,7 @@ class _UpdateProfilesState extends State<UpdateProfiles> {
       suffix: false,
       textInputAction: TextInputAction.next,
       validateFunction: Validations.validateName,
+      submitAction: () {},
     );
   }
 
@@ -3758,6 +3874,7 @@ class _UpdateProfilesState extends State<UpdateProfiles> {
       hintText: "Phone Number",
       textInputAction: TextInputAction.next,
       validateFunction: Validations.validatephone,
+      submitAction: () {},
     );
   }
 }
@@ -3766,26 +3883,28 @@ class MapScreen extends StatefulWidget {
   static String routeName = '/MapScreen';
   final User user;
 
-  const MapScreen({Key? key, this.user}) : super(key: key);
+  const MapScreen({Key? key, required this.user}) : super(key: key);
+
   @override
   _MapScreenState createState() => _MapScreenState();
 }
 
 class _MapScreenState extends State<MapScreen> {
-  LocationProvider locationData;
-  LatLng currentLocation;
-  GoogleMapController _mapController;
+  late LocationProvider locationData;
+  late LatLng currentLocation;
+  late GoogleMapController _mapController;
   TextEditingController wareHouseLocationController = TextEditingController();
   AuthService authService = AuthService();
   Completer<GoogleMapController> _controller = Completer();
-  static CameraPosition _myPosition;
-  static CameraPosition initPosition;
-  String controllerLocationString = "Warehouse";
-  PlacesDetailsResponse detail;
-  Prediction p;
+  static late CameraPosition _myPosition;
+  static late CameraPosition initPosition;
+  String? controllerLocationString = "Warehouse";
+  late PlacesDetailsResponse detail;
+  late Prediction p;
   final searchScaffoldKey = GlobalKey<ScaffoldState>();
   final homeScaffoldKey = GlobalKey<ScaffoldState>();
-  double searchedLocationLnt, searchedLocationLng;
+  late double searchedLocationLnt, searchedLocationLng;
+
   @override
   Widget build(BuildContext context) {
     locationData = Provider.of<LocationProvider>(context);
@@ -3819,7 +3938,8 @@ class _MapScreenState extends State<MapScreen> {
               },
               onMapCreated: onCreate,
               onCameraIdle: () {
-                locationData.getMoveCamera().then((value) => setState(() {
+                locationData.getMoveCamera().then((value) =>
+                    setState(() {
                       controllerLocationString = value;
                     }));
               },
@@ -3873,7 +3993,7 @@ class _MapScreenState extends State<MapScreen> {
                           Container(
                             width: 250,
                             child: Text(
-                              controllerLocationString,
+                              controllerLocationString ?? "",
                               overflow: TextOverflow.ellipsis,
                               style: TextStyle(
                                   color: Colors.black,
@@ -3917,23 +4037,25 @@ class _MapScreenState extends State<MapScreen> {
                     ),
                     width: SizeConfig.screenWidth - 150,
                     onPressed: () async {
-                      Map<String, dynamic> agentTripsLocationList =
-                          new HashMap();
+                      Map<String?, dynamic> agentTripsLocationList =
+                      new HashMap();
                       agentTripsLocationList.putIfAbsent(
                           "wareHouseAddress",
-                          () => p != null
+                              () =>
+                          p != null
                               ? p.description
                               : controllerLocationString);
                       agentTripsLocationList.putIfAbsent(
                           "wareHousePosition",
-                          () => GeoPoint(
-                              locationData.lnt != null
-                                  ? locationData.lnt
-                                  : searchedLocationLnt,
-                              locationData.lng != null
-                                  ? locationData.lng
-                                  : searchedLocationLnt));
-                      List<HashMap<String, dynamic>> list = [];
+                              () =>
+                              GeoPoint(
+                                  locationData.lnt != null
+                                      ? locationData.lnt
+                                      : searchedLocationLnt,
+                                  locationData.lng != null
+                                      ? locationData.lng
+                                      : searchedLocationLnt));
+                      List<Map<String?, dynamic>> list = [];
                       list.add(agentTripsLocationList);
                       authService.updateBusinessLocationToFireStore(
                           widget.user, list, "Yes");
@@ -3953,7 +4075,7 @@ class _MapScreenState extends State<MapScreen> {
   Future<void> _goToMyPosition(c) async {
     _myPosition = CameraPosition(
       target:
-          LatLng(initPosition.target.latitude, initPosition.target.longitude),
+      LatLng(initPosition.target.latitude, initPosition.target.longitude),
       zoom: 14.5,
     );
     await locationData.getCurrentPosition();
@@ -3987,7 +4109,7 @@ class _MapScreenState extends State<MapScreen> {
       components: [Component(Component.country, "mar")],
     );
 
-    displayPrediction(p, homeScaffoldKey.currentState);
+    displayPrediction(p, homeScaffoldKey.currentState!);
   }
 
   Future<Null> displayPrediction(Prediction p, ScaffoldState scaffold) async {
@@ -3997,7 +4119,7 @@ class _MapScreenState extends State<MapScreen> {
         apiHeaders: await GoogleApiHeaders().getHeaders(),
       );
       PlacesDetailsResponse detail =
-          await _places.getDetailsByPlaceId(p.placeId);
+      await _places.getDetailsByPlaceId(p.placeId);
       setState(() {
         searchedLocationLnt = detail.result.geometry.location.lat;
         searchedLocationLng = detail.result.geometry.location.lng;
@@ -4013,28 +4135,30 @@ class MapTripScreen extends StatefulWidget {
   static String routeName = '/MapTripScreen';
   final User user;
 
-  const MapTripScreen({Key? key, this.user}) : super(key: key);
+  const MapTripScreen({Key? key, required this.user}) : super(key: key);
+
   @override
   _MapTripScreenState createState() => _MapTripScreenState();
 }
 
 class _MapTripScreenState extends State<MapTripScreen> {
-  LocationProvider locationData;
-  LatLng currentLocation;
-  GoogleMapController _mapController;
+  late LocationProvider locationData;
+  late LatLng currentLocation;
+  late GoogleMapController _mapController;
   AuthService authService = AuthService();
   Completer<GoogleMapController> _controller = Completer();
-  static CameraPosition _myPosition;
-  static CameraPosition initPosition;
-  String startingTripLocationString = "Starting Point";
-  String arriveTripLocationString = "Arrival Point";
-  PlacesDetailsResponse detail;
-  Prediction p, p2;
+  static late CameraPosition _myPosition;
+  static late CameraPosition initPosition;
+  String? startingTripLocationString = "Starting Point";
+  String? arriveTripLocationString = "Arrival Point";
+  late PlacesDetailsResponse detail;
+  late Prediction p, p2;
   final searchScaffoldKey = GlobalKey<ScaffoldState>();
   final homeScaffoldKey = GlobalKey<ScaffoldState>();
-  double startingLocationLnt, startingLocationLng;
-  double arrivedLocationLnt, arrivedLocationLng;
+  late double startingLocationLnt, startingLocationLng;
+  late double arrivedLocationLnt, arrivedLocationLng;
   bool start = true;
+
   @override
   Widget build(BuildContext context) {
     locationData = Provider.of<LocationProvider>(context);
@@ -4068,7 +4192,8 @@ class _MapTripScreenState extends State<MapTripScreen> {
               },
               onMapCreated: onCreate,
               onCameraIdle: () {
-                locationData.getMoveCamera().then((value) => setState(() {
+                locationData.getMoveCamera().then((value) =>
+                    setState(() {
                       start
                           ? startingTripLocationString = value
                           : arriveTripLocationString = value;
@@ -4129,7 +4254,7 @@ class _MapTripScreenState extends State<MapTripScreen> {
                           Container(
                             width: 220,
                             child: Text(
-                              startingTripLocationString,
+                              startingTripLocationString ?? "",
                               overflow: TextOverflow.ellipsis,
                               style: TextStyle(
                                   color: Colors.black,
@@ -4144,7 +4269,7 @@ class _MapTripScreenState extends State<MapTripScreen> {
                   ),
                   Container(
                     height: 1,
-                    color: Colors.grey[400],
+                    color: Colors.grey[400] ?? Colors.grey,
                     width: 250,
                   ),
                   Container(
@@ -4171,7 +4296,7 @@ class _MapTripScreenState extends State<MapTripScreen> {
                           Container(
                             width: 220,
                             child: Text(
-                              arriveTripLocationString,
+                              arriveTripLocationString ?? "",
                               overflow: TextOverflow.ellipsis,
                               style: TextStyle(
                                   color: Colors.black,
@@ -4214,37 +4339,41 @@ class _MapTripScreenState extends State<MapTripScreen> {
                     ),
                     width: SizeConfig.screenWidth - 150,
                     onPressed: () async {
-                      Map<String, dynamic> agentTripsLocationList =
-                          new HashMap();
+                      Map<String?, dynamic> agentTripsLocationList =
+                      new HashMap();
                       agentTripsLocationList.putIfAbsent(
-                          "startingPointString",
-                          () => p != null
+                          "startingPointString?",
+                              () =>
+                          p != null
                               ? p.description
                               : startingTripLocationString);
                       agentTripsLocationList.putIfAbsent(
-                          "arrivalPointString",
-                          () => p2 != null
+                          "arrivalPointString?",
+                              () =>
+                          p2 != null
                               ? p2.description
                               : arriveTripLocationString);
                       agentTripsLocationList.putIfAbsent(
                           "arrivalPoint",
-                          () => GeoPoint(
-                              locationData.lnt != null
-                                  ? locationData.lnt
-                                  : arrivedLocationLnt,
-                              locationData.lng != null
-                                  ? locationData.lng
-                                  : arrivedLocationLng));
+                              () =>
+                              GeoPoint(
+                                  locationData.lnt != null
+                                      ? locationData.lnt
+                                      : arrivedLocationLnt,
+                                  locationData.lng != null
+                                      ? locationData.lng
+                                      : arrivedLocationLng));
                       agentTripsLocationList.putIfAbsent(
                           "startingPoint",
-                          () => GeoPoint(
-                              locationData.lnt != null
-                                  ? locationData.lnt
-                                  : startingLocationLnt,
-                              locationData.lng != null
-                                  ? locationData.lng
-                                  : startingLocationLng));
-                      List<HashMap<String, dynamic>> list = [];
+                              () =>
+                              GeoPoint(
+                                  locationData.lnt != null
+                                      ? locationData.lnt
+                                      : startingLocationLnt,
+                                  locationData.lng != null
+                                      ? locationData.lng
+                                      : startingLocationLng));
+                      List<Map<String?, dynamic>> list = [];
                       list.add(agentTripsLocationList);
                       authService.updateTripsLocationToFireStore(
                           widget.user, list);
@@ -4263,7 +4392,7 @@ class _MapTripScreenState extends State<MapTripScreen> {
   Future<void> _goToMyPosition(c) async {
     _myPosition = CameraPosition(
       target:
-          LatLng(initPosition.target.latitude, initPosition.target.longitude),
+      LatLng(initPosition.target.latitude, initPosition.target.longitude),
       zoom: 14.5,
     );
     await locationData.getCurrentPosition();
@@ -4300,7 +4429,7 @@ class _MapTripScreenState extends State<MapTripScreen> {
       components: [Component(Component.country, "mar")],
     );
 
-    displayStartingPrediction(p, homeScaffoldKey.currentState);
+    displayStartingPrediction(p, homeScaffoldKey.currentState!);
   }
 
   Future<void> _handlePressButton2() async {
@@ -4318,18 +4447,18 @@ class _MapTripScreenState extends State<MapTripScreen> {
       components: [Component(Component.country, "mar")],
     );
 
-    displayArrivedPrediction(p2, homeScaffoldKey.currentState);
+    displayArrivedPrediction(p2, homeScaffoldKey.currentState!);
   }
 
-  Future<Null> displayStartingPrediction(
-      Prediction p, ScaffoldState scaffold) async {
+  Future<Null> displayStartingPrediction(Prediction p,
+      ScaffoldState scaffold) async {
     if (p != null) {
       GoogleMapsPlaces _places = GoogleMapsPlaces(
         apiKey: kGoogleApiKey,
         apiHeaders: await GoogleApiHeaders().getHeaders(),
       );
       PlacesDetailsResponse detail =
-          await _places.getDetailsByPlaceId(p.placeId);
+      await _places.getDetailsByPlaceId(p.placeId);
       setState(() {
         startingLocationLnt = detail.result.geometry.location.lat;
         startingLocationLng = detail.result.geometry.location.lng;
@@ -4340,15 +4469,15 @@ class _MapTripScreenState extends State<MapTripScreen> {
     }
   }
 
-  Future<Null> displayArrivedPrediction(
-      Prediction p, ScaffoldState scaffold) async {
+  Future<Null> displayArrivedPrediction(Prediction p,
+      ScaffoldState scaffold) async {
     if (p != null) {
       GoogleMapsPlaces _places = GoogleMapsPlaces(
         apiKey: kGoogleApiKey,
         apiHeaders: await GoogleApiHeaders().getHeaders(),
       );
       PlacesDetailsResponse detail =
-          await _places.getDetailsByPlaceId(p.placeId);
+      await _places.getDetailsByPlaceId(p.placeId);
       setState(() {
         arrivedLocationLnt = detail.result.geometry.location.lat;
         arrivedLocationLng = detail.result.geometry.location.lng;

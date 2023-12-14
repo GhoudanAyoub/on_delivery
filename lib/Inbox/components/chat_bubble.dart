@@ -6,11 +6,11 @@ import 'package:on_delivery/models/enum/message_type.dart';
 import 'package:timeago/timeago.dart' as timeago;
 
 class ChatBubble extends StatefulWidget {
-  final String message;
+  final String? message;
   final MessageType type;
   final Timestamp time;
   final bool isMe;
-  final bool accepted;
+  final bool? accepted;
 
   ChatBubble({
     required this.message,
@@ -30,18 +30,18 @@ class _ChatBubbleState extends State<ChatBubble> {
       return Color.fromRGBO(248, 250, 251, 1);
     } else {
       if (Theme.of(context).brightness == Brightness.dark) {
-        return Colors.grey[800];
+        return Colors.grey[800]??Colors.grey;
       } else {
-        return Colors.grey[200];
+        return Colors.grey[200]??Colors.grey;
       }
     }
   }
 
   Color chatBubbleReplyColor() {
     if (Theme.of(context).brightness == Brightness.dark) {
-      return Colors.grey[600];
+      return Colors.grey[600]??Colors.grey;
     } else {
-      return Colors.grey[50];
+      return Colors.grey[50]??Colors.grey;
     }
   }
 
@@ -80,33 +80,33 @@ class _ChatBubbleState extends State<ChatBubble> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            widget.message,
+                            widget.message??"",
                             style: TextStyle(
                                 fontSize: 14,
                                 letterSpacing: 0.8,
-                                color: widget.message.toLowerCase().contains(
-                                            "please confirm you position") ||
+                                color: widget.message?.toLowerCase().contains(
+                                            "please confirm you position") ==true||
                                         widget.message
-                                            .contains("cash delivery") ||
+                                            ?.contains("cash delivery") ==true||
                                         widget.message
-                                            .contains("Bank transfer option")
+                                            ?.contains("Bank transfer option")==true
                                     ? Color.fromRGBO(45, 111, 214, 1)
                                     : Color.fromRGBO(10, 22, 41, 1),
                                 decoration: widget.message
-                                            .toLowerCase()
+                                            ?.toLowerCase()
                                             .contains(
-                                                "please confirm you position") ||
+                                                "please confirm you position")==true ||
                                         widget.message
-                                            .contains("cash delivery") ||
+                                            ?.contains("cash delivery")==true ||
                                         widget.message
-                                            .contains("Bank transfer option")
+                                           ?.contains("Bank transfer option")==true
                                     ? TextDecoration.underline
                                     : TextDecoration.none),
                           ),
                           SizedBox(
                             height: 2,
                           ),
-                          widget.message.contains("cash delivery")
+                          widget.message?.contains("cash delivery")==true
                               ? Text(
                                   "OR",
                                   style: TextStyle(

@@ -9,10 +9,10 @@ import 'package:on_delivery/utils/firebase.dart';
 import 'package:on_delivery/utils/utils.dart';
 
 class RateLayout extends StatefulWidget {
-  final String id;
+  final String? id;
   final RateModel rateModel;
 
-  const RateLayout({Key? key, this.id, this.rateModel}) : super(key: key);
+  const RateLayout({Key? key, this.id, required this.rateModel}) : super(key: key);
   @override
   _RateLayoutState createState() => _RateLayoutState();
 }
@@ -32,8 +32,9 @@ class _RateLayoutState extends State<RateLayout> {
           StreamBuilder(
             stream: usersRef.doc(widget.rateModel.userID).snapshots(),
             builder: (context, AsyncSnapshot<DocumentSnapshot> snapshot) {
-              if (snapshot.hasData) {
-                UserModel user1 = UserModel.fromJson(snapshot.data.data());
+              Map<String?, dynamic>? mapData = snapshot.data?.data();
+              if (snapshot.hasData && mapData != null) {
+                UserModel user1 = UserModel.fromJson(mapData);
 
                 return Container(
                   padding: EdgeInsets.all(10),
@@ -99,7 +100,7 @@ class _RateLayoutState extends State<RateLayout> {
                                       MainAxisAlignment.spaceBetween,
                                   children: [
                                     Text(
-                                        "${user1.firstName} ${user1.lastname.toUpperCase()}",
+                                        "${user1.firstName} ${user1.lastname?.toUpperCase()}",
                                         style: TextStyle(
                                           fontSize: 12,
                                           letterSpacing: 1,
@@ -107,7 +108,7 @@ class _RateLayoutState extends State<RateLayout> {
                                           color: Colors.black,
                                         )),
                                     Text(
-                                        "${DateFormat('MMM dd,yyyy').format(Utils.toDateTime(widget.rateModel.timestamp))}",
+                                        "${DateFormat('MMM dd,yyyy').format(Utils.toDateTime(widget.rateModel.timestamp??Timestamp.now()))}",
                                         style: TextStyle(
                                           fontSize: 12,
                                           letterSpacing: 1,

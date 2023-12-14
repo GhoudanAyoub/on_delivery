@@ -6,6 +6,7 @@ import 'package:on_delivery/block/navigation_block/navigation_block.dart';
 import 'package:on_delivery/components/chat_item.dart';
 import 'package:on_delivery/components/chat_item2.dart';
 import 'package:on_delivery/home/base.dart';
+import 'package:on_delivery/models/enum/message_type.dart';
 import 'package:on_delivery/models/new_message_system.dart';
 import 'package:on_delivery/utils/constants.dart';
 import 'package:on_delivery/utils/firebase.dart';
@@ -52,7 +53,7 @@ class _ChatsState extends State<Chats> {
                             if (snapshot.hasData) {
                               chatList.clear();
                               for (DocumentSnapshot doc
-                                  in snapshot.data.documents) {
+                                  in snapshot.data?.documents) {
                                 if (doc.data()['users'][0].toString().contains(
                                         firebaseAuth.currentUser.uid) ||
                                     doc.data()['users'][1].toString().contains(
@@ -103,7 +104,7 @@ class _ChatsState extends State<Chats> {
                                                       .data()['users'];
                                                   users.remove(
                                                       '${viewModel.user?.uid ?? ""}');
-                                                  String recipient = users[0];
+                                                  String? recipient = users[0];
                                                   return Container(
                                                     margin:
                                                         EdgeInsets.symmetric(
@@ -127,9 +128,9 @@ class _ChatsState extends State<Chats> {
                                                                         .id,
                                                                 isAgent: viewModel
                                                                         .type
-                                                                        .toLowerCase()
+                                                                        ?.toLowerCase()
                                                                         .contains(
-                                                                            "agent")
+                                                                            "agent")==true
                                                                     ? true
                                                                     : false,
                                                               );
@@ -138,19 +139,17 @@ class _ChatsState extends State<Chats> {
                                                         );
                                                       },
                                                       userId: recipient,
-                                                      messageCount:
-                                                          messages?.length,
-                                                      msg: message?.content,
-                                                      time: message?.time,
-                                                      chatId:
-                                                          chatListSnapshot.id,
-                                                      type: message?.type,
+                                                      messageCount: messages.length??0,
+                                                      msg: message.content,
+                                                      time: message.time??Timestamp.now(),
+                                                      chatId: chatListSnapshot.id,
+                                                      type: message.type??MessageType.TEXT,
                                                       currentUserId:
                                                           viewModel.user?.uid ??
                                                               "",
                                                       isAgent: viewModel.type
-                                                              .toLowerCase()
-                                                              .contains("agent")
+                                                              ?.toLowerCase()
+                                                              .contains("agent")==true
                                                           ? true
                                                           : false,
                                                     ),
@@ -200,19 +199,19 @@ class _ChatsState extends State<Chats> {
                                                   .data()['users'];
                                               users.remove(
                                                   '${viewModel.user?.uid ?? ""}');
-                                              String recipient = users[0];
+                                              String? recipient = users[0];
                                               return ChatItem(
                                                 userId: recipient,
-                                                messageCount: messages?.length,
-                                                msg: message?.content,
-                                                time: message?.time,
+                                                messageCount: messages.length??0,
+                                                msg: message.content,
+                                                time: message.time??Timestamp.now(),
                                                 chatId: chatListSnapshot.id,
-                                                type: message?.type,
+                                                type: message.type??MessageType.TEXT,
                                                 currentUserId:
-                                                    viewModel.user?.uid ?? "",
+                                                    viewModel.user.uid ?? "",
                                                 isAgent: viewModel.type
-                                                        .toLowerCase()
-                                                        .contains("agent")
+                                                        ?.toLowerCase()
+                                                        .contains("agent")==true
                                                     ? true
                                                     : false,
                                               );
@@ -275,7 +274,7 @@ class _ChatsState extends State<Chats> {
                                                   BorderRadius.circular(10.0),
                                               boxShadow: [
                                                 BoxShadow(
-                                                  color: Colors.grey[500],
+                                                  color: Colors.grey[500]??Colors.grey,
                                                   offset: Offset(0.0, 1.5),
                                                   blurRadius: 1.5,
                                                 ),
@@ -338,7 +337,7 @@ class _ChatsState extends State<Chats> {
                               borderRadius: BorderRadius.circular(10.0),
                               boxShadow: [
                                 BoxShadow(
-                                  color: Colors.grey[500],
+                                  color: Colors.grey[500]??Colors.grey,
                                   offset: Offset(0.0, 1.5),
                                   blurRadius: 1.5,
                                 ),
@@ -350,11 +349,11 @@ class _ChatsState extends State<Chats> {
                 ))));
   }
 
-  Stream<QuerySnapshot> userChatsStream(String uid) {
+  Stream<QuerySnapshot> userChatsStream(String? uid) {
     return chatRef.orderBy("lastTextTime", descending: true).snapshots();
   }
 
-  Stream<QuerySnapshot> messageListStream(String documentId) {
+  Stream<QuerySnapshot> messageListStream(String? documentId) {
     return chatRef
         .doc(documentId)
         .collection('messages')

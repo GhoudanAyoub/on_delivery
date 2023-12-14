@@ -24,12 +24,12 @@ class Body extends StatefulWidget {
 
 class _BodyState extends State<Body> {
   FirebaseAuth _auth = FirebaseAuth.instance;
-  User _user;
+  late User _user;
   GoogleSignIn _googleSignIn = GoogleSignIn();
   FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
   static final FacebookLogin facebookSignIn = new FacebookLogin();
   bool isSignIn = false;
-  String name = '', image;
+  String? name = '', image;
 
   GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
   @override
@@ -61,7 +61,7 @@ class _BodyState extends State<Body> {
                         height: 80,
                         child: Stack(
                           fit: StackFit.expand,
-                          overflow: Overflow.visible,
+                          clipBehavior:Clip.none,
                           children: [
                             Text(
                               "Welcome \nBack",
@@ -155,14 +155,14 @@ class _BodyState extends State<Body> {
                                             UserModel.fromJson(data.data());
                                         if (data.exists &&
                                             (userModel.type
-                                                    .toLowerCase()
-                                                    .contains("client") ||
+                                                    ?.toLowerCase()
+                                                    .contains("client")==true ||
                                                 userModel.type
-                                                    .toLowerCase()
-                                                    .contains("agent"))) {
+                                                    ?.toLowerCase()
+                                                    .contains("agent")==true)) {
                                           Navigator.pushNamed(
                                               context, Base.routeName);
-                                          Scaffold.of(context).showSnackBar(
+                                          ScaffoldMessenger.of(context).showSnackBar(
                                               SnackBar(
                                                   content:
                                                       Text('Welcome Back')));
@@ -223,14 +223,14 @@ class _BodyState extends State<Body> {
                                             UserModel.fromJson(data.data());
                                         if (data.exists &&
                                             (userModel.type
-                                                    .toLowerCase()
-                                                    .contains("client") ||
+                                                    ?.toLowerCase()
+                                                    .contains("client")==true ||
                                                 userModel.type
-                                                    .toLowerCase()
-                                                    .contains("agent"))) {
+                                                    ?.toLowerCase()
+                                                    .contains("agent")==true)) {
                                           Navigator.pushNamed(
                                               context, Base.routeName);
-                                          Scaffold.of(context).showSnackBar(
+                                          ScaffoldMessenger.of(context).showSnackBar(
                                               SnackBar(
                                                   content:
                                                       Text('Welcome Back')));
@@ -320,9 +320,9 @@ class _BodyState extends State<Body> {
     setState(() {
       isSignIn = true;
     });
-    Scaffold.of(context)
+    ScaffoldMessenger.of(context)
         .showSnackBar(SnackBar(content: Text("Checking Your Account..")));
-    Scaffold.of(context).showSnackBar(SnackBar(content: Text("please Wait..")));
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("please Wait..")));
     final GoogleSignInAccount account = await _googleSignIn.signIn();
     final GoogleSignInAuthentication _googleAuth = await account.authentication;
     final AuthCredential credential = GoogleAuthProvider.credential(
@@ -333,7 +333,7 @@ class _BodyState extends State<Body> {
         await _firebaseAuth.signInWithCredential(credential).catchError((e) {
       print("Error===>" + e.toString());
     });
-    Scaffold.of(context).showSnackBar(SnackBar(content: Text("please Wait..")));
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("please Wait..")));
   }
 
   Future loginWithFacebook(context) async {
@@ -377,8 +377,8 @@ class _BodyState extends State<Body> {
     }
   }
 
-  void showInSnackBar(String value) {
-    scaffoldKey.currentState.removeCurrentSnackBar();
-    scaffoldKey.currentState.showSnackBar(SnackBar(content: Text(value)));
+  void showInSnackBar(String? value) {
+    ScaffoldMessenger.of(context).removeCurrentSnackBar();
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(value??"")));
   }
 }

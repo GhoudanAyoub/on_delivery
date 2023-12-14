@@ -1,21 +1,21 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class AgentTripsLocation {
-  String startingPointString;
-  String arrivalPointString;
-  GeoPoint startingPoint;
-  GeoPoint arrivalPoint;
+  late String? startingPointString;
+  late String? arrivalPointString;
+  late GeoPoint? startingPoint;
+  late GeoPoint? arrivalPoint;
 
   AgentTripsLocation(
-      {this.startingPointString,
-      this.arrivalPointString,
-      this.startingPoint,
-      this.arrivalPoint});
+      {required this.startingPointString,
+      required this.arrivalPointString,
+      required this.startingPoint,
+      required this.arrivalPoint});
 
-  static AgentTripsLocation fromJson(Map<String, dynamic> json) =>
+  static AgentTripsLocation fromJson(Map<String?, dynamic> json) =>
       AgentTripsLocation(
-        startingPointString: json['startingPointString'],
-        arrivalPointString: json['arrivalPointString'],
+        startingPointString: json['startingPointString?'],
+        arrivalPointString: json['arrivalPointString?'],
         startingPoint: json['startingPoint'],
         arrivalPoint: json['arrivalPoint'],
       );

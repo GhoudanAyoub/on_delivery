@@ -5,19 +5,19 @@ import 'package:http/http.dart' as http;
 import 'package:http_auth/http_auth.dart';
 
 class PaypalServices {
-  String domain = "https://api.sandbox.paypal.com"; // for sandbox mode
-//  String domain = "https://api.paypal.com"; // for production mode
+  String? domain = "https://api.sandbox.paypal.com"; // for sandbox mode
+//  String? domain = "https://api.paypal.com"; // for production mode
 
   // change clientId and secret with your own, provided by paypal
 
-  String clientId =
+  String? clientId =
       'AYefr3dDdShYDGjbCxaFV64YkAgJ7GKxeKcKqAgzNvs-Ibmb_rlWy16gqGJFtUksdPQeld3niJBEfsfS';
 
-  String secret =
+  String? secret =
       'EMMjVbdhM7XmiBnlRWZm81b5nZQ-9JxLVOR3tJYROugZ5r2b1hvHIb_7fADfqN7hZgAwrKanUwot2fVq';
 
   // for getting the access token from Paypal
-  Future<String> getAccessToken() async {
+  Future<String?> getAccessToken() async {
     try {
       var client = BasicAuthClient(clientId, secret);
       var response = await client
@@ -33,7 +33,7 @@ class PaypalServices {
   }
 
   // for creating the payment request with Paypal
-  Future<Map<String, String>> createPaypalPayment(
+  Future<Map<String?, String?>?> createPaypalPayment(
       transactions, accessToken) async {
     try {
       var response = await http.post("$domain/v1/payments/payment",
@@ -48,8 +48,8 @@ class PaypalServices {
         if (body["links"] != null && body["links"].length > 0) {
           List links = body["links"];
 
-          String executeUrl = "";
-          String approvalUrl = "";
+          String? executeUrl = "";
+          String? approvalUrl = "";
           final item = links.firstWhere((o) => o["rel"] == "approval_url",
               orElse: () => null);
           if (item != null) {
@@ -72,7 +72,7 @@ class PaypalServices {
   }
 
   // for executing the payment transaction
-  Future<String> executePayment(url, payerId, accessToken) async {
+  Future<String?> executePayment(url, payerId, accessToken) async {
     try {
       var response = await http.post(url,
           body: convert.jsonEncode({"payer_id": payerId}),

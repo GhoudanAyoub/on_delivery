@@ -51,13 +51,13 @@ class _SuccessState extends State<Success> {
             width: MediaQuery.of(context).size.width,
             margin: EdgeInsets.symmetric(vertical: 16),
             padding: EdgeInsets.symmetric(horizontal: 16),
-            child: FlatButton(
-              padding: EdgeInsets.symmetric(vertical: 24),
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(30)),
-              color: Colors.green,
-              textColor: Colors.white,
-              highlightColor: Colors.transparent,
+            child: TextButton(
+            style: TextButton.styleFrom(
+    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
+    primary: Colors.white,
+    onSurface: Colors.green,
+    padding: EdgeInsets.symmetric(vertical: 24)
+    ),
               onPressed: () => Navigator.pushNamed(context, Base.routeName),
               child: Text('Ok'.toUpperCase()),
             ),

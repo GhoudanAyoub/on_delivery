@@ -18,7 +18,7 @@ class CustomDropdown<T> extends StatefulWidget {
   final DropdownButtonStyle dropdownButtonStyle;
 
   /// dropdown button icon defaults to caret
-  final Icon icon;
+  final Icon? icon;
   final bool hideIcon;
 
   /// if true the dropdown icon will as a leading icon, default to false
@@ -32,7 +32,7 @@ class CustomDropdown<T> extends StatefulWidget {
     this.dropdownButtonStyle = const DropdownButtonStyle(),
     this.icon,
     this.leadingIcon = false,
-    this.onChange,
+    required this.onChange,
   }) : super(key: key);
 
   @override
@@ -42,12 +42,12 @@ class CustomDropdown<T> extends StatefulWidget {
 class _CustomDropdownState<T> extends State<CustomDropdown<T>>
     with TickerProviderStateMixin {
   final LayerLink _layerLink = LayerLink();
-  OverlayEntry _overlayEntry;
+ late OverlayEntry _overlayEntry;
   bool _isOpen = false;
   int _currentIndex = -1;
-  AnimationController _animationController;
-  Animation<double> _expandAnimation;
-  Animation<double> _rotateAnimation;
+  late AnimationController _animationController;
+  late Animation<double> _expandAnimation;
+ late Animation<double> _rotateAnimation;
 
   @override
   void initState() {
@@ -109,7 +109,7 @@ class _CustomDropdownState<T> extends State<CustomDropdown<T>>
 
   OverlayEntry _createOverlayEntry() {
     // find the size and position of the current widget
-    RenderBox renderBox = context.findRenderObject();
+    RenderBox renderBox = context.findRenderObject() as RenderBox;
     var size = renderBox.size;
 
     var offset = renderBox.localToGlobal(Offset.zero);
@@ -186,7 +186,7 @@ class _CustomDropdownState<T> extends State<CustomDropdown<T>>
       });
     } else {
       this._overlayEntry = this._createOverlayEntry();
-      Overlay.of(context).insert(this._overlayEntry);
+      Overlay.of(context)?.insert(this._overlayEntry);
       setState(() => _isOpen = true);
       _animationController.forward();
     }
@@ -199,7 +199,7 @@ class DropdownItem<T> extends StatelessWidget {
   final T value;
   final Widget child;
 
-  const DropdownItem({Key? key, this.value, this.child}) : super(key: key);
+  const DropdownItem({Key? key, required this.value,required this.child}) : super(key: key);
   @override
   Widget build(BuildContext context) {
     return child;
@@ -207,15 +207,15 @@ class DropdownItem<T> extends StatelessWidget {
 }
 
 class DropdownButtonStyle {
-  final MainAxisAlignment mainAxisAlignment;
-  final ShapeBorder shape;
-  final double elevation;
-  final Color backgroundColor;
-  final EdgeInsets padding;
-  final BoxConstraints constraints;
-  final double width;
-  final double height;
-  final Color primaryColor;
+  final MainAxisAlignment? mainAxisAlignment;
+  final OutlinedBorder? shape;
+  final double? elevation;
+  final Color? backgroundColor;
+  final EdgeInsets? padding;
+  final BoxConstraints? constraints;
+  final double? width;
+  final double? height;
+  final Color? primaryColor;
   const DropdownButtonStyle({
     this.mainAxisAlignment,
     this.backgroundColor,
@@ -230,17 +230,17 @@ class DropdownButtonStyle {
 }
 
 class DropdownStyle {
-  final BorderRadius borderRadius;
-  final double elevation;
-  final Color color;
-  final EdgeInsets padding;
-  final BoxConstraints constraints;
+  final BorderRadius? borderRadius;
+  final double? elevation;
+  final Color? color;
+  final EdgeInsets? padding;
+  final BoxConstraints? constraints;
 
   /// position of the top left of the dropdown relative to the top left of the button
-  final Offset offset;
+  final Offset? offset;
 
   ///button width must be set for this to take effect
-  final double width;
+  final double? width;
 
   const DropdownStyle({
     this.constraints,

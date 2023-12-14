@@ -21,7 +21,7 @@ class _BodyState extends State<Body> {
 
   checkInternet() async {
     try {
-      final result = await InternetAddress.lookup('example.com');
+      final result = await InternetAddress.lookup('https://ayoubghoudan.web.app');
       if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
         new Future.delayed(Duration(seconds: 3), () {
           if (firebaseAuth.currentUser != null)

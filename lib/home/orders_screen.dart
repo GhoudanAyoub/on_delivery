@@ -23,19 +23,19 @@ class OrderScreen extends StatefulWidget with NavigationStates {
 }
 
 class _OrderScreenState extends State<OrderScreen> {
-  UserModel user1;
+  late UserModel user1;
   int _activeTabHome = 0;
   bool searchClicked = false;
-  String CatName;
+  String? CatName;
   TextEditingController _searchedController = TextEditingController();
   List<DocumentSnapshot> orders = [];
   List<DocumentSnapshot> filteredOrders = [];
   bool loading = true;
-  LocationProvider locationData;
+  late LocationProvider locationData;
   int myDocs = 0;
   int currentDocs = 0;
   int histoDocs = 0;
-  int counter;
+  late int counter;
 
   getOrders() async {
     QuerySnapshot snap = await orderRef.get();
@@ -52,9 +52,9 @@ class _OrderScreenState extends State<OrderScreen> {
       element.docChanges.forEach((element) {
         Orders order = Orders.fromJson(element.doc.data());
         if (order.userId != null &&
-                order.userId.contains(firebaseAuth.currentUser.uid) ||
+                order.userId?.contains(firebaseAuth.currentUser.uid) ==true||
             order.agentId != null &&
-                order.agentId.contains(firebaseAuth.currentUser.uid)) {
+                order.agentId?.contains(firebaseAuth.currentUser.uid) ==true) {
           setState(() {
             myDocs++;
           });
@@ -79,8 +79,7 @@ class _OrderScreenState extends State<OrderScreen> {
         .snapshots()
         .listen((event) {
       event.docChanges.forEach((element) {
-        readCount +=
-            element.doc.data()['reads'][firebaseAuth.currentUser.uid] ?? 0;
+        readCount += (element.doc.data()['reads'][firebaseAuth.currentUser.uid] ?? 0);
         chatRef
             .doc(element.doc.id)
             .collection('messages')
@@ -290,7 +289,7 @@ class _OrderScreenState extends State<OrderScreen> {
                             borderRadius: BorderRadius.circular(10.0),
                             boxShadow: [
                               BoxShadow(
-                                color: Colors.grey[500],
+                                color: Colors.grey[500]??Colors.grey,
                                 offset: Offset(0.0, 1.5),
                                 blurRadius: 1.5,
                               ),
@@ -377,7 +376,7 @@ class _OrderScreenState extends State<OrderScreen> {
                                         fontWeight: FontWeight.w600,
                                         color: _activeTabHome == index
                                             ? Colors.black
-                                            : Colors.grey[400],
+                                            : Colors.grey[400]??Colors.grey,
                                       ),
                                     ),
                                     _activeTabHome == index
@@ -385,14 +384,14 @@ class _OrderScreenState extends State<OrderScreen> {
                                             right: -25,
                                             top: -10,
                                             child: Text(
-                                              "(${_activeTabHome == 0 ? myDocs.toString() : _activeTabHome == 1 ? currentDocs.toString() : histoDocs.toString()})",
+                                              "(${_activeTabHome == 0 ? myDocs.toString?() : _activeTabHome == 1 ? currentDocs.toString?() : histoDocs.toString?()})",
                                               style: TextStyle(
                                                 letterSpacing: 1,
                                                 fontSize: 16,
                                                 fontWeight: FontWeight.w600,
                                                 color: _activeTabHome == index
                                                     ? Colors.green
-                                                    : Colors.grey[400],
+                                                    : Colors.grey[400]??Colors.grey,
                                               ),
                                             ),
                                           )
@@ -436,7 +435,7 @@ class _OrderScreenState extends State<OrderScreen> {
                       borderRadius: BorderRadius.circular(10.0),
                       boxShadow: [
                         BoxShadow(
-                          color: Colors.grey[500],
+                          color: Colors.grey[500]??Colors.grey,
                           offset: Offset(0.0, 1.5),
                           blurRadius: 1.5,
                         ),

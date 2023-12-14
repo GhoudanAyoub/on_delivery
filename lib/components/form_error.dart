@@ -8,7 +8,7 @@ class FormError extends StatelessWidget {
     required this.errors,
   }) : super(key: key);
 
-  final List<String> errors;
+  final List<String?> errors;
 
   @override
   Widget build(BuildContext context) {
@@ -18,7 +18,7 @@ class FormError extends StatelessWidget {
     );
   }
 
-  Row formErrorText({String error}) {
+  Row formErrorText({String? error}) {
     return Row(
       children: [
         SvgPicture.asset(
@@ -29,7 +29,7 @@ class FormError extends StatelessWidget {
         SizedBox(
           width: getProportionateScreenWidth(10),
         ),
-        Text(error),
+        Text(error??""),
       ],
     );
   }

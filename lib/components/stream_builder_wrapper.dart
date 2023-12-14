@@ -15,7 +15,7 @@ class StreamBuilderWrapper extends StatelessWidget {
   final bool shrinkWrap;
   final ScrollPhysics physics;
   final EdgeInsets padding;
-  final String text;
+  final String? text;
 
   const StreamBuilderWrapper({
     Key? key,
@@ -40,7 +40,7 @@ class StreamBuilderWrapper extends StatelessWidget {
                   padding: const EdgeInsets.only(top: 100.0),
                   child: Center(
                     child: Container(
-                      child: Text(text),
+                      child: Text(text??""),
                     ),
                   ),
                 )

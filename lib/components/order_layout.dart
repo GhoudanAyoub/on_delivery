@@ -1,4 +1,5 @@
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:expand_widget/expand_widget.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -14,13 +15,13 @@ import 'package:on_delivery/utils/firebase.dart';
 import 'package:on_delivery/utils/utils.dart';
 
 class OrderLayout extends StatefulWidget {
-  final Orders order;
-  final UserModel user;
-  final UserModel me;
+  final Orders? order;
+  final UserModel? user;
+  final UserModel? me;
   final bool track;
   final bool count;
   final bool show;
-  final String Time;
+  final String? Time;
 
   const OrderLayout(
       {Key? key,
@@ -37,7 +38,7 @@ class OrderLayout extends StatefulWidget {
 }
 
 class _OrderLayoutState extends State<OrderLayout> {
-  String startFrom, endAt;
+  String? startFrom, endAt;
   @override
   void initState() {
     getLocationString();
@@ -76,8 +77,8 @@ class _OrderLayoutState extends State<OrderLayout> {
                       children: [
                         CircleAvatar(
                           backgroundImage: CachedNetworkImageProvider(
-                            widget.user.photoUrl != null
-                                ? widget.user.photoUrl
+                            widget.user?.photoUrl != null
+                                ? widget.user?.photoUrl
                                 : FirebaseService.getProfileImage(),
                           ),
                           radius: 30.0,
@@ -116,14 +117,14 @@ class _OrderLayoutState extends State<OrderLayout> {
                         Row(
                           children: [
                             Text(
-                                "${widget.user.firstName} ${widget.user.lastname.toUpperCase()}",
+                                "${widget.user?.firstName} ${widget.user?.lastname?.toUpperCase()}",
                                 style: TextStyle(
                                   fontSize: 12,
                                   letterSpacing: 1,
                                   fontWeight: FontWeight.w500,
                                   color: Colors.black,
                                 )),
-                            widget.user.verified == "true"
+                            widget.user?.verified == "true"
                                 ? Image.asset("assets/images/ver_agent.png")
                                 : SizedBox(height: 0)
                           ],
@@ -140,7 +141,7 @@ class _OrderLayoutState extends State<OrderLayout> {
                                   fontWeight: FontWeight.normal,
                                   color: Colors.black,
                                 )),
-                            Text("${widget.user.activities.toLowerCase()}",
+                            Text("${widget.user?.activities?.toLowerCase()}",
                                 style: TextStyle(
                                   fontSize: 11,
                                   letterSpacing: 1,
@@ -169,7 +170,7 @@ class _OrderLayoutState extends State<OrderLayout> {
                         color: Colors.black,
                       )),
                   Text(
-                      "${DateFormat('yyyy-MM-dd AT kk:mm').format(Utils.toDateTime(widget.order.date))}",
+                      "${DateFormat('yyyy-MM-dd AT kk:mm').format(Utils.toDateTime(widget.order?.date??Timestamp.now()))}",
                       style: TextStyle(
                         fontSize: 12,
                         letterSpacing: 1,
@@ -220,24 +221,24 @@ class _OrderLayoutState extends State<OrderLayout> {
                 children: [
                   Container(
                     decoration: BoxDecoration(
-                      color: widget.order.status
+                      color: widget.order?.status
                               .toLowerCase()
-                              .contains("canceled")
+                              .contains("canceled")=true
                           ? Color.fromRGBO(254, 29, 29, 1).withOpacity(0.2)
-                          : widget.order.status
+                          : widget.order?.status
                                   .toLowerCase()
-                                  .contains("pending")
+                                  .contains("pending")==true
                               ? Color.fromRGBO(195, 199, 24, 1).withOpacity(0.2)
                               : Color.fromRGBO(10, 201, 71, 1).withOpacity(0.2),
                       border: Border.all(
                         width: 1,
-                        color: widget.order.status
+                        color: widget.order?.status
                                 .toLowerCase()
-                                .contains("canceled")
+                                .contains("canceled")==true
                             ? Color.fromRGBO(254, 29, 29, 1).withOpacity(0.2)
-                            : widget.order.status
+                            : widget.order?.status
                                     .toLowerCase()
-                                    .contains("pending")
+                                    .contains("pending")==true
                                 ? Color.fromRGBO(195, 199, 24, 1)
                                     .withOpacity(0.2)
                                 : Color.fromRGBO(10, 201, 71, 1)
@@ -251,17 +252,17 @@ class _OrderLayoutState extends State<OrderLayout> {
                       mainAxisAlignment: MainAxisAlignment.spaceAround,
                       children: [
                         Text(
-                          "${widget.order.status}",
+                          "${widget.order?.status}",
                           style: TextStyle(
                             fontSize: 12,
                             fontWeight: FontWeight.w600,
-                            color: widget.order.status
+                            color: widget.order?.status
                                     .toLowerCase()
-                                    .contains("canceled")
+                                    .contains("canceled") == true
                                 ? Color.fromRGBO(254, 29, 29, 1)
-                                : widget.order.status
+                                : widget.order?.status
                                         .toLowerCase()
-                                        .contains("pending")
+                                        .contains("pending") == true
                                     ? Color.fromRGBO(195, 199, 24, 1)
                                     : Color.fromRGBO(10, 201, 71, 1),
                           ),
@@ -285,8 +286,8 @@ class _OrderLayoutState extends State<OrderLayout> {
                 height: 5,
               ),
               widget.track &&
-                      widget.me != null &&
-                      !widget.me.type.toLowerCase().contains('agent')
+                      widget.me != null && widget.me?.type != null &&
+                      widget.me?.type?.toLowerCase().contains('agent') != true
                   ? ExpandChild(
                       child: Column(
                         children: <Widget>[
@@ -328,7 +329,7 @@ class _OrderLayoutState extends State<OrderLayout> {
                   : Container(),
               widget.show &&
                       widget.me != null &&
-                      widget.me.type.toLowerCase().contains('agent') == true
+                      widget.me?.type?.toLowerCase().contains('agent') == true
                   ? ExpandChild(
                       child: Column(
                         children: <Widget>[
@@ -351,14 +352,17 @@ class _OrderLayoutState extends State<OrderLayout> {
                                 ),
                                 width: getProportionateScreenWidth(200),
                                 onPressed: () {
-                                  Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (context) => ShowOnMap(
-                                          orders: widget.order,
-                                          userModel: widget.user,
-                                        ),
-                                      ));
+                                  if(widget.order!=null && widget.user!=null) {
+                                    Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (context) =>
+                                              ShowOnMap(
+                                                orders: widget.order!,
+                                                userModel: widget.user!,
+                                              ),
+                                        ));
+                                  }
                                 }),
                           ),
                           SizedBox(
@@ -373,7 +377,7 @@ class _OrderLayoutState extends State<OrderLayout> {
         ));
   }
 
-  Future<String> getCurrentCoordinatesName(lnts, lngs) async {
+  Future<String?> getCurrentCoordinatesName(lnts, lngs) async {
     final coordinates = new Coordinates(lnts, lngs);
     final addresses =
         await Geocoder.local.findAddressesFromCoordinates(coordinates);
@@ -438,7 +442,7 @@ class _OrderLayoutState extends State<OrderLayout> {
                       ),
                       width: SizeConfig.screenWidth - 150,
                       onPressed: () async {
-                        orderRef.doc(widget.order.orderId).delete();
+                        orderRef.doc(widget.order?.orderId).delete();
                         Navigator.pop(context);
                       }),
                   SizedBox(
@@ -470,14 +474,14 @@ class _OrderLayoutState extends State<OrderLayout> {
 
   getLocationString() {
     getCurrentCoordinatesName(
-            widget.order.startAt.latitude, widget.order.startAt.longitude)
+            widget.order?.startAt?.latitude, widget.order?.startAt?.longitude)
         .then((value) {
       setState(() {
         startFrom = value;
       });
     });
     getCurrentCoordinatesName(
-            widget.order.endAt.latitude, widget.order.endAt.longitude)
+            widget.order?.endAt?.latitude, widget.order?.endAt?.longitude)
         .then((value) {
       setState(() {
         endAt = value;

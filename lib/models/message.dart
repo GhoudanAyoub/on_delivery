@@ -2,15 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:on_delivery/utils/utils.dart';
 
 class MessageField {
-  static final String createdAt = 'createdAt';
+  static final String? createdAt = 'createdAt';
 }
 
 class messages {
-  final String sender;
-  final String receiver;
-  final String urlAvatar;
-  final String username;
-  final String message;
+  final String? sender;
+  final String? receiver;
+  final String? urlAvatar;
+  final String? username;
+  final String? message;
   final DateTime createdAt;
 
   const messages({
@@ -22,7 +22,7 @@ class messages {
     required this.createdAt,
   });
 
-  static messages fromJson(Map<String, dynamic> json) => messages(
+  static messages fromJson(Map<String?, dynamic> json) => messages(
         sender: json['sender'],
         receiver: json['receiver'],
         urlAvatar: json['urlAvatar'],
@@ -31,7 +31,7 @@ class messages {
         createdAt: Utils.toDateTime(json['createdAt']),
       );
 
-  Map<String, dynamic> toJson() => {
+  Map<String?, dynamic> toJson() => {
         'sender': sender,
         'receiver': receiver,
         'urlAvatar': urlAvatar,

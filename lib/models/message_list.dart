@@ -1,17 +1,17 @@
 import 'package:on_delivery/utils/utils.dart';
 
 class MessageListField {
-  static final String lastMessageTime = 'created_at';
+  static final String? lastMessageTime = 'created_at';
 }
 
 class MessageList {
-  final String id;
-  final String name;
-  final String img;
-  final bool online;
-  final bool live;
-  final String message;
-  final DateTime created_at;
+  final String? id;
+  final String? name;
+  final String? img;
+  final bool? online;
+  final bool? live;
+  final String? message;
+  final DateTime? created_at;
 
   MessageList({
     this.id,
@@ -23,13 +23,13 @@ class MessageList {
     this.created_at,
   });
   MessageList copyWith({
-    String id,
-    String name,
-    String img,
-    bool online,
-    bool live,
-    String message,
-    DateTime created_at,
+    String? id,
+    String? name,
+    String? img,
+    bool? online,
+    bool? live,
+    String? message,
+    DateTime? created_at,
   }) =>
       MessageList(
         id: id ?? this.id,
@@ -41,7 +41,7 @@ class MessageList {
         created_at: created_at ?? this.created_at,
       );
 
-  static MessageList fromJson(Map<String, dynamic> json) => MessageList(
+  static MessageList fromJson(Map<String?, dynamic> json) => MessageList(
       name: json['name'],
       img: json['img'],
       online: json['online'],
@@ -49,14 +49,14 @@ class MessageList {
       message: json['message'],
       created_at: Utils.toDateTime(json['created_at']));
 
-  Map<String, dynamic> toJson() => {
+  Map<String?, dynamic> toJson() => {
         'id': id,
         'name': name,
         'img': img,
         'online': online,
         'live': live,
         'message': message,
-        'created_at': Utils.fromDateTimeToJson(created_at),
+        'created_at': Utils.fromDateTimeToJson(created_at!),
       };
 
   static get initMessageList => <MessageList>[

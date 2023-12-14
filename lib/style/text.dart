@@ -2,24 +2,24 @@ import 'package:flutter/material.dart';
 import 'package:on_delivery/style/style.dart';
 
 class AdMucisText extends StatelessWidget {
-  final String text;
-  final TextStyle style;
+  final String? text;
+  final TextStyle? style;
   final TextStyle defaultStyle;
-  final bool enableOffset;
+  final bool? enableOffset;
 
   const AdMucisText({
     Key? key,
     this.text,
     this.style,
-    this.defaultStyle,
+    this.defaultStyle = StandardTextStyle.normal,
     this.enableOffset: false,
   }) : super(key: key);
 
   const AdMucisText.small(
-    String text, {
+    String? text, {
     Key? key,
-    TextStyle style,
-    bool enableOffset,
+    TextStyle style = StandardTextStyle.normal,
+    bool? enableOffset,
   }) : this(
           key: key,
           text: text,
@@ -29,10 +29,10 @@ class AdMucisText extends StatelessWidget {
         );
 
   const AdMucisText.normal(
-    String text, {
+    String? text, {
     Key? key,
-    TextStyle style,
-    bool enableOffset,
+    TextStyle style = StandardTextStyle.normal,
+    bool? enableOffset,
   }) : this(
           key: key,
           text: text,
@@ -42,10 +42,10 @@ class AdMucisText extends StatelessWidget {
         );
 
   const AdMucisText.big(
-    String text, {
+    String? text, {
     Key? key,
-    TextStyle style,
-    bool enableOffset,
+    TextStyle style = StandardTextStyle.normal,
+    bool? enableOffset,
   }) : this(
           key: key,
           text: text,
@@ -71,9 +71,11 @@ class AdMucisText extends StatelessWidget {
   }
 
   bool get isAscii {
-    for (var unit in text.codeUnits) {
-      if (unit > 0xff) {
-        return false;
+    if (text != null) {
+      for (var unit in text!.codeUnits) {
+        if (unit > 0xff) {
+          return false;
+        }
       }
     }
     return true;
@@ -87,7 +89,7 @@ class AdMucisText extends StatelessWidget {
       child: DefaultTextStyle(
         style: defaultStyle,
         child: Text(
-          text,
+          text ?? '',
           maxLines: 5,
           style: style,
         ),

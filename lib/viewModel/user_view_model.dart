@@ -5,7 +5,7 @@ import 'package:on_delivery/utils/firebase.dart';
 
 class UserViewModel extends ChangeNotifier {
   late User user;
-  late String type;
+  late String? type;
   FirebaseAuth auth = FirebaseAuth.instance;
 
   setUser() {

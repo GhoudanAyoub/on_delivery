@@ -3,39 +3,39 @@ import 'dart:collection';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class UserModel {
-  String id;
-  String email;
-  String pass;
-  String type;
-  String firstName;
-  String lastname;
-  String city;
-  String phone;
-  String photoUrl;
-  String verificationType;
-  String side1PhotoUrl;
-  String side2PhotoUrl;
-  String passportPhotoUrl;
-  String businessType;
-  String businessName;
-  String transportType;
-  String wareHouse;
-  String activities;
-  String verified;
-  List<dynamic> agentTripsLocationList;
-  List<dynamic> wareHouseLocationList;
-  String percentage;
-  String maxWeight;
-  String unity;
-  String price;
-  String RIB;
-  String bankName;
-  Timestamp signedUpAt;
-  Timestamp lastSeen;
-  bool isOnline;
-  bool enable;
-  double Lnt;
-  double Lng;
+  String? id;
+  String? email;
+  String? pass;
+  String? type;
+  String? firstName;
+  String? lastname;
+  String? city;
+  String? phone;
+  String? photoUrl;
+  String? verificationType;
+  String? side1PhotoUrl;
+  String? side2PhotoUrl;
+  String? passportPhotoUrl;
+  String? businessType;
+  String? businessName;
+  String? transportType;
+  String? wareHouse;
+  String? activities;
+  String? verified;
+  List<dynamic>? agentTripsLocationList;
+  List<dynamic>? wareHouseLocationList;
+  String? percentage;
+  String? maxWeight;
+  String? unity;
+  String? price;
+  String? RIB;
+  String? bankName;
+  Timestamp? signedUpAt;
+  Timestamp? lastSeen;
+  bool? isOnline;
+  bool? enable;
+  double? Lnt;
+  double? Lng;
 
   UserModel(
       {this.id,
@@ -69,7 +69,7 @@ class UserModel {
       this.Lng,
       this.enable});
 
-  UserModel.fromJson(Map<String, dynamic> json) {
+  UserModel.fromJson(Map<String?, dynamic> json) {
     id = json['id'];
     email = json['email'];
     pass = json['pass'];
@@ -105,8 +105,8 @@ class UserModel {
     enable = json['enable'];
   }
 
-  Map<String, dynamic> toJson() {
-    final HashMap<String, dynamic> data = new HashMap<String, dynamic>();
+  Map<String?, dynamic> toJson() {
+    final HashMap<String?, dynamic> data = new HashMap<String?, dynamic>();
     data.putIfAbsent('id', () => this.id);
     data['email'] = this.email;
     data['pass'] = this.pass;

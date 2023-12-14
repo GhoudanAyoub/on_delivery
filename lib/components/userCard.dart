@@ -9,7 +9,7 @@ import 'package:on_delivery/utils/firebase.dart';
 class UserCard extends StatefulWidget {
   final UserModel userModel;
 
-  const UserCard({Key? key, this.userModel}) : super(key: key);
+  const UserCard({Key? key,required this.userModel}) : super(key: key);
   @override
   _UserCardState createState() => _UserCardState();
 }
@@ -19,7 +19,7 @@ class _UserCardState extends State<UserCard> {
   int doneDocs = 0;
   double i = 0;
   int j = 0;
-  double rate;
+  double? rate;
 
   getMyOrders() {
     orderRef.snapshots().listen((element) {
@@ -27,7 +27,7 @@ class _UserCardState extends State<UserCard> {
         Orders order = Orders.fromJson(element.doc.data());
         if (order != null &&
             order.agentId != null &&
-            order.agentId.contains(widget.userModel.id)) {
+            order.agentId?.contains(widget.userModel.id!) == true) {
           setState(() {
             myDocs++;
           });
@@ -94,10 +94,9 @@ class _UserCardState extends State<UserCard> {
                             color: Colors.transparent,
                           ),
                           image: DecorationImage(
-                            image: NetworkImage(widget.userModel.photoUrl !=
-                                    null
-                                ? widget.userModel.photoUrl
-                                : "https://images.unsplash.com/photo-1571741140674-8949ca7df2a7?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=60"),
+                            image: NetworkImage( widget.userModel.photoUrl
+                                ??
+                                "https://images.unsplash.com/photo-1571741140674-8949ca7df2a7?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=60"),
                             fit: BoxFit.cover,
                           ),
                           boxShadow: [
@@ -122,7 +121,7 @@ class _UserCardState extends State<UserCard> {
                                 Row(
                                   children: [
                                     Text(
-                                        "${widget.userModel.firstName} ${widget.userModel.lastname != null ? widget.userModel.lastname.toUpperCase() : ""}",
+                                        "${widget.userModel.firstName} ${widget.userModel.lastname != null ? widget.userModel.lastname?.toUpperCase() : ""}",
                                         style: TextStyle(
                                           fontSize: 12,
                                           letterSpacing: 1,
@@ -168,7 +167,7 @@ class _UserCardState extends State<UserCard> {
                                 Container(
                                   width: getProportionateScreenWidth(150),
                                   child: Text(
-                                      "${widget.userModel.activities.toLowerCase()}",
+                                      "${widget.userModel.activities?.toLowerCase()}",
                                       overflow: TextOverflow.ellipsis,
                                       style: TextStyle(
                                         fontSize: 14,
@@ -178,7 +177,7 @@ class _UserCardState extends State<UserCard> {
                                       )),
                                 ),
                                 Text(
-                                    "${widget.userModel.price != "" ? widget.userModel.price : '??'}/${widget.userModel.unity != null ? widget.userModel.unity.toLowerCase() : "??"}",
+                                    "${widget.userModel.price != "" ? widget.userModel.price : '??'}/${widget.userModel.unity != null ? widget.userModel.unity?.toLowerCase() : "??"}",
                                     style: TextStyle(
                                       fontSize: 12,
                                       letterSpacing: 1,

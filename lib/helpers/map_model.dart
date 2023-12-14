@@ -4,9 +4,9 @@ import 'package:flutter/cupertino.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 class MyModel extends ChangeNotifier {
-  String name = "";
-  String adr = "";
-  Future<List> value;
+  String? name = "";
+  String? adr = "";
+  late Future<List> value;
   bool _showInfoWindow = false;
   bool _tempHidden = false;
 
@@ -24,8 +24,8 @@ class MyModel extends ChangeNotifier {
       LatLng location,
       double infoWindowWidth,
       double markerOffset,
-      String name,
-      String Adr) async {
+      String? name,
+      String? Adr) async {
     name = name;
     adr = Adr;
     ScreenCoordinate screenCoordinate =
@@ -46,6 +46,6 @@ class MyModel extends ChangeNotifier {
   bool get showInfoWindow =>
       (_showInfoWindow == true && _tempHidden == false) ? true : false;
 
-  String get Placename => name;
-  String get Placeadr => adr;
+  String? get Placename => name;
+  String? get Placeadr => adr;
 }

@@ -26,19 +26,19 @@ class _BodyState extends State<Body> {
   TextEditingController _emailContoller = TextEditingController();
   TextEditingController _passwordController = TextEditingController();
   TextEditingController _passwordController2 = TextEditingController();
-  String email;
-  String password;
-  String conform_password;
+  String? email;
+  String? password;
+  String? conform_password;
   bool remember = false;
   AuthService authService = AuthService();
-  final List<String> errors = [];
+  final List<String?> errors = [];
   FirebaseAuth _auth = FirebaseAuth.instance;
-  User _user;
+  late User _user;
   GoogleSignIn _googleSignIn = GoogleSignIn();
   FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
   static final FacebookLogin facebookSignIn = new FacebookLogin();
   bool isSignIn = false;
-  String name = '', image;
+  String? name = '', image;
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
@@ -205,9 +205,9 @@ class _BodyState extends State<Body> {
     setState(() {
       isSignIn = true;
     });
-    Scaffold.of(context)
+    ScaffoldMessenger.of(context)
         .showSnackBar(SnackBar(content: Text("Checking Your Account..")));
-    Scaffold.of(context).showSnackBar(SnackBar(content: Text("please Wait..")));
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("please Wait..")));
     final GoogleSignInAccount account = await _googleSignIn.signIn();
     final GoogleSignInAuthentication _googleAuth = await account.authentication;
     final AuthCredential credential = GoogleAuthProvider.credential(
@@ -218,7 +218,7 @@ class _BodyState extends State<Body> {
         await _firebaseAuth.signInWithCredential(credential).catchError((e) {
       print("Error===>" + e.toString());
     });
-    Scaffold.of(context).showSnackBar(SnackBar(content: Text("please Wait..")));
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("please Wait..")));
   }
 
   Future loginWithFacebook(context) async {

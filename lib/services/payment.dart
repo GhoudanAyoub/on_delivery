@@ -6,7 +6,7 @@ import 'package:http/http.dart' as http;
 import 'package:stripe_payment/stripe_payment.dart';
 
 class StripeTransactionResponse {
-  String message;
+  String? message;
   bool success;
   StripeTransactionResponse({
     required this.message,
@@ -15,13 +15,13 @@ class StripeTransactionResponse {
 }
 
 class StripeServices {
-  static String apiBase = 'https://api.stripe.com/v1';
-  static String paymentApiUrl = '${StripeServices.apiBase}/payment_intents';
-  static Uri paymentApiUri = Uri.parse(paymentApiUrl);
-  static String secret =
+  static String? apiBase = 'https://api.stripe.com/v1';
+  static String? paymentApiUrl = '${StripeServices.apiBase}/payment_intents';
+  static Uri paymentApiUri = Uri.parse(paymentApiUrl??"");
+  static String? secret =
       'sk_test_51JDZiMBpOuUb6HqhobRyLRA12lSqPtePRSM3qrviNPQSw7SbL7yoJGnd4jxu1gVPgBTvfo4lOQmnc2NDcaVleLvA00vbPjjXGJ';
 
-  static Map<String, String> headers = {
+  static Map<String?, String?> headers = {
     'Authorization': 'Bearer ${StripeServices.secret}',
     'Content-Type': 'application/x-www-form-urlencoded'
   };
@@ -34,10 +34,10 @@ class StripeServices {
         merchantId: 'test'));
   }
 
-  static Future<Map<String, dynamic>> createPaymentIntent(
-      String amount, String currency) async {
+  static Future<Map<String?, dynamic>> createPaymentIntent(
+      String? amount, String? currency) async {
     try {
-      Map<String, dynamic> body = {
+      Map<String?, dynamic> body = {
         'amount': amount,
         'currency': currency,
       };
@@ -52,7 +52,7 @@ class StripeServices {
   }
 
   static Future<StripeTransactionResponse> payNowHandler(
-      {required String amount, required String currency}) async {
+      {required String? amount, required String? currency}) async {
     try {
       var paymentMethod = await StripePayment.paymentRequestWithCardForm(
           CardFormPaymentRequest());
@@ -78,7 +78,7 @@ class StripeServices {
   }
 
   static Future<StripeTransactionResponse> choseExistingCard(
-      {String amount, String currency, CreditCard card}) async {
+      {String? amount, String? currency, required CreditCard card}) async {
     try {
       var stripePaymentMethod = await StripePayment.createPaymentMethod(
           PaymentMethodRequest(card: card));
@@ -101,14 +101,14 @@ class StripeServices {
       return StripeServices.getErrorAndAnalyze(error);
     } catch (error) {
       return new StripeTransactionResponse(
-          //convert the error to string and assign to message variable for json resposne
+          //convert the error to String? and assign to message variable for json resposne
           message: 'Transaction failed: ${error.toString()}',
           success: false);
     }
   }
 
   static getErrorAndAnalyze(err) {
-    String message = 'Something went wrong';
+    String? message = 'Something went wrong';
     if (err.code == 'cancelled') {
       message = 'Transaction canceled';
     }

@@ -1,6 +1,6 @@
 class Category {
-  final int id;
-  final String name;
+  late final int id;
+  late final String? name;
 
-  Category({this.id, this.name});
+  Category({required this.id, required this.name});
 }

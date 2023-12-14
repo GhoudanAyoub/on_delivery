@@ -11,17 +11,17 @@ import 'package:on_delivery/utils/firebase.dart';
 import 'package:on_delivery/utils/utils.dart';
 
 class FirebaseService {
-  static String Client_displayName = FirebaseAuth.instance.currentUser.email;
+  static String? Client_displayName = FirebaseAuth.instance.currentUser.email;
 
   static FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
   static final _fireStore = FirebaseFirestore.instance;
   final GoogleSignIn _googleSignIn = GoogleSignIn();
 
-  Stream<String> get onAuthStateChanged => _firebaseAuth.authStateChanges().map(
+  Stream<String?> get onAuthStateChanged => _firebaseAuth.authStateChanges().map(
         (User user) => user?.uid,
       );
 
-  static void changeStatus(String status) async {
+  static void changeStatus(String? status) async {
     var snapshots = FirebaseFirestore.instance.collection("Users").snapshots();
     await snapshots.forEach((snapshot) async {
       List<DocumentSnapshot> documents = snapshot.docs;
@@ -42,7 +42,7 @@ class FirebaseService {
       .transform(Utils.transformer(MessageList.fromJson));
 
   static Future uploadMessage(
-      String sender, final String receiver, String message) async {
+      String? sender, final String? receiver, String? message) async {
     final refMessages = FirebaseFirestore.instance.collection('chats');
 
     final newMessage = messages(
@@ -63,7 +63,7 @@ class FirebaseService {
       .transform(Utils.transformer(messages.fromJson));
 
   // GET UID
-  String getCurrentUID() {
+  String? getCurrentUID() {
     return _firebaseAuth.currentUser.uid;
   }
 
@@ -73,7 +73,7 @@ class FirebaseService {
   }
 
   // GET CURRENT USER name
-  String getCurrentUserName() {
+  String? getCurrentUserName() {
     return _firebaseAuth.currentUser.displayName;
   }
 
@@ -101,7 +101,7 @@ class FirebaseService {
     return userModel;
   }
 
-  switchCurrentUserType(User user, String type) async {
+  switchCurrentUserType(User user, String? type) async {
     if (user != null) {
       final snapShot = await usersRef.doc(user.uid).get();
       if (snapShot.exists) {
@@ -119,7 +119,7 @@ class FirebaseService {
     return plansModel;
   }
 
-  addCurrentUserPlant(String sAt, String eAt, String pType) async {
+  addCurrentUserPlant(String? sAt, String? eAt, String? pType) async {
     final snapShot = await plansRef.doc(_firebaseAuth.currentUser.uid).get();
     if (snapShot.exists) {
       plansRef.doc(_firebaseAuth.currentUser.uid).update({
@@ -138,8 +138,8 @@ class FirebaseService {
     }
   }
 
-  Future<String> addOrder(User user, Orders orders) async {
-    String docId;
+  Future<String?> addOrder(User user, Orders orders) async {
+    String? docId;
     final doc = orderRef.doc();
     if (user != null) {
       docId = doc.id;
@@ -149,14 +149,14 @@ class FirebaseService {
     return docId;
   }
 
-  Future<String> addRate(RateModel rate) async {
-    String docId;
+  Future<String?> addRate(RateModel rate) async {
+    String? docId;
     final doc = rateRef.doc();
     doc.set(rate.toJson()).onError((error, stackTrace) => print(error));
     return docId;
   }
 
-  updateOrders(User user, Orders orders, String docId) {
+  updateOrders(User user, Orders orders, String? docId) {
     orderRef.doc(docId).update({
       "date": Utils.getCurrentDate(),
       "iceBox": orders.iceBox,
@@ -173,7 +173,7 @@ class FirebaseService {
   }
 
   updateOrdersStatus(
-      String status, String docId, String agentId, String chatID) async {
+      String? status, String? docId, String? agentId, String? chatID) async {
     orderRef.doc(docId).update({
       "status": status,
       "agentId": agentId,
@@ -196,7 +196,7 @@ class FirebaseService {
     }
   }
 
-  deleteFromFavorite(User user, String id) async {
+  deleteFromFavorite(User user, String? id) async {
     if (user != null) {
       await favoriteRef
           .doc(_firebaseAuth.currentUser.uid)
@@ -206,7 +206,7 @@ class FirebaseService {
     }
   }
 
-  deleteChat(User user, String id) async {
+  deleteChat(User user, String? id) async {
     if (user != null) {
       await chatRef.doc(id).delete();
     }

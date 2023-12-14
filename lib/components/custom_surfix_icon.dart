@@ -8,7 +8,7 @@ class CustomSurffixIcon extends StatelessWidget {
     required this.svgIcon,
   }) : super(key: key);
 
-  final String svgIcon;
+  final String? svgIcon;
 
   @override
   Widget build(BuildContext context) {

@@ -24,10 +24,10 @@ class Home extends StatefulWidget with NavigationStates {
 }
 
 class _HomeState extends State<Home> {
-  UserModel user1;
+  late UserModel user1;
   int _activeTabHome = 0;
   bool searchClicked = false;
-  String CatName;
+  String? CatName;
   List<DocumentSnapshot> agents = [];
   List<DocumentSnapshot> filteredAgents = [];
   bool loading = true;
@@ -35,8 +35,8 @@ class _HomeState extends State<Home> {
   bool fav = false;
   TextEditingController _searchedController = TextEditingController();
   ScrollController scrollController = ScrollController();
-  UserModel locationService;
-  int counter;
+  late UserModel locationService;
+  late int counter;
 
   getAgents() async {
     QuerySnapshot snap = await usersRef.get();
@@ -48,16 +48,16 @@ class _HomeState extends State<Home> {
     });
   }
 
-  search(String query) {
+  search(String? query) {
     if (query == "") {
       filteredAgents = agents;
     } else {
-      List userSearch = agents.where((userSnap) {
+      List<DocumentSnapshot>  userSearch = agents.where((userSnap) {
         Map user = userSnap.data();
-        String userName = user['firstName'];
-        return userName.toLowerCase().contains(query.toLowerCase()) ||
-            user['lastName'].toLowerCase().contains(query.toLowerCase()) ||
-            user['activities'].toLowerCase().contains(query.toLowerCase());
+        String? userName = user['firstName'];
+        return userName?.toLowerCase().contains(query?.toLowerCase()??"")==true||
+            user['lastName'].toLowerCase().contains(query?.toLowerCase()) ||
+            user['activities'].toLowerCase().contains(query?.toLowerCase());
       }).toList();
 
       setState(() {
@@ -154,8 +154,9 @@ class _HomeState extends State<Home> {
                         usersRef.doc(firebaseAuth.currentUser.uid).snapshots(),
                     builder:
                         (context, AsyncSnapshot<DocumentSnapshot> snapshot) {
-                      if (snapshot.hasData) {
-                        user1 = UserModel.fromJson(snapshot.data.data());
+                          Map<String?, dynamic>? mapData = snapshot.data?.data();
+                          if (snapshot.hasData && mapData != null) {
+                        user1 = UserModel.fromJson(mapData);
                         return Align(
                           alignment: Alignment.center,
                           child: Row(
@@ -199,7 +200,7 @@ class _HomeState extends State<Home> {
                                   Row(
                                     children: [
                                       Text(
-                                          "${user1.firstName} ${user1.lastname.toUpperCase()}",
+                                          "${user1.firstName} ${user1.lastname?.toUpperCase()}",
                                           style: TextStyle(
                                             fontSize: 12,
                                             letterSpacing: 1,
@@ -290,9 +291,10 @@ class _HomeState extends State<Home> {
                   stream:
                       usersRef.doc(firebaseAuth.currentUser.uid).snapshots(),
                   builder: (context, AsyncSnapshot<DocumentSnapshot> snapshot) {
-                    if (snapshot.hasData) {
-                      user1 = UserModel.fromJson(snapshot.data.data());
-                      if (user1.type.toLowerCase().contains("client"))
+                    Map<String?, dynamic>? mapData = snapshot.data?.data();
+                    if (snapshot.hasData && mapData != null) {
+                      user1 = UserModel.fromJson(mapData);
+                      if (user1.type?.toLowerCase().contains("client")==true)
                         return Container(
                           height: 60.0,
                           decoration: BoxDecoration(
@@ -305,7 +307,7 @@ class _HomeState extends State<Home> {
                               borderRadius: BorderRadius.circular(10.0),
                               boxShadow: [
                                 BoxShadow(
-                                  color: Colors.grey[500],
+                                  color: Colors.grey[500]??Colors.grey,
                                   offset: Offset(0.0, 1.5),
                                   blurRadius: 1.5,
                                 ),
@@ -369,7 +371,7 @@ class _HomeState extends State<Home> {
                                 setState(() {
                                   _activeTabHome = index;
                                   CatName =
-                                      categories[index].name.toLowerCase();
+                                      categories[index].name?.toLowerCase();
                                   //search(CatName);
                                 });
                               },
@@ -380,14 +382,14 @@ class _HomeState extends State<Home> {
                                 ),
                                 height: 10,
                                 child: Text(
-                                  categories[index].name,
+                                  categories[index]?.name??"",
                                   style: TextStyle(
                                     letterSpacing: 1,
                                     fontSize: 14,
                                     fontWeight: FontWeight.w600,
                                     color: _activeTabHome == index
                                         ? Colors.black
-                                        : Colors.grey[400],
+                                        : Colors.grey[400]??Colors.grey,
                                   ),
                                 ),
                               ),
@@ -488,12 +490,12 @@ class _HomeState extends State<Home> {
                     height: 5,
                     decoration: BoxDecoration(
                         gradient: LinearGradient(
-                          colors: <Color>[Colors.grey[300], Colors.grey[300]],
+                          colors: <Color>[Colors.grey[300]??Colors.grey, Colors.grey[300]??Colors.grey],
                         ),
                         borderRadius: BorderRadius.circular(10.0),
                         boxShadow: [
                           BoxShadow(
-                            color: Colors.grey[500],
+                            color: Colors.grey[500]??Colors.grey,
                             offset: Offset(0.0, 1.5),
                             blurRadius: 1.5,
                           ),
@@ -564,12 +566,10 @@ class _HomeState extends State<Home> {
               UserModel _user = UserModel.fromJson(doc.data());
               if ((firebaseAuth.currentUser != null &&
                       doc.id == currentUserId() &&
-                      _user.type.toLowerCase().contains("agent")) ||
-                  _user.type.toLowerCase().contains("client") ||
+                      _user.type?.toLowerCase().contains("agent")==true) ||
+                  _user.type?.toLowerCase().contains("client")==true ||
                   _user.isOnline != true ||
-                  !_user.city
-                      .toLowerCase()
-                      .contains(user1.city.toLowerCase())) {
+                  _user.city?.toLowerCase().contains(user1.city?.toLowerCase()??"")==false) {
                 Timer(Duration(milliseconds: 10), () {
                   setState(() {
                     removeFromList(index);
@@ -604,11 +604,11 @@ class _HomeState extends State<Home> {
               child: ListView.builder(
                   controller: scrollController,
                   padding: EdgeInsets.symmetric(horizontal: 4.0, vertical: 5),
-                  itemCount: snapshot.data.documents.length,
+                  itemCount: snapshot.data!.documents.length,
                   reverse: false,
                   itemBuilder: (BuildContext context, int index) {
                     UserModel _user = UserModel.fromJson(snapshot
-                        .data.documents.reversed
+                        .data!.documents.reversed
                         .toList()[index]
                         .data());
                     return UserCard(
@@ -625,7 +625,7 @@ class _HomeState extends State<Home> {
     );
   }
 
-  Stream<QuerySnapshot> favoriteListStream(String documentId) {
+  Stream<QuerySnapshot> favoriteListStream(String? documentId) {
     return favoriteRef
         .doc(documentId)
         .collection(favoritesName)

@@ -7,8 +7,8 @@ import 'package:on_delivery/payment/success.dart';
 import 'package:on_delivery/services/payment.dart';
 
 class PaymentGateways extends StatefulWidget {
-  static String routeName = "/PaymentGateways";
-  final String amount;
+  static String? routeName = "/PaymentGateways";
+  final String? amount;
 
   const PaymentGateways({Key? key, this.amount}) : super(key: key);
   @override
@@ -24,7 +24,7 @@ class _PaymentGatewaysState extends State<PaymentGateways> {
     StripeServices.init();
   }
 
-  payNow(String price) async {
+  payNow(String? price) async {
     await StripeServices.payNowHandler(amount: price, currency: 'MAD')
         .then((value) {
       if (value.success == true)
@@ -73,8 +73,8 @@ class _PaymentGatewaysState extends State<PaymentGateways> {
                   padding: EdgeInsets.all(23),
                   child: ListView.separated(
                       itemBuilder: (context, index) {
-                        Icon icon;
-                        Text text;
+                        late Icon icon;
+                        late Text text;
                         switch (index) {
                           case 0:
                             break;
@@ -198,7 +198,7 @@ class _PaymentGatewaysState extends State<PaymentGateways> {
                       borderRadius: BorderRadius.circular(10.0),
                       boxShadow: [
                         BoxShadow(
-                          color: Colors.grey[500],
+                          color: Colors.grey[500]??Colors.grey,
                           offset: Offset(0.0, 1.5),
                           blurRadius: 1.5,
                         ),

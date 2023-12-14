@@ -5,8 +5,8 @@ import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 class LocationProvider with ChangeNotifier {
-  double lnt;
-  double lng;
+  late double lnt;
+  late double lng;
   bool permissionGranted = false;
   var selectedAddress;
   Future<void> getCurrentPosition() async {
@@ -33,7 +33,7 @@ class LocationProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  Future<String> getMoveCamera() async {
+  Future<String?> getMoveCamera() async {
     final coordinates = new Coordinates(this.lnt, this.lng);
     final addresses =
         await Geocoder.local.findAddressesFromCoordinates(coordinates);
@@ -45,7 +45,7 @@ class LocationProvider with ChangeNotifier {
     return GeoPoint(this.lnt, this.lng);
   }
 
-  Future<String> getCurrentCoordinatesName(lnts, lngs) async {
+  Future<String?> getCurrentCoordinatesName(lnts, lngs) async {
     final coordinates = new Coordinates(lnts, lngs);
     final addresses =
         await Geocoder.local.findAddressesFromCoordinates(coordinates);

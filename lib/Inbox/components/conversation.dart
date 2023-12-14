@@ -27,10 +27,10 @@ import '../../viewModel/conversation_view_model.dart';
 import 'chat_bubble.dart';
 
 class Conversation extends StatefulWidget {
-  final String userId;
-  final String chatId;
-  final bool isAgent;
-  final Orders order;
+  final String? userId;
+  final String? chatId;
+  final bool? isAgent;
+  final Orders? order;
 
   const Conversation(
       {required this.userId, required this.chatId, this.isAgent, this.order});
@@ -47,16 +47,16 @@ class _ConversationState extends State<Conversation> {
   TextEditingController ribController = TextEditingController();
   TextEditingController bankNameController = TextEditingController();
   bool isFirst = false;
-  String chatId;
+  String? chatId;
   int stages = 1;
   double ratingG = 3;
-  Orders initOrder;
+  late Orders initOrder;
   bool agentRole = false;
   bool doneChoosing = false;
-  String startFrom, endAt;
-  String agentId;
-  UserModel agentFullData;
-  Message message;
+  String? startFrom, endAt;
+  String? agentId;
+  late UserModel agentFullData;
+  late Message message;
 
   @override
   void initState() {
@@ -491,7 +491,7 @@ class _ConversationState extends State<Conversation> {
                     ratingWidget: RatingWidget(
                       full: Image.asset('assets/images/rating active.png'),
                       empty: Image.asset('assets/images/rating inactive.png'),
-                      half: null,
+                      half: Image.asset('assets/images/rating inactive.png'),
                     ),
                     onRatingUpdate: (rating) {
                       print(rating);
@@ -589,7 +589,7 @@ class _ConversationState extends State<Conversation> {
 
   getCurrentCoordinatesName() async {
     final coordinates =
-        new Coordinates(initOrder.endAt.latitude, initOrder.endAt.longitude);
+        new Coordinates(initOrder.endAt?.latitude, initOrder.endAt?.longitude);
     final addresses =
         await Geocoder.local.findAddressesFromCoordinates(coordinates);
     setState(() {
@@ -675,8 +675,9 @@ class _ConversationState extends State<Conversation> {
                                             messages.reversed
                                                 .toList()[index]
                                                 .data());
-                                        if (message.content.contains(
-                                                "Deliver the Items to") &&
+                                        if (message.content?.contains(
+                                                    "Deliver the Items to") ==
+                                                true &&
                                             agentRole == true &&
                                             message2.stages == 3) {
                                           sendBotMessage("cash delivery",
@@ -687,15 +688,17 @@ class _ConversationState extends State<Conversation> {
                                         return GestureDetector(
                                           onTap: () {
                                             if (message.content
-                                                    .toLowerCase()
-                                                    .contains(
-                                                        "please confirm you position") &&
+                                                        ?.toLowerCase()
+                                                        .contains(
+                                                            "please confirm you position") ==
+                                                    true &&
                                                 agentRole == false &&
                                                 message2.stages != 4) {
                                               locationNotificationInto();
                                             }
-                                            if (message.content.contains(
-                                                    "cash delivery") &&
+                                            if (message.content?.contains(
+                                                        "cash delivery") ==
+                                                    true &&
                                                 agentRole == false &&
                                                 message2.stages != 4) {
                                               sendBotMessage(
@@ -703,8 +706,9 @@ class _ConversationState extends State<Conversation> {
                                                   agentFullData.id,
                                                   4);
                                             }
-                                            if (message.content.contains(
-                                                    "Bank transfer option") &&
+                                            if (message.content?.contains(
+                                                        "Bank transfer option") ==
+                                                    true &&
                                                 agentRole == false &&
                                                 message2.stages != 4) {
                                               sendBotMessage(
@@ -712,8 +716,9 @@ class _ConversationState extends State<Conversation> {
                                                   agentFullData.id,
                                                   4);
                                             }
-                                            if (message.content.contains(
-                                                    "You Choose Bank transfer. You can Click On this Msg to get my bank account RIB") &&
+                                            if (message.content?.contains(
+                                                        "You Choose Bank transfer. You can Click On this Msg to get my bank account RIB") ==
+                                                    true &&
                                                 agentRole == false &&
                                                 message2.stages != 6) {
                                               bankAccountID(context);
@@ -721,15 +726,18 @@ class _ConversationState extends State<Conversation> {
                                           },
                                           child: ChatBubble(
                                             message: '${message.content}',
-                                            time: message?.time,
+                                            time: message?.time ??
+                                                Timestamp.now(),
                                             isMe:
                                                 message?.senderUid == user?.uid,
-                                            type: message?.type,
+                                            type: message?.type ??
+                                                MessageType.TEXT,
                                             accepted: message.content
-                                                .toLowerCase()
-                                                .contains(
-                                                    "Thank you for reaching out with me but I’m sorry I am busy."
-                                                        .toLowerCase()),
+                                                    ?.toLowerCase()
+                                                    .contains(
+                                                        "Thank you for reaching out with me but I’m sorry I am busy."
+                                                            .toLowerCase()) ==
+                                                true,
                                           ),
                                         );
                                       },
@@ -979,8 +987,9 @@ class _ConversationState extends State<Conversation> {
                                 agentRole == false &&
                                 initOrder.lunchStatus == true &&
                                 initOrder.status
-                                    .toLowerCase()
-                                    .contains("pending"))
+                                        ?.toLowerCase()
+                                        .contains("pending") ==
+                                    true)
                               return Align(
                                 alignment: Alignment.bottomCenter,
                                 child: Row(
@@ -1062,7 +1071,7 @@ class _ConversationState extends State<Conversation> {
                         }
                       },
                     ),
-                    widget.isAgent &&
+                    widget.isAgent == true &&
                             agentRole &&
                             initOrder.lunchStatus == true &&
                             doneChoosing == false
@@ -1141,7 +1150,7 @@ class _ConversationState extends State<Conversation> {
                                 borderRadius: BorderRadius.circular(10.0),
                                 boxShadow: [
                                   BoxShadow(
-                                    color: Colors.grey[500],
+                                    color: Colors.grey[500] ?? Colors.grey,
                                     offset: Offset(0.0, 1.5),
                                     blurRadius: 1.5,
                                   ),
@@ -1187,10 +1196,12 @@ class _ConversationState extends State<Conversation> {
               StreamBuilder(
                 stream: usersRef.doc(agentFullData.id).snapshots(),
                 builder: (context, AsyncSnapshot<DocumentSnapshot> snapshot) {
-                  if (snapshot.hasData) {
-                    UserModel user1 = UserModel.fromJson(snapshot.data.data());
-                    ribController.text = user1.RIB;
-                    bankNameController.text = user1.bankName;
+                  DocumentSnapshot? documentSnapshot = snapshot.data;
+                  Map<String?, dynamic>? mapData = documentSnapshot?.data();
+                  if (snapshot.hasData && mapData != null) {
+                    UserModel user1 = UserModel.fromJson(mapData);
+                    ribController.text = user1.RIB ?? "";
+                    bankNameController.text = user1.bankName ?? "";
                     return Column(
                       children: [
                         TextFormBuilder(
@@ -1200,6 +1211,7 @@ class _ConversationState extends State<Conversation> {
                           readOnly: true,
                           textInputAction: TextInputAction.next,
                           validateFunction: Validations.validateRib,
+                          submitAction: () {},
                         ),
                         SizedBox(
                           height: 20,
@@ -1211,6 +1223,7 @@ class _ConversationState extends State<Conversation> {
                           readOnly: true,
                           textInputAction: TextInputAction.next,
                           validateFunction: Validations.validateBankName,
+                          submitAction: () {},
                         ),
                       ],
                     );
@@ -1264,7 +1277,8 @@ class _ConversationState extends State<Conversation> {
       stream: usersRef.doc('${widget.userId}').snapshots(),
       builder: (context, snapshot) {
         if (snapshot.hasData) {
-          DocumentSnapshot documentSnapshot = snapshot.data;
+          DocumentSnapshot documentSnapshot =
+              snapshot.data! as DocumentSnapshot;
           agentFullData = UserModel.fromJson(documentSnapshot.data());
           return Padding(
             padding: const EdgeInsets.all(10.0),
@@ -1275,7 +1289,7 @@ class _ConversationState extends State<Conversation> {
                   width: 40,
                   child: Stack(
                     fit: StackFit.expand,
-                    overflow: Overflow.visible,
+                    clipBehavior: Clip.none,
                     children: [
                       Container(
                         decoration: BoxDecoration(
@@ -1284,9 +1298,8 @@ class _ConversationState extends State<Conversation> {
                             color: Colors.transparent,
                           ),
                           image: DecorationImage(
-                            image: NetworkImage(agentFullData.photoUrl != null
-                                ? agentFullData.photoUrl
-                                : "https://image.similarpng.com/very-thumbnail/2020/06/Hand-drawn-delivery-man-with-scooter-royalty-free-PNG.png"),
+                            image: NetworkImage(agentFullData.photoUrl ??
+                                "https://image.similarpng.com/very-thumbnail/2020/06/Hand-drawn-delivery-man-with-scooter-royalty-free-PNG.png"),
                             fit: BoxFit.cover,
                           ),
                           boxShadow: [
@@ -1334,7 +1347,7 @@ class _ConversationState extends State<Conversation> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: <Widget>[
                       Text(
-                        '${agentFullData.firstName} ${agentFullData.lastname.toUpperCase()}',
+                        '${agentFullData.firstName} ${agentFullData.lastname?.toUpperCase()}',
                         style: TextStyle(
                           color: Colors.black,
                           fontWeight: FontWeight.w500,
@@ -1405,13 +1418,13 @@ class _ConversationState extends State<Conversation> {
   }
 
   sendMessage(ConversationViewModel viewModel, var user,
-      {bool isImage = false, int imageType}) async {
-    String msg;
+      {bool isImage = false, int imageType = 0}) async {
+    String? msg;
     if (isImage) {
       msg = await viewModel.pickImage(
-        source: imageType,
-        context: context,
-        chatId: widget.chatId,
+        imageType,
+        context,
+        widget.chatId,
       );
     } else {
       msg = messageController.text.trim();
@@ -1425,9 +1438,9 @@ class _ConversationState extends State<Conversation> {
         time: Timestamp.now(),
         stages: 4);
 
-    if (msg.isNotEmpty) {
+    if (msg?.isNotEmpty == true) {
       if (isFirst) {
-        String id = await viewModel.sendFirstMessage(
+        String? id = await viewModel.sendFirstMessage(
             widget.userId, message, widget.order);
         setState(() {
           isFirst = false;
@@ -1476,7 +1489,7 @@ class _ConversationState extends State<Conversation> {
     });
   }
 
-  sendBotMessage(String msg, String id, int stage) async {
+  sendBotMessage(String? msg, String? id, int stage) async {
     Message message = Message(
         content: '$msg',
         senderUid: id,
@@ -1484,20 +1497,21 @@ class _ConversationState extends State<Conversation> {
         time: Timestamp.now(),
         stages: stage);
 
-    if (msg.isNotEmpty) {
+    if (msg?.isNotEmpty == true) {
       if (initOrder != null &&
           initOrder.status != null &&
-          !initOrder.status.toLowerCase().contains("delivered")) {
+          initOrder.status?.toLowerCase().contains("delivered") == false) {
         send(message, widget.chatId);
-        if (msg.contains(
-            "Thank you for reaching out with me but I’m sorry I am busy.")) {
+        if (msg?.contains(
+                "Thank you for reaching out with me but I’m sorry I am busy.") ==
+            true) {
           FirebaseService().updateOrdersStatus("canceled", initOrder.orderId,
               firebaseAuth.currentUser.uid, widget.chatId);
           setState(() {
             doneChoosing = true;
           });
         }
-        if ((msg.contains("Yes,Sure"))) {
+        if ((msg?.contains("Yes,Sure") == true)) {
           FirebaseService().updateOrdersStatus("pending", initOrder.orderId,
               firebaseAuth.currentUser.uid, widget.chatId);
           setState(() {
@@ -1507,15 +1521,16 @@ class _ConversationState extends State<Conversation> {
       }
       if (initOrder != null && initOrder.status == null) {
         send(message, widget.chatId);
-        if (msg.contains(
-            "Thank you for reaching out with me but I’m sorry I am busy.")) {
+        if (msg?.contains(
+                "Thank you for reaching out with me but I’m sorry I am busy.") ==
+            true) {
           FirebaseService().updateOrdersStatus("canceled", initOrder.orderId,
               firebaseAuth.currentUser.uid, widget.chatId);
           setState(() {
             doneChoosing = true;
           });
         }
-        if ((msg.contains("Yes,Sure"))) {
+        if ((msg?.contains("Yes,Sure") == true)) {
           FirebaseService().updateOrdersStatus("pending", initOrder.orderId,
               firebaseAuth.currentUser.uid, widget.chatId);
           setState(() {
@@ -1526,7 +1541,7 @@ class _ConversationState extends State<Conversation> {
     }
   }
 
-  send(Message message, String chatId) async {
+  send(Message message, String? chatId) async {
     await chatRef.doc("$chatId").collection("messages").add(message.toJson());
     await chatRef.doc("$chatId").update({"lastTextTime": Timestamp.now()});
   }
@@ -1541,7 +1556,7 @@ class _ConversationState extends State<Conversation> {
         type: MessageType.TEXT,
         time: Timestamp.now(),
         stages: 2);
-    String id =
+    String? id =
         await viewModel.sendFirstMessage(widget.userId, message, widget.order);
     setState(() {
       isFirst = false;
@@ -1550,7 +1565,7 @@ class _ConversationState extends State<Conversation> {
     });
   }
 
-  Stream<QuerySnapshot> messageListStream(String documentId) {
+  Stream<QuerySnapshot> messageListStream(String? documentId) {
     return chatRef
         .doc(documentId)
         .collection('messages')

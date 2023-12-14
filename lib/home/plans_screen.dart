@@ -219,7 +219,7 @@ class _PlansState extends State<Plans> {
                                     borderRadius: BorderRadius.circular(50.0),
                                     boxShadow: [
                                       BoxShadow(
-                                        color: Colors.grey[500],
+                                        color: Colors.grey[500]??Colors.grey,
                                         offset: Offset(0.0, 1.5),
                                         blurRadius: 1.5,
                                       ),
@@ -290,7 +290,7 @@ class _PlansState extends State<Plans> {
                           borderRadius: BorderRadius.circular(10.0),
                           boxShadow: [
                             BoxShadow(
-                              color: Colors.grey[500],
+                              color: Colors.grey[500]??Colors.grey,
                               offset: Offset(0.0, 1.5),
                               blurRadius: 1.5,
                             ),

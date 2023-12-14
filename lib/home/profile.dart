@@ -47,12 +47,12 @@ class _ProfileState extends State<Profile> {
   bool moto = false, car = false;
   bool warehouseNo = true, warehouseYes = false;
   File userImage;
-  String userImgLink, unity;
+  String? userImgLink, unity;
   final picker = ImagePicker();
   int _activeTab = 0;
-  String CatName = "",
-      startingPointString = "Starting Point",
-      arrivalPointString = "Arrive Point";
+  String? CatName = "",
+      startingPointString? = "Starting Point",
+      arrivalPointString? = "Arrive Point";
   LocationProvider locationData;
   bool food = false, move = false, ecom = false, courier = false;
 
@@ -83,8 +83,8 @@ class _ProfileState extends State<Profile> {
           ecom = value.activities.toUpperCase().contains("E-COMMERCE"),
           move = value.activities.toLowerCase().contains("move"),
           courier = value.activities.toLowerCase().contains("courier"),
-          startingPointString = "Starting Point",
-          arrivalPointString = "Arrive Point",
+          startingPointString? = "Starting Point",
+          arrivalPointString? = "Arrive Point",
           warehouseYes =
               value.wareHouse.toLowerCase().contains("yes") ? true : false,
           warehouseNo = !warehouseYes,
@@ -259,7 +259,7 @@ class _ProfileState extends State<Profile> {
                                                   fontWeight: FontWeight.w600,
                                                   color: _activeTab == index
                                                       ? Colors.black
-                                                      : Colors.grey[400],
+                                                      : Colors.grey[400]??Colors.grey,
                                                 ),
                                               ),
                                               _activeTab == index
@@ -878,7 +878,7 @@ class _ProfileState extends State<Profile> {
                                                       BorderRadius.circular(
                                                           10.0),
                                                   border: Border.all(
-                                                    color: Colors.grey[400],
+                                                    color: Colors.grey[400]??Colors.grey,
                                                   ),
                                                 ),
                                                 child: Column(
@@ -920,7 +920,7 @@ class _ProfileState extends State<Profile> {
                                                               child: Text(
                                                                 userModel.agentTripsLocationList[
                                                                         e][
-                                                                    "startingPointString"],
+                                                                    "startingPointString?"],
                                                                 overflow:
                                                                     TextOverflow
                                                                         .ellipsis,
@@ -942,7 +942,7 @@ class _ProfileState extends State<Profile> {
                                                     ),
                                                     Container(
                                                       height: 1,
-                                                      color: Colors.grey[400],
+                                                      color: Colors.grey[400]??Colors.grey,
                                                     ),
                                                     Container(
                                                       width: 300,
@@ -983,7 +983,7 @@ class _ProfileState extends State<Profile> {
                                                               child: Text(
                                                                 userModel.agentTripsLocationList[
                                                                         e][
-                                                                    "arrivalPointString"],
+                                                                    "arrivalPointString?"],
                                                                 overflow:
                                                                     TextOverflow
                                                                         .ellipsis,
@@ -1017,7 +1017,7 @@ class _ProfileState extends State<Profile> {
                                                 borderRadius:
                                                     BorderRadius.circular(10.0),
                                                 border: Border.all(
-                                                  color: Colors.grey[400],
+                                                  color: Colors.grey[400]??Colors.grey,
                                                 ),
                                               ),
                                               child: Column(
@@ -1056,7 +1056,7 @@ class _ProfileState extends State<Profile> {
                                                           Container(
                                                             width: 220,
                                                             child: Text(
-                                                              startingPointString,
+                                                              startingPointString?,
                                                               overflow:
                                                                   TextOverflow
                                                                       .ellipsis,
@@ -1077,7 +1077,7 @@ class _ProfileState extends State<Profile> {
                                                   ),
                                                   Container(
                                                     height: 1,
-                                                    color: Colors.grey[400],
+                                                    color: Colors.grey[400]??Colors.grey,
                                                   ),
                                                   Container(
                                                     width: 300,
@@ -1113,7 +1113,7 @@ class _ProfileState extends State<Profile> {
                                                           Container(
                                                             width: 220,
                                                             child: Text(
-                                                              arrivalPointString,
+                                                              arrivalPointString?,
                                                               overflow:
                                                                   TextOverflow
                                                                       .ellipsis,
@@ -1587,14 +1587,14 @@ class _ProfileState extends State<Profile> {
                                 decoration: BoxDecoration(
                                     gradient: LinearGradient(
                                       colors: <Color>[
-                                        Colors.grey[400],
-                                        Colors.grey[400]
+                                        Colors.grey[400]??Colors.grey,
+                                        Colors.grey[400]??Colors.grey
                                       ],
                                     ),
                                     borderRadius: BorderRadius.circular(10.0),
                                     boxShadow: [
                                       BoxShadow(
-                                        color: Colors.grey[500],
+                                        color: Colors.grey[500]??Colors.grey,
                                         offset: Offset(0.0, 1.5),
                                         blurRadius: 1.5,
                                       ),
@@ -1649,7 +1649,7 @@ class _ProfileState extends State<Profile> {
     }
   }
 
-  void showInSnackBar(String value) {
+  void showInSnackBar(String? value) {
     _scaffoldKey.currentState.removeCurrentSnackBar();
     _scaffoldKey.currentState.showSnackBar(SnackBar(content: Text(value)));
   }

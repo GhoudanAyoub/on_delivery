@@ -4,8 +4,8 @@ import 'package:on_delivery/utils/firebase.dart';
 
 class IconBadge extends StatefulWidget {
   final IconData icon;
-  final double size;
-  final Color color;
+  final double? size;
+  final Color? color;
 
   IconBadge({Key? key, required this.icon, this.size, this.color})
       : super(key: key);
@@ -57,19 +57,19 @@ class _IconBadgeState extends State<IconBadge> {
           .snapshots(),
       builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
         if (snapshot.hasData) {
-          QuerySnapshot snap = snapshot.data;
-          List<DocumentSnapshot> docs = snap.docs;
-          return buildTextWidget(docs?.length ?? 0.toString());
+          QuerySnapshot? snap = snapshot.data;
+          List<DocumentSnapshot> docs = snap?.docs as List<DocumentSnapshot> ;
+          return buildTextWidget(docs.length.toString());
         } else {
-          return buildTextWidget(0.toString());
+          return buildTextWidget("0");
         }
       },
     );
   }
 
-  buildTextWidget(String counter) {
+  buildTextWidget(String? counter) {
     return Text(
-      counter,
+      counter??"",
       style: TextStyle(
         color: Colors.white,
         fontSize: 9,

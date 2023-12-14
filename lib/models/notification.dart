@@ -1,18 +1,18 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class ActivityModel {
-  String type;
-  String username;
-  String userId;
-  String userDp;
-  String postId;
-  String mediaUrl;
-  String commentData;
-  Timestamp timestamp;
+  String? type;
+  String? username;
+  String? userId;
+  String? userDp;
+  String? postId;
+  String? mediaUrl;
+  String? commentData;
+  Timestamp? timestamp;
   ActivityModel(this.type, this.username, this.userId, this.userDp, this.postId,
       this.commentData, this.mediaUrl, this.timestamp);
 
-  ActivityModel.fromJson(Map<String, dynamic> json) {
+  ActivityModel.fromJson(Map<String?, dynamic> json) {
     type = json['type'];
     username = json['username'];
     userId = json['userId'];
@@ -22,8 +22,8 @@ class ActivityModel {
     commentData = json['commentData'];
     timestamp = json['timestamp'];
   }
-  Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
+  Map<String?, dynamic> toJson() {
+    final Map<String?, dynamic> data = new Map<String?, dynamic>();
     data['type'] = this.type;
     data['username'] = this.username;
     data['userId'] = this.userId;

@@ -49,8 +49,8 @@ class ForgotPassForm extends StatefulWidget {
 class _ForgotPassFormState extends State<ForgotPassForm> {
   final _formKey = GlobalKey<FormState>();
   TextEditingController _emailContoller = TextEditingController();
-  List<String> errors = [];
-  String email;
+  List<String?> errors = [];
+  String? email;
   var submitted = false;
   @override
   Widget build(BuildContext context) {
@@ -86,7 +86,7 @@ class _ForgotPassFormState extends State<ForgotPassForm> {
                 ],
               ),
               onPressed: () async {
-                if (_formKey.currentState.validate()) {
+                if (_formKey.currentState!.validate()) {
                   firebaseAuth.sendPasswordResetEmail(
                       email: _emailContoller.text);
                   Fluttertoast.showToast(
@@ -112,6 +112,7 @@ class _ForgotPassFormState extends State<ForgotPassForm> {
       hintText: "Email",
       textInputAction: TextInputAction.next,
       validateFunction: Validations.validateEmail,
+      submitAction: (){},
     );
   }
 }

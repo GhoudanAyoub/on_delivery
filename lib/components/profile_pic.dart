@@ -4,7 +4,7 @@ class ProfilePic extends StatelessWidget {
   final Widget child;
   const ProfilePic({
     Key? key,
-    this.child,
+    required this.child,
   }) : super(key: key);
 
   @override
@@ -14,7 +14,7 @@ class ProfilePic extends StatelessWidget {
       width: 115,
       child: Stack(
         fit: StackFit.expand,
-        overflow: Overflow.visible,
+        clipBehavior: Clip.none,
         children: [
           child,
           Positioned(
