@@ -46,14 +46,14 @@ class _ProfileState extends State<Profile> {
   bool loading = false;
   bool moto = false, car = false;
   bool warehouseNo = true, warehouseYes = false;
-  File userImage;
+  late File userImage;
   String? userImgLink, unity;
   final picker = ImagePicker();
   int _activeTab = 0;
   String? CatName = "",
-      startingPointString? = "Starting Point",
-      arrivalPointString? = "Arrive Point";
-  LocationProvider locationData;
+      startingPointString = "Starting Point",
+      arrivalPointString = "Arrive Point";
+  late LocationProvider locationData;
   bool food = false, move = false, ecom = false, courier = false;
 
   List<Category> categories = [];
@@ -69,24 +69,24 @@ class _ProfileState extends State<Profile> {
   @override
   void initState() {
     FirebaseService().getCurrentUserData().then((value) => {
-          _fNameController.text = value.firstName,
-          _lNameController.text = value.lastname,
-          _cityController.text = value.city,
-          _phoneController.text = value.phone,
-          _businessController.text = value.businessName,
-          ribController.text = value.RIB,
-          bankNameController.text = value.bankName,
+          _fNameController.text = value.firstName??"",
+          _lNameController.text = value.lastname??"",
+          _cityController.text = value.city??"",
+          _phoneController.text = value.phone??"",
+          _businessController.text = value.businessName??"",
+          ribController.text = value.RIB??"",
+          bankNameController.text = value.bankName??"",
           userImgLink = value.photoUrl,
-          moto = value.transportType.toLowerCase().contains("moto"),
-          car = !value.transportType.toLowerCase().contains("moto"),
-          food = value.activities.toLowerCase().contains("food"),
-          ecom = value.activities.toUpperCase().contains("E-COMMERCE"),
-          move = value.activities.toLowerCase().contains("move"),
-          courier = value.activities.toLowerCase().contains("courier"),
-          startingPointString? = "Starting Point",
-          arrivalPointString? = "Arrive Point",
+          moto = value.transportType?.toLowerCase().contains("moto")==true,
+          car = value.transportType?.toLowerCase().contains("moto")==false,
+          food = value.activities?.toLowerCase().contains("food")==true,
+          ecom = value.activities?.toUpperCase().contains("E-COMMERCE")==true,
+          move = value.activities?.toLowerCase().contains("move")==true,
+          courier = value.activities?.toLowerCase().contains("courier")==true,
+          startingPointString = "Starting Point",
+          arrivalPointString = "Arrive Point",
           warehouseYes =
-              value.wareHouse.toLowerCase().contains("yes") ? true : false,
+              value.wareHouse?.toLowerCase().contains("yes")==true ? true : false,
           warehouseNo = !warehouseYes,
         });
     super.initState();
@@ -156,7 +156,7 @@ class _ProfileState extends State<Profile> {
                                             backgroundColor: Color.fromRGBO(
                                                 239, 240, 246, 1),
                                             backgroundImage:
-                                                NetworkImage(userImgLink),
+                                                NetworkImage(userImgLink??""),
                                           ),
                                         ))
                                     : userImage == null
@@ -190,19 +190,21 @@ class _ProfileState extends State<Profile> {
                           ),
                         ),
                         SizedBox(height: 20),
-                        StreamBuilder(
+                        StreamBuilder<DocumentSnapshot>(
                           stream: usersRef
                               .doc(firebaseAuth.currentUser.uid)
                               .snapshots(),
                           builder: (context,
                               AsyncSnapshot<DocumentSnapshot> snapshot) {
                             if (snapshot.hasData) {
+                              DocumentSnapshot? documentSnapshot = snapshot.data as DocumentSnapshot;
+                              Map<String?, dynamic>? mapData = documentSnapshot.data();
                               UserModel userModel =
-                                  UserModel.fromJson(snapshot.data.data());
+                              UserModel.fromJson(mapData);
 
                               if (userModel.type
-                                  .toLowerCase()
-                                  .contains('agent')) {
+                                  ?.toLowerCase()
+                                  .contains('agent')==true) {
                                 categories = [
                                   Category(
                                     id: 1,
@@ -239,7 +241,7 @@ class _ProfileState extends State<Profile> {
                                             _activeTab = index;
                                             CatName = categories[index]
                                                 .name
-                                                .toLowerCase();
+                                                ?.toLowerCase();
                                             //search(CatName);
                                           });
                                         },
@@ -252,7 +254,7 @@ class _ProfileState extends State<Profile> {
                                           child: Column(
                                             children: [
                                               Text(
-                                                categories[index].name,
+                                                categories[index].name??"",
                                                 style: TextStyle(
                                                   letterSpacing: 1,
                                                   fontSize: 14,
@@ -348,6 +350,7 @@ class _ProfileState extends State<Profile> {
                                     textInputAction: TextInputAction.next,
                                     validateFunction:
                                         Validations.validateBusinessName,
+                                    submitAction: (){},
                                   ),
                                   SizedBox(height: 20),
                                   Align(
@@ -777,6 +780,7 @@ class _ProfileState extends State<Profile> {
                                           textInputAction: TextInputAction.next,
                                           validateFunction:
                                               Validations.validateNumber,
+                                          submitAction: (){},
                                         ),
                                         width: getProportionateScreenWidth(140),
                                       ),
@@ -789,6 +793,7 @@ class _ProfileState extends State<Profile> {
                                           textInputAction: TextInputAction.next,
                                           validateFunction:
                                               Validations.validateNumber2,
+                                          submitAction: (){},
                                         ),
                                         width: getProportionateScreenWidth(140),
                                       ),
@@ -848,7 +853,7 @@ class _ProfileState extends State<Profile> {
                                     height: 10,
                                   ),
                                   //tripShit
-                                  StreamBuilder(
+                                  StreamBuilder<DocumentSnapshot>(
                                     stream: usersRef
                                         .doc(firebaseAuth.currentUser.uid)
                                         .snapshots(),
@@ -856,18 +861,19 @@ class _ProfileState extends State<Profile> {
                                         AsyncSnapshot<DocumentSnapshot>
                                             snapshot) {
                                       if (snapshot.hasData) {
+                                        DocumentSnapshot? documentSnapshot = snapshot.data as DocumentSnapshot;
+                                        Map<String?, dynamic>? mapData = documentSnapshot.data();
                                         UserModel userModel =
-                                            UserModel.fromJson(
-                                                snapshot.data.data());
+                                            UserModel.fromJson(mapData);
 
-                                        List<Widget> list = new List<Widget>();
+                                        List<Widget> list = <Widget>[];
                                         if (userModel.agentTripsLocationList !=
                                             null) {
                                           for (int e = 0;
                                               e <
                                                   userModel
                                                       .agentTripsLocationList
-                                                      .length;
+                                                      !.length;
                                               e++) {
                                             list.add(Container(
                                                 padding: EdgeInsets.all(10),
@@ -887,6 +893,7 @@ class _ProfileState extends State<Profile> {
                                                       width: 300,
                                                       height: 50,
                                                       child: ElevatedButton(
+                                                        onPressed: (){},
                                                         style: ElevatedButton
                                                             .styleFrom(
                                                           onSurface:
@@ -918,9 +925,9 @@ class _ProfileState extends State<Profile> {
                                                             Container(
                                                               width: 220,
                                                               child: Text(
-                                                                userModel.agentTripsLocationList[
+                                                                userModel.agentTripsLocationList![
                                                                         e][
-                                                                    "startingPointString?"],
+                                                                    "startingPointString"],
                                                                 overflow:
                                                                     TextOverflow
                                                                         .ellipsis,
@@ -948,6 +955,7 @@ class _ProfileState extends State<Profile> {
                                                       width: 300,
                                                       height: 50,
                                                       child: ElevatedButton(
+                                                        onPressed: (){},
                                                         style: ElevatedButton
                                                             .styleFrom(
                                                           elevation: 4,
@@ -981,9 +989,9 @@ class _ProfileState extends State<Profile> {
                                                             Container(
                                                               width: 220,
                                                               child: Text(
-                                                                userModel.agentTripsLocationList[
+                                                                userModel.agentTripsLocationList![
                                                                         e][
-                                                                    "arrivalPointString?"],
+                                                                    "arrivalPointString"],
                                                                 overflow:
                                                                     TextOverflow
                                                                         .ellipsis,
@@ -1026,6 +1034,7 @@ class _ProfileState extends State<Profile> {
                                                     width: 300,
                                                     height: 50,
                                                     child: ElevatedButton(
+                                                      onPressed: (){},
                                                       style: ElevatedButton
                                                           .styleFrom(
                                                         onSurface: Colors.white,
@@ -1056,7 +1065,7 @@ class _ProfileState extends State<Profile> {
                                                           Container(
                                                             width: 220,
                                                             child: Text(
-                                                              startingPointString?,
+                                                              startingPointString??"",
                                                               overflow:
                                                                   TextOverflow
                                                                       .ellipsis,
@@ -1083,6 +1092,7 @@ class _ProfileState extends State<Profile> {
                                                     width: 300,
                                                     height: 50,
                                                     child: ElevatedButton(
+                                                      onPressed: (){},
                                                       style: ElevatedButton
                                                           .styleFrom(
                                                         elevation: 4,
@@ -1113,7 +1123,7 @@ class _ProfileState extends State<Profile> {
                                                           Container(
                                                             width: 220,
                                                             child: Text(
-                                                              arrivalPointString?,
+                                                              arrivalPointString??"",
                                                               overflow:
                                                                   TextOverflow
                                                                       .ellipsis,
@@ -1272,7 +1282,7 @@ class _ProfileState extends State<Profile> {
                                   SizedBox(
                                     height: 20,
                                   ),
-                                  StreamBuilder(
+                                  StreamBuilder<DocumentSnapshot>(
                                     stream: usersRef
                                         .doc(firebaseAuth.currentUser.uid)
                                         .snapshots(),
@@ -1280,18 +1290,19 @@ class _ProfileState extends State<Profile> {
                                         AsyncSnapshot<DocumentSnapshot>
                                             snapshot) {
                                       if (snapshot.hasData) {
+                                        DocumentSnapshot? documentSnapshot = snapshot.data as DocumentSnapshot;
+                                        Map<String?, dynamic>? mapData = documentSnapshot.data();
                                         UserModel userModel =
-                                            UserModel.fromJson(
-                                                snapshot.data.data());
+                                        UserModel.fromJson(mapData);
 
-                                        List<Widget> list = new List<Widget>();
+                                        List<Widget> list = <Widget>[];
                                         if (userModel.wareHouseLocationList !=
                                             null) {
                                           for (int e = 0;
                                               e <
                                                   userModel
                                                       .wareHouseLocationList
-                                                      .length;
+                                                      !.length;
                                               e++) {
                                             list.add(Column(
                                               children: [
@@ -1331,7 +1342,7 @@ class _ProfileState extends State<Profile> {
                                                                     Container(
                                                                       child:
                                                                           Text(
-                                                                        userModel.wareHouseLocationList[e]
+                                                                        userModel.wareHouseLocationList![e]
                                                                             [
                                                                             "wareHouseAddress"],
                                                                         overflow:
@@ -1497,6 +1508,7 @@ class _ProfileState extends State<Profile> {
                                     suffix: false,
                                     textInputAction: TextInputAction.next,
                                     validateFunction: Validations.validateRib,
+                                      submitAction: (){},
                                   ),
                                   SizedBox(
                                     height: 20,
@@ -1508,6 +1520,7 @@ class _ProfileState extends State<Profile> {
                                     textInputAction: TextInputAction.next,
                                     validateFunction:
                                         Validations.validateBankName,
+                                    submitAction: (){},
                                   ),
                                   SizedBox(height: 50),
                                 ],
@@ -1617,7 +1630,7 @@ class _ProfileState extends State<Profile> {
       PickedFile pickedFile = await picker.getImage(
         source: camera ? ImageSource.camera : ImageSource.gallery,
       );
-      File croppedFile = await ImageCropper.cropImage(
+      File? croppedFile = await ImageCropper.cropImage(
         sourcePath: pickedFile.path,
         aspectRatioPresets: [
           CropAspectRatioPreset.square,
@@ -1638,7 +1651,7 @@ class _ProfileState extends State<Profile> {
         ),
       );
       setState(() {
-        userImage = File(croppedFile.path);
+        userImage = File(croppedFile?.path??"");
         loading = false;
       });
     } catch (e) {
@@ -1650,8 +1663,8 @@ class _ProfileState extends State<Profile> {
   }
 
   void showInSnackBar(String? value) {
-    _scaffoldKey.currentState.removeCurrentSnackBar();
-    _scaffoldKey.currentState.showSnackBar(SnackBar(content: Text(value)));
+    ScaffoldMessenger.of(context).removeCurrentSnackBar();
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(value??"")));
   }
 
   buildFNameFormField() {
@@ -1661,6 +1674,7 @@ class _ProfileState extends State<Profile> {
       suffix: false,
       textInputAction: TextInputAction.next,
       validateFunction: Validations.validateName,
+      submitAction: (){},
     );
   }
 
@@ -1671,6 +1685,7 @@ class _ProfileState extends State<Profile> {
       suffix: false,
       textInputAction: TextInputAction.next,
       validateFunction: Validations.validateName,
+      submitAction: (){},
     );
   }
 
@@ -1681,6 +1696,7 @@ class _ProfileState extends State<Profile> {
       suffix: false,
       textInputAction: TextInputAction.next,
       validateFunction: Validations.validateName,
+      submitAction: (){},
     );
   }
 
@@ -1691,6 +1707,7 @@ class _ProfileState extends State<Profile> {
       hintText: "Phone Number",
       textInputAction: TextInputAction.next,
       validateFunction: Validations.validatephone,
+      submitAction: (){},
     );
   }
 }

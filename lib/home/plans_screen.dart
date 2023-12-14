@@ -45,19 +45,21 @@ class _PlansState extends State<Plans> {
               SizedBox(height: 20),
               Padding(
                 padding: const EdgeInsets.all(10.0),
-                child: StreamBuilder(
+                child: StreamBuilder<DocumentSnapshot>(
                   stream:
                       plansRef.doc(firebaseAuth.currentUser.uid).snapshots(),
                   builder: (context, AsyncSnapshot<DocumentSnapshot> snapshot) {
-                    if (snapshot.hasData && snapshot.data.exists) {
+                    if (snapshot.hasData && snapshot.data?.exists==true) {
+                      DocumentSnapshot? documentSnapshot = snapshot.data as DocumentSnapshot;
+                      Map<String?, dynamic>? mapData = documentSnapshot.data();
                       PlansModel plans =
-                          PlansModel.fromJson(snapshot.data.data());
+                          PlansModel.fromJson(mapData);
                       if (Utils.toDateTime(Utils.getCurrentDate())
-                          .isBefore(Utils.toDateTime(plans.endAt))) {
+                          .isBefore(Utils.toDateTime(plans.endAt??Timestamp.now()))) {
                         return Align(
                           alignment: Alignment.topCenter,
                           child: Text(
-                              "You have ${Utils.toDateTime(Utils.getCurrentDate()).difference(Utils.toDateTime(plans.endAt))} days left before your finish your free plan. Please try to chose a plan before that.",
+                              "You have ${Utils.toDateTime(Utils.getCurrentDate()).difference(Utils.toDateTime(plans.endAt??Timestamp.now()))} days left before your finish your free plan. Please try to chose a plan before that.",
                               textAlign: TextAlign.center,
                               style: TextStyle(
                                 letterSpacing: 1,
@@ -70,7 +72,7 @@ class _PlansState extends State<Plans> {
                       return Align(
                         alignment: Alignment.topCenter,
                         child: Text(
-                            "Your plan Ends ${Utils.toDateTime(Utils.getCurrentDate()).difference(Utils.toDateTime(plans.endAt))} days ago. You are welcomed to replan again.",
+                            "Your plan Ends ${Utils.toDateTime(Utils.getCurrentDate()).difference(Utils.toDateTime(plans.endAt??Timestamp.now()))} days ago. You are welcomed to replan again.",
                             textAlign: TextAlign.center,
                             style: TextStyle(
                               letterSpacing: 1,
@@ -155,7 +157,7 @@ class _PlansState extends State<Plans> {
                       width: 160,
                       child: Stack(
                         fit: StackFit.expand,
-                        overflow: Overflow.visible,
+                        clipBehavior: Clip.none,
                         children: [
                           Card(
                               elevation: eco ? 8 : 1,
@@ -285,7 +287,7 @@ class _PlansState extends State<Plans> {
                       height: 5,
                       decoration: BoxDecoration(
                           gradient: LinearGradient(
-                            colors: <Color>[Colors.grey[300], Colors.grey[300]],
+                            colors: <Color>[Colors.grey[300]??Colors.grey, Colors.grey[300]??Colors.grey],
                           ),
                           borderRadius: BorderRadius.circular(10.0),
                           boxShadow: [

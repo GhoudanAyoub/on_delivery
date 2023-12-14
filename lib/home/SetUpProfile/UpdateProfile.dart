@@ -1012,7 +1012,7 @@ class _UpdateProfilesState extends State<UpdateProfiles> {
                                 SizedBox(
                                   height: 40,
                                 ),
-                                StreamBuilder(
+                                StreamBuilder<DocumentSnapshot>(
                                   stream: usersRef
                                       .doc(firebaseAuth.currentUser.uid)
                                       .snapshots(),
@@ -1086,7 +1086,7 @@ class _UpdateProfilesState extends State<UpdateProfiles> {
                                                             child: Text(
                                                               userModel
                                                                   .agentTripsLocationList![e][
-                                                              "startingPointString?"],
+                                                              "startingPointString"],
                                                               overflow: TextOverflow
                                                                   .ellipsis,
                                                               style: TextStyle(
@@ -1148,7 +1148,7 @@ class _UpdateProfilesState extends State<UpdateProfiles> {
                                                                 200),
                                                             child: Text(
                                                               userModel
-                                                                  .agentTripsLocationList![e]["arrivalPointString?"],
+                                                                  .agentTripsLocationList![e]["arrivalPointString"],
                                                               overflow: TextOverflow
                                                                   .ellipsis,
                                                               style: TextStyle(
@@ -2517,7 +2517,7 @@ class _UpdateProfilesState extends State<UpdateProfiles> {
                                     SizedBox(
                                       height: 20,
                                     ),
-                                    StreamBuilder(
+                                    StreamBuilder<DocumentSnapshot>(
                                       stream: usersRef
                                           .doc(firebaseAuth.currentUser.uid)
                                           .snapshots(),
@@ -4342,13 +4342,13 @@ class _MapTripScreenState extends State<MapTripScreen> {
                       Map<String?, dynamic> agentTripsLocationList =
                       new HashMap();
                       agentTripsLocationList.putIfAbsent(
-                          "startingPointString?",
+                          "startingPointString",
                               () =>
                           p != null
                               ? p.description
                               : startingTripLocationString);
                       agentTripsLocationList.putIfAbsent(
-                          "arrivalPointString?",
+                          "arrivalPointString",
                               () =>
                           p2 != null
                               ? p2.description

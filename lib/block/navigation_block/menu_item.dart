@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 
-class MenuItem extends StatelessWidget {
+class MenuItem2 extends StatelessWidget {
   final String? title;
   final VoidCallback onTap;
 
-  const MenuItem({Key? key, required this.title, required this.onTap}) : super(key: key);
+  const MenuItem2({Key? key, required this.title, required this.onTap}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {

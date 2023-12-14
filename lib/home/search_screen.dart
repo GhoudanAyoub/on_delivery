@@ -38,6 +38,7 @@ const double PIN_INVISIBLE_POSITION = -220;
 
 class SearchScreen extends StatefulWidget {
   static String routeName = "/search";
+
   @override
   _SearchScreenState createState() => _SearchScreenState();
 }
@@ -56,9 +57,9 @@ class _SearchScreenState extends State<SearchScreen> {
       moveInt = false,
       corriesInt = false;
   bool locationState = false;
-  LocationProvider locationData;
-  String? startingPointString? = "Starting Point",
-      arrivalPointString? = "Arrive Point",
+  late LocationProvider locationData;
+  String? startingPointString = "Starting Point",
+      arrivalPointString = "Arrive Point",
       brand,
       transport,
       result;
@@ -80,6 +81,7 @@ class _SearchScreenState extends State<SearchScreen> {
   TextEditingController arrivalPointController = TextEditingController();
   TextEditingController maxWeightController = TextEditingController();
   TextEditingController itemNumberController = TextEditingController();
+
   @override
   Widget build(BuildContext context) {
     locationData = Provider.of<LocationProvider>(context, listen: false);
@@ -203,7 +205,9 @@ class _SearchScreenState extends State<SearchScreen> {
                                                   BorderRadius.circular(10.0),
                                               boxShadow: [
                                                 BoxShadow(
-                                                  color: Colors.grey[500]??Colors.grey??Colors.grey,
+                                                  color: Colors.grey[500] ??
+                                                      Colors.grey ??
+                                                      Colors.grey,
                                                   offset: Offset(0.0, 1.5),
                                                   blurRadius: 1.5,
                                                 ),
@@ -265,7 +269,8 @@ class _SearchScreenState extends State<SearchScreen> {
                                                   BorderRadius.circular(10.0),
                                               boxShadow: [
                                                 BoxShadow(
-                                                  color: Colors.grey[500]??Colors.grey,
+                                                  color: Colors.grey[500] ??
+                                                      Colors.grey,
                                                   offset: Offset(0.0, 1.5),
                                                   blurRadius: 1.5,
                                                 ),
@@ -334,7 +339,8 @@ class _SearchScreenState extends State<SearchScreen> {
                                                   BorderRadius.circular(10.0),
                                               boxShadow: [
                                                 BoxShadow(
-                                                  color: Colors.grey[500]??Colors.grey,
+                                                  color: Colors.grey[500] ??
+                                                      Colors.grey,
                                                   offset: Offset(0.0, 1.5),
                                                   blurRadius: 1.5,
                                                 ),
@@ -396,7 +402,8 @@ class _SearchScreenState extends State<SearchScreen> {
                                                   BorderRadius.circular(10.0),
                                               boxShadow: [
                                                 BoxShadow(
-                                                  color: Colors.grey[500]??Colors.grey,
+                                                  color: Colors.grey[500] ??
+                                                      Colors.grey,
                                                   offset: Offset(0.0, 1.5),
                                                   blurRadius: 1.5,
                                                 ),
@@ -478,7 +485,8 @@ class _SearchScreenState extends State<SearchScreen> {
                                               BorderRadius.circular(10.0),
                                           boxShadow: [
                                             BoxShadow(
-                                              color: Colors.grey[500]??Colors.grey,
+                                              color: Colors.grey[500] ??
+                                                  Colors.grey,
                                               offset: Offset(0.0, 1.5),
                                               blurRadius: 1.5,
                                             ),
@@ -584,7 +592,7 @@ class _SearchScreenState extends State<SearchScreen> {
                                           .getMoveCamera()
                                           .then((value) => setState(() {
                                                 locationState = state;
-                                                startingPointString? = value;
+                                                startingPointString = value;
                                               }));
                                     },
                                   ),
@@ -609,7 +617,8 @@ class _SearchScreenState extends State<SearchScreen> {
                                           ),
                                         ));
                                     setState(() {
-                                      arrivalPointString? = result.split("/")[1];
+                                      arrivalPointString =
+                                          result?.split("/")[1];
                                     });
                                   }
                                 },
@@ -618,7 +627,7 @@ class _SearchScreenState extends State<SearchScreen> {
                                     decoration: BoxDecoration(
                                       borderRadius: BorderRadius.circular(10.0),
                                       border: Border.all(
-                                        color: Colors.grey[400]??Colors.grey,
+                                        color: Colors.grey[400] ?? Colors.grey,
                                       ),
                                     ),
                                     child: Column(
@@ -628,6 +637,7 @@ class _SearchScreenState extends State<SearchScreen> {
                                               getProportionateScreenWidth(250),
                                           height: 50,
                                           child: ElevatedButton(
+                                            onPressed: () {},
                                             style: ElevatedButton.styleFrom(
                                               onSurface: Colors.white,
                                               primary: Colors.transparent,
@@ -652,7 +662,7 @@ class _SearchScreenState extends State<SearchScreen> {
                                                       getProportionateScreenWidth(
                                                           180),
                                                   child: Text(
-                                                    startingPointString?,
+                                                    startingPointString ?? "",
                                                     overflow:
                                                         TextOverflow.ellipsis,
                                                     style: TextStyle(
@@ -670,13 +680,15 @@ class _SearchScreenState extends State<SearchScreen> {
                                         ),
                                         Container(
                                           height: 1,
-                                          color: Colors.grey[400]??Colors.grey,
+                                          color:
+                                              Colors.grey[400] ?? Colors.grey,
                                         ),
                                         Container(
                                           width:
                                               getProportionateScreenWidth(250),
                                           height: 50,
                                           child: ElevatedButton(
+                                            onPressed: () {},
                                             style: ElevatedButton.styleFrom(
                                               elevation: 4,
                                               onSurface: Colors.white,
@@ -703,7 +715,7 @@ class _SearchScreenState extends State<SearchScreen> {
                                                       getProportionateScreenWidth(
                                                           150),
                                                   child: Text(
-                                                    arrivalPointString?,
+                                                    arrivalPointString ?? '',
                                                     overflow:
                                                         TextOverflow.ellipsis,
                                                     style: TextStyle(
@@ -732,6 +744,8 @@ class _SearchScreenState extends State<SearchScreen> {
                                 prefix: CupertinoIcons.arrow_up_down,
                                 textInputAction: TextInputAction.next,
                                 validateFunction: Validations.validateNumber,
+                                submitAction: () => FocusScope.of(context)
+                                    .requestFocus(FocusNode()),
                               ),
                               height: 100,
                               width: 150,
@@ -780,8 +794,8 @@ class _SearchScreenState extends State<SearchScreen> {
                                   ),
                                   width: SizeConfig.screenWidth - 150,
                                   onPressed: () async {
-                                    if (startingPointString? != null &&
-                                        arrivalPointString? != null) {
+                                    if (startingPointString != null &&
+                                        arrivalPointString != null) {
                                       Orders order = new Orders(
                                         userId: firebaseAuth.currentUser.uid,
                                         lunchStatus: true,
@@ -797,13 +811,13 @@ class _SearchScreenState extends State<SearchScreen> {
                                       FirebaseService().updateOrders(
                                           firebaseAuth.currentUser,
                                           order,
-                                          result.split('/')[0]);
+                                          result?.split('/')[0]);
                                       Navigator.push(
                                           context,
                                           MaterialPageRoute(
                                             builder: (context) =>
                                                 SearchMapAgentScreen(
-                                              orders: result.split('/')[0],
+                                              orders: result?.split('/')[0],
                                             ),
                                           ));
                                     }
@@ -819,7 +833,7 @@ class _SearchScreenState extends State<SearchScreen> {
                                     borderRadius: BorderRadius.circular(10.0),
                                     boxShadow: [
                                       BoxShadow(
-                                        color: Colors.grey[500]??Colors.grey,
+                                        color: Colors.grey[500] ?? Colors.grey,
                                         offset: Offset(0.0, 1.5),
                                         blurRadius: 1.5,
                                       ),
@@ -925,7 +939,7 @@ class _SearchScreenState extends State<SearchScreen> {
                                           .getMoveCamera()
                                           .then((value) => setState(() {
                                                 locationState = state;
-                                                startingPointString? = value;
+                                                startingPointString = value;
                                               }));*/
 
                                         Geolocator.getCurrentPosition(
@@ -939,7 +953,7 @@ class _SearchScreenState extends State<SearchScreen> {
                                                       value.longitude))
                                               .then((value) => setState(() {
                                                     locationState = state;
-                                                    startingPointString? =
+                                                    startingPointString =
                                                         value.first.addressLine;
                                                   }));
                                         });
@@ -966,7 +980,8 @@ class _SearchScreenState extends State<SearchScreen> {
                                           ),
                                         ));
                                     setState(() {
-                                      arrivalPointString? = result.split("/")[1];
+                                      arrivalPointString =
+                                          result?.split("/")[1];
                                     });
                                   }
                                 },
@@ -975,7 +990,7 @@ class _SearchScreenState extends State<SearchScreen> {
                                     decoration: BoxDecoration(
                                       borderRadius: BorderRadius.circular(10.0),
                                       border: Border.all(
-                                        color: Colors.grey[400]??Colors.grey,
+                                        color: Colors.grey[400] ?? Colors.grey,
                                       ),
                                     ),
                                     child: Column(
@@ -985,6 +1000,7 @@ class _SearchScreenState extends State<SearchScreen> {
                                               getProportionateScreenWidth(250),
                                           height: 50,
                                           child: ElevatedButton(
+                                            onPressed: () {},
                                             style: ElevatedButton.styleFrom(
                                               onSurface: Colors.white,
                                               primary: Colors.transparent,
@@ -1009,7 +1025,7 @@ class _SearchScreenState extends State<SearchScreen> {
                                                       getProportionateScreenWidth(
                                                           180),
                                                   child: Text(
-                                                    startingPointString?,
+                                                    startingPointString ?? '',
                                                     overflow:
                                                         TextOverflow.ellipsis,
                                                     style: TextStyle(
@@ -1027,13 +1043,15 @@ class _SearchScreenState extends State<SearchScreen> {
                                         ),
                                         Container(
                                           height: 1,
-                                          color: Colors.grey[400]??Colors.grey,
+                                          color:
+                                              Colors.grey[400] ?? Colors.grey,
                                         ),
                                         Container(
                                           width:
                                               getProportionateScreenWidth(250),
                                           height: 50,
                                           child: ElevatedButton(
+                                            onPressed: () {},
                                             style: ElevatedButton.styleFrom(
                                               elevation: 4,
                                               onSurface: Colors.white,
@@ -1060,7 +1078,7 @@ class _SearchScreenState extends State<SearchScreen> {
                                                       getProportionateScreenWidth(
                                                           150),
                                                   child: Text(
-                                                    arrivalPointString?,
+                                                    arrivalPointString ?? '',
                                                     overflow:
                                                         TextOverflow.ellipsis,
                                                     style: TextStyle(
@@ -1125,8 +1143,8 @@ class _SearchScreenState extends State<SearchScreen> {
                                   ),
                                   width: SizeConfig.screenWidth - 150,
                                   onPressed: () async {
-                                    if (startingPointString? != null &&
-                                        arrivalPointString? != null) {
+                                    if (startingPointString != null &&
+                                        arrivalPointString != null) {
                                       Orders order = new Orders(
                                         userId: firebaseAuth.currentUser.uid,
                                         lunchStatus: true,
@@ -1142,13 +1160,13 @@ class _SearchScreenState extends State<SearchScreen> {
                                       FirebaseService().updateOrders(
                                           firebaseAuth.currentUser,
                                           order,
-                                          result.split('/')[0]);
+                                          result?.split('/')[0]);
                                       Navigator.push(
                                           context,
                                           MaterialPageRoute(
                                             builder: (context) =>
                                                 SearchMapAgentScreen(
-                                              orders: result.split('/')[0],
+                                              orders: result?.split('/')[0],
                                             ),
                                           ));
                                     }
@@ -1164,7 +1182,7 @@ class _SearchScreenState extends State<SearchScreen> {
                                     borderRadius: BorderRadius.circular(10.0),
                                     boxShadow: [
                                       BoxShadow(
-                                        color: Colors.grey[500]??Colors.grey,
+                                        color: Colors.grey[500] ?? Colors.grey,
                                         offset: Offset(0.0, 1.5),
                                         blurRadius: 1.5,
                                       ),
@@ -1269,7 +1287,7 @@ class _SearchScreenState extends State<SearchScreen> {
                                           .getMoveCamera()
                                           .then((value) => setState(() {
                                                 locationState = state;
-                                                startingPointString? = value;
+                                                startingPointString = value;
                                               }));
                                     },
                                   ),
@@ -1325,7 +1343,8 @@ class _SearchScreenState extends State<SearchScreen> {
                                           ),
                                         ));
                                     setState(() {
-                                      arrivalPointString? = result.split("/")[1];
+                                      arrivalPointString =
+                                          result?.split("/")[1];
                                     });
                                   }
                                 },
@@ -1334,7 +1353,7 @@ class _SearchScreenState extends State<SearchScreen> {
                                     decoration: BoxDecoration(
                                       borderRadius: BorderRadius.circular(10.0),
                                       border: Border.all(
-                                        color: Colors.grey[400]??Colors.grey,
+                                        color: Colors.grey[400] ?? Colors.grey,
                                       ),
                                     ),
                                     child: Column(
@@ -1344,6 +1363,7 @@ class _SearchScreenState extends State<SearchScreen> {
                                               getProportionateScreenWidth(250),
                                           height: 50,
                                           child: ElevatedButton(
+                                            onPressed: () {},
                                             style: ElevatedButton.styleFrom(
                                               onSurface: Colors.white,
                                               primary: Colors.transparent,
@@ -1368,7 +1388,7 @@ class _SearchScreenState extends State<SearchScreen> {
                                                       getProportionateScreenWidth(
                                                           180),
                                                   child: Text(
-                                                    startingPointString?,
+                                                    startingPointString ?? '',
                                                     overflow:
                                                         TextOverflow.ellipsis,
                                                     style: TextStyle(
@@ -1386,13 +1406,15 @@ class _SearchScreenState extends State<SearchScreen> {
                                         ),
                                         Container(
                                           height: 1,
-                                          color: Colors.grey[400]??Colors.grey,
+                                          color:
+                                              Colors.grey[400] ?? Colors.grey,
                                         ),
                                         Container(
                                           width:
                                               getProportionateScreenWidth(250),
                                           height: 50,
                                           child: ElevatedButton(
+                                            onPressed: () {},
                                             style: ElevatedButton.styleFrom(
                                               elevation: 4,
                                               onSurface: Colors.white,
@@ -1419,7 +1441,7 @@ class _SearchScreenState extends State<SearchScreen> {
                                                       getProportionateScreenWidth(
                                                           150),
                                                   child: Text(
-                                                    arrivalPointString?,
+                                                    arrivalPointString ?? '',
                                                     overflow:
                                                         TextOverflow.ellipsis,
                                                     style: TextStyle(
@@ -1523,8 +1545,8 @@ class _SearchScreenState extends State<SearchScreen> {
                                   ),
                                   width: SizeConfig.screenWidth - 150,
                                   onPressed: () async {
-                                    if (startingPointString? != null &&
-                                        arrivalPointString? != null) {
+                                    if (startingPointString != null &&
+                                        arrivalPointString != null) {
                                       Orders order = new Orders(
                                         userId: firebaseAuth.currentUser.uid,
                                         lunchStatus: true,
@@ -1540,13 +1562,13 @@ class _SearchScreenState extends State<SearchScreen> {
                                       FirebaseService().updateOrders(
                                           firebaseAuth.currentUser,
                                           order,
-                                          result.split('/')[0]);
+                                          result?.split('/')[0]);
                                       Navigator.push(
                                           context,
                                           MaterialPageRoute(
                                             builder: (context) =>
                                                 SearchMapAgentScreen(
-                                              orders: result.split('/')[0],
+                                              orders: result?.split('/')[0],
                                             ),
                                           ));
                                     }
@@ -1562,7 +1584,7 @@ class _SearchScreenState extends State<SearchScreen> {
                                     borderRadius: BorderRadius.circular(10.0),
                                     boxShadow: [
                                       BoxShadow(
-                                        color: Colors.grey[500]??Colors.grey,
+                                        color: Colors.grey[500] ?? Colors.grey,
                                         offset: Offset(0.0, 1.5),
                                         blurRadius: 1.5,
                                       ),
@@ -1667,7 +1689,7 @@ class _SearchScreenState extends State<SearchScreen> {
                                           .getMoveCamera()
                                           .then((value) => setState(() {
                                                 locationState = state;
-                                                startingPointString? = value;
+                                                startingPointString = value;
                                               }));
                                     },
                                   ),
@@ -1692,7 +1714,8 @@ class _SearchScreenState extends State<SearchScreen> {
                                           ),
                                         ));
                                     setState(() {
-                                      arrivalPointString? = result.split("/")[1];
+                                      arrivalPointString =
+                                          result?.split("/")[1];
                                     });
                                   }
                                 },
@@ -1701,7 +1724,7 @@ class _SearchScreenState extends State<SearchScreen> {
                                     decoration: BoxDecoration(
                                       borderRadius: BorderRadius.circular(10.0),
                                       border: Border.all(
-                                        color: Colors.grey[400]??Colors.grey,
+                                        color: Colors.grey[400] ?? Colors.grey,
                                       ),
                                     ),
                                     child: Column(
@@ -1711,6 +1734,7 @@ class _SearchScreenState extends State<SearchScreen> {
                                               getProportionateScreenWidth(250),
                                           height: 50,
                                           child: ElevatedButton(
+                                            onPressed: () {},
                                             style: ElevatedButton.styleFrom(
                                               onSurface: Colors.white,
                                               primary: Colors.transparent,
@@ -1735,7 +1759,7 @@ class _SearchScreenState extends State<SearchScreen> {
                                                       getProportionateScreenWidth(
                                                           180),
                                                   child: Text(
-                                                    startingPointString?,
+                                                    startingPointString ?? '',
                                                     overflow:
                                                         TextOverflow.ellipsis,
                                                     style: TextStyle(
@@ -1753,13 +1777,15 @@ class _SearchScreenState extends State<SearchScreen> {
                                         ),
                                         Container(
                                           height: 1,
-                                          color: Colors.grey[400]??Colors.grey,
+                                          color:
+                                              Colors.grey[400] ?? Colors.grey,
                                         ),
                                         Container(
                                           width:
                                               getProportionateScreenWidth(250),
                                           height: 50,
                                           child: ElevatedButton(
+                                            onPressed: () {},
                                             style: ElevatedButton.styleFrom(
                                               elevation: 4,
                                               onSurface: Colors.white,
@@ -1786,7 +1812,7 @@ class _SearchScreenState extends State<SearchScreen> {
                                                       getProportionateScreenWidth(
                                                           150),
                                                   child: Text(
-                                                    arrivalPointString?,
+                                                    arrivalPointString ?? '',
                                                     overflow:
                                                         TextOverflow.ellipsis,
                                                     style: TextStyle(
@@ -1857,6 +1883,7 @@ class _SearchScreenState extends State<SearchScreen> {
                                 prefix: CupertinoIcons.arrow_up_down,
                                 textInputAction: TextInputAction.next,
                                 validateFunction: Validations.validateNumber,
+                                submitAction: () {},
                               ),
                             ),
                             SizedBox(
@@ -1870,6 +1897,7 @@ class _SearchScreenState extends State<SearchScreen> {
                                 prefix: CupertinoIcons.arrow_up_down,
                                 textInputAction: TextInputAction.next,
                                 validateFunction: Validations.validateNumber,
+                                submitAction: () {},
                               ),
                             ),
                           ],
@@ -1916,8 +1944,8 @@ class _SearchScreenState extends State<SearchScreen> {
                                   ),
                                   width: SizeConfig.screenWidth - 150,
                                   onPressed: () async {
-                                    if (startingPointString? != null &&
-                                        arrivalPointString? != null) {
+                                    if (startingPointString != null &&
+                                        arrivalPointString != null) {
                                       Orders order = new Orders(
                                         userId: firebaseAuth.currentUser.uid,
                                         lunchStatus: true,
@@ -1933,13 +1961,13 @@ class _SearchScreenState extends State<SearchScreen> {
                                       FirebaseService().updateOrders(
                                           firebaseAuth.currentUser,
                                           order,
-                                          result.split('/')[0]);
+                                          result?.split('/')[0]);
                                       Navigator.push(
                                           context,
                                           MaterialPageRoute(
                                             builder: (context) =>
                                                 SearchMapAgentScreen(
-                                              orders: result.split('/')[0],
+                                              orders: result?.split('/')[0],
                                             ),
                                           ));
                                     }
@@ -1955,7 +1983,7 @@ class _SearchScreenState extends State<SearchScreen> {
                                     borderRadius: BorderRadius.circular(10.0),
                                     boxShadow: [
                                       BoxShadow(
-                                        color: Colors.grey[500]??Colors.grey,
+                                        color: Colors.grey[500] ?? Colors.grey,
                                         offset: Offset(0.0, 1.5),
                                         blurRadius: 1.5,
                                       ),
@@ -1973,32 +2001,34 @@ class _SearchScreenState extends State<SearchScreen> {
 
 class SearchMapTripScreen extends StatefulWidget {
   static String routeName = '/SearchMapTripScreen';
-  final User user;
-  final GeoPoint sLocation;
+  final User? user;
+  final GeoPoint? sLocation;
 
   const SearchMapTripScreen({Key? key, this.user, this.sLocation})
       : super(key: key);
+
   @override
   _SearchMapTripScreenState createState() => _SearchMapTripScreenState();
 }
 
 class _SearchMapTripScreenState extends State<SearchMapTripScreen> {
-  LocationProvider locationData;
-  LatLng currentLocation;
-  GoogleMapController _mapController;
+  late LocationProvider locationData;
+  late LatLng currentLocation;
+  late GoogleMapController _mapController;
   AuthService authService = AuthService();
   Completer<GoogleMapController> _controller = Completer();
-  static CameraPosition _myPosition;
-  static CameraPosition initPosition;
-  String? startingTripLocationString? = "Starting Point";
-  String? arriveTripLocationString? = "Arrival Point";
-  PlacesDetailsResponse detail;
-  Prediction p, p2;
+  static late CameraPosition _myPosition;
+  static late CameraPosition initPosition;
+  String? startingTripLocationString = "Starting Point";
+  String? arriveTripLocationString = "Arrival Point";
+  late PlacesDetailsResponse detail;
+  late Prediction p, p2;
   final searchScaffoldKey = GlobalKey<ScaffoldState>();
   final homeScaffoldKey = GlobalKey<ScaffoldState>();
-  double startingLocationLnt, startingLocationLng;
-  double arrivedLocationLnt, arrivedLocationLng;
+  late double startingLocationLnt, startingLocationLng;
+  late double arrivedLocationLnt, arrivedLocationLng;
   bool start = true;
+
   @override
   Widget build(BuildContext context) {
     locationData = Provider.of<LocationProvider>(context);
@@ -2020,7 +2050,7 @@ class _SearchMapTripScreenState extends State<SearchMapTripScreen> {
       body: WillPopScope(
         onWillPop: () async {
           Navigator.pop(
-              context, p2 != null ? p2.description : arriveTripLocationString?);
+              context, p2 != null ? p2.description : arriveTripLocationString);
           return true;
         },
         child: SafeArea(
@@ -2041,8 +2071,8 @@ class _SearchMapTripScreenState extends State<SearchMapTripScreen> {
                 onCameraIdle: () {
                   locationData.getMoveCamera().then((value) => setState(() {
                         start
-                            ? startingTripLocationString? = value
-                            : arriveTripLocationString? = value;
+                            ? startingTripLocationString = value
+                            : arriveTripLocationString = value;
                       }));
                   start
                       ? locationData.getMoveCameraLntLng().then((value) {
@@ -2070,7 +2100,7 @@ class _SearchMapTripScreenState extends State<SearchMapTripScreen> {
                                   context,
                                   p2 != null
                                       ? p2.description
-                                      : arriveTripLocationString?);
+                                      : arriveTripLocationString);
                             },
                             child: Image.asset(
                               "assets/images/Back Arrow.png",
@@ -2115,7 +2145,7 @@ class _SearchMapTripScreenState extends State<SearchMapTripScreen> {
                             Container(
                               width: 220,
                               child: Text(
-                                startingTripLocationString?,
+                                startingTripLocationString ?? "",
                                 overflow: TextOverflow.ellipsis,
                                 style: TextStyle(
                                     color: Colors.black,
@@ -2130,7 +2160,7 @@ class _SearchMapTripScreenState extends State<SearchMapTripScreen> {
                     ),
                     Container(
                       height: 1,
-                      color: Colors.grey[400]??Colors.grey,
+                      color: Colors.grey[400] ?? Colors.grey,
                       width: 250,
                     ),
                     Container(
@@ -2157,7 +2187,7 @@ class _SearchMapTripScreenState extends State<SearchMapTripScreen> {
                             Container(
                               width: 220,
                               child: Text(
-                                arriveTripLocationString?,
+                                arriveTripLocationString ?? "",
                                 overflow: TextOverflow.ellipsis,
                                 style: TextStyle(
                                     color: Colors.black,
@@ -2206,15 +2236,15 @@ class _SearchMapTripScreenState extends State<SearchMapTripScreen> {
                             startAt: widget.sLocation != null
                                 ? GeoPoint(
                                     startingLocationLnt, startingLocationLng)
-                                : GeoPoint(widget.sLocation.latitude,
-                                    widget.sLocation.longitude),
+                                : GeoPoint(widget.sLocation?.latitude,
+                                    widget.sLocation?.longitude),
                             endAt: GeoPoint(
                                 arrivedLocationLnt, arrivedLocationLng));
 
                         var id = await FirebaseService()
                             .addOrder(firebaseAuth.currentUser, order);
                         Navigator.pop(context,
-                            "$id/${p2 != null ? p2.description : arriveTripLocationString?}");
+                            "$id/${p2 != null ? p2.description : arriveTripLocationString}");
                       }),
                 ),
               )
@@ -2265,7 +2295,7 @@ class _SearchMapTripScreenState extends State<SearchMapTripScreen> {
       components: [Component(Component.country, "mar")],
     );
 
-    displayStartingPrediction(p, homeScaffoldKey.currentState);
+    displayStartingPrediction(p, homeScaffoldKey.currentState!);
   }
 
   Future<void> _handlePressButton2() async {
@@ -2283,7 +2313,7 @@ class _SearchMapTripScreenState extends State<SearchMapTripScreen> {
       components: [Component(Component.country, "mar")],
     );
 
-    displayArrivedPrediction(p2, homeScaffoldKey.currentState);
+    displayArrivedPrediction(p2, homeScaffoldKey.currentState!);
   }
 
   Future<Null> displayStartingPrediction(
@@ -2298,7 +2328,7 @@ class _SearchMapTripScreenState extends State<SearchMapTripScreen> {
       setState(() {
         startingLocationLnt = detail.result.geometry.location.lat;
         startingLocationLng = detail.result.geometry.location.lng;
-        startingTripLocationString? = p.description;
+        startingTripLocationString = p.description;
       });
       _goToPosition(
           _controller.future, startingLocationLnt, startingLocationLng);
@@ -2317,7 +2347,7 @@ class _SearchMapTripScreenState extends State<SearchMapTripScreen> {
       setState(() {
         arrivedLocationLnt = detail.result.geometry.location.lat;
         arrivedLocationLng = detail.result.geometry.location.lng;
-        arriveTripLocationString? = p2.description;
+        arriveTripLocationString = p2.description;
       });
       _goToPosition(_controller.future, arrivedLocationLnt, arrivedLocationLng);
     }
@@ -2326,48 +2356,49 @@ class _SearchMapTripScreenState extends State<SearchMapTripScreen> {
 
 class SearchMapAgentScreen extends StatefulWidget {
   static String? routeName = '/SearchMapAgentScreen';
-  final User user;
+  final User? user;
   final String? orders;
 
   const SearchMapAgentScreen({Key? key, this.user, this.orders})
       : super(key: key);
+
   @override
   _SearchMapAgentScreenState createState() => _SearchMapAgentScreenState();
 }
 
 class _SearchMapAgentScreenState extends State<SearchMapAgentScreen> {
-  LocationProvider locationData;
-  LatLng currentLocation;
-  GoogleMapController _mapController;
+  late LocationProvider locationData;
+  late LatLng currentLocation;
+  late GoogleMapController _mapController;
   AuthService authService = AuthService();
   Completer<GoogleMapController> _controller = Completer();
-  static CameraPosition _myPosition;
-  static CameraPosition initPosition;
-  String? startingTripLocationString? = "Starting Point";
-  String? arriveTripLocationString? = "Arrival Point";
-  PlacesDetailsResponse detail;
-  Prediction p, p2;
+  static late CameraPosition _myPosition;
+  static late CameraPosition initPosition;
+  String? startingTripLocationString = "Starting Point";
+  String? arriveTripLocationString = "Arrival Point";
+  late PlacesDetailsResponse detail;
+  late Prediction p, p2;
   final searchScaffoldKey = GlobalKey<ScaffoldState>();
   final homeScaffoldKey = GlobalKey<ScaffoldState>();
-  double startingLocationLnt, startingLocationLng;
-  double arrivedLocationLnt, arrivedLocationLng;
+  late double startingLocationLnt, startingLocationLng;
+  late double arrivedLocationLnt, arrivedLocationLng;
   bool start = true;
-  UserModel locationService;
-  BitmapDescriptor myIcon;
-  MyModel myModel;
+  late UserModel locationService;
+  late BitmapDescriptor myIcon;
+  late MyModel myModel;
   Set<Marker> customMarkers = Set<Marker>();
-  UserModel agent1;
+  late UserModel agent1;
   List<UserModel> userList = [];
   List<DocumentSnapshot> filteredAgents = [];
   List<DocumentSnapshot> filteredAgentsLocation = [];
   String? agentLocationId;
-  Directions _info;
-  Marker _origin;
-  Marker _destination;
+  late Directions? _info;
+  late Marker _origin;
+  late Marker _destination;
   List agentTime = [];
   double pinPillPosition = PIN_VISIBLE_POSITION;
   double soloPinPillPosition = PIN_INVISIBLE_POSITION;
-  Orders order;
+  late Orders order;
 
   getAgents() async {
     QuerySnapshot snap = await usersRef.get();
@@ -2375,16 +2406,16 @@ class _SearchMapAgentScreenState extends State<SearchMapAgentScreen> {
     filteredAgents = doc;
     for (DocumentSnapshot d in filteredAgents) {
       UserModel user1 = UserModel.fromJson(d.data());
-      if ((user1.type.toLowerCase().contains("agent") &&
+      if ((user1.type?.toLowerCase().contains("agent") == true &&
               user1.isOnline == true ||
-          user1.id.contains(firebaseAuth.currentUser.uid))) {
+          user1.id?.contains(firebaseAuth.currentUser.uid) == true)) {
         customMarkers.add(_createMarker(user1.Lnt, user1.Lng, d.id));
         getInfoTime(LatLng(user1.Lnt, user1.Lng)).then((value) {
           setState(() {
             agentTime.add(value);
           });
         });
-        if (!user1.id.contains(firebaseAuth.currentUser.uid))
+        if (user1.id?.contains(firebaseAuth.currentUser.uid) == false)
           userList.add(user1);
 
         if (d.id.contains(firebaseAuth.currentUser.uid))
@@ -2412,13 +2443,13 @@ class _SearchMapAgentScreenState extends State<SearchMapAgentScreen> {
   }
 
   Future getInfoTime(_destination) async {
-    Directions directions;
+    Directions? directions;
     if (_origin != null) {
       directions = await DirectionsRepository()
           .getDirections(origin: _origin.position, destination: _destination);
       setState(() => _info = directions);
     }
-    return directions.totalDuration;
+    return directions?.totalDuration;
   }
 
   getOrders() async {
@@ -2496,6 +2527,7 @@ class _SearchMapAgentScreenState extends State<SearchMapAgentScreen> {
   }
 
   bool clicked = false;
+
   @override
   Widget build(BuildContext context) {
     locationData = Provider.of<LocationProvider>(context);
@@ -2643,7 +2675,7 @@ class _SearchMapAgentScreenState extends State<SearchMapAgentScreen> {
                                                       Row(
                                                         children: [
                                                           Text(
-                                                              "${userList[index].firstName} ${userList[index].lastname.toUpperCase()}",
+                                                              "${userList[index].firstName} ${userList[index].lastname?.toUpperCase()}",
                                                               style: TextStyle(
                                                                 fontSize: 12,
                                                                 letterSpacing:
@@ -2705,7 +2737,7 @@ class _SearchMapAgentScreenState extends State<SearchMapAgentScreen> {
                                                     children: [
                                                       Container(
                                                         child: Text(
-                                                            "${userList[index].activities.toLowerCase()}",
+                                                            "${userList[index].activities?.toLowerCase()}",
                                                             overflow:
                                                                 TextOverflow
                                                                     .ellipsis,
@@ -2721,7 +2753,7 @@ class _SearchMapAgentScreenState extends State<SearchMapAgentScreen> {
                                                         width: 150,
                                                       ),
                                                       Text(
-                                                          "${userList[index].price}/${userList[index].unity.toLowerCase()}",
+                                                          "${userList[index].price}/${userList[index].unity?.toLowerCase()}",
                                                           style: TextStyle(
                                                             fontSize: 12,
                                                             letterSpacing: 1,
@@ -2942,7 +2974,7 @@ class _SearchMapAgentScreenState extends State<SearchMapAgentScreen> {
                                                         Row(
                                                           children: [
                                                             Text(
-                                                                "${userList[index].firstName} ${userList[index].lastname.toUpperCase()}",
+                                                                "${userList[index].firstName} ${userList[index].lastname?.toUpperCase()}",
                                                                 style:
                                                                     TextStyle(
                                                                   fontSize: 12,
@@ -3005,7 +3037,7 @@ class _SearchMapAgentScreenState extends State<SearchMapAgentScreen> {
                                                               .spaceBetween,
                                                       children: [
                                                         Text(
-                                                            "${userList[index].activities.toLowerCase()}",
+                                                            "${userList[index].activities?.toLowerCase()}",
                                                             style: TextStyle(
                                                               fontSize: 14,
                                                               letterSpacing: 1,
@@ -3016,7 +3048,7 @@ class _SearchMapAgentScreenState extends State<SearchMapAgentScreen> {
                                                                   Colors.grey,
                                                             )),
                                                         Text(
-                                                            "${userList[index].price}/${userList[index].unity.toLowerCase()}",
+                                                            "${userList[index].price}/${userList[index].unity?.toLowerCase()}",
                                                             style: TextStyle(
                                                               fontSize: 12,
                                                               letterSpacing: 1,
@@ -3142,22 +3174,25 @@ class _SearchMapAgentScreenState extends State<SearchMapAgentScreen> {
                         },
                       ),
                     )),
-                StreamBuilder(
+                StreamBuilder<DocumentSnapshot>(
                   stream: orderRef.doc(widget.orders).snapshots(),
                   builder: (context, AsyncSnapshot<DocumentSnapshot> snapshot) {
                     if (snapshot.hasData) {
-                      Orders orders = Orders.fromJson(snapshot.data.data());
+                      DocumentSnapshot? documentSnapshot =
+                          snapshot.data as DocumentSnapshot;
+                      Map<String?, dynamic>? mapData = documentSnapshot.data();
+                      Orders orders = Orders.fromJson(mapData);
                       locationData
-                          .getCurrentCoordinatesName(
-                              orders.startAt?.latitude, orders.startAt?.longitude)
+                          .getCurrentCoordinatesName(orders.startAt?.latitude,
+                              orders.startAt?.longitude)
                           .then((value) => setState(() {
-                                startingTripLocationString? = value;
+                                startingTripLocationString = value;
                               }));
                       locationData
                           .getCurrentCoordinatesName(
                               orders.endAt?.latitude, orders.endAt?.longitude)
                           .then((value) => setState(() {
-                                arriveTripLocationString? = value;
+                                arriveTripLocationString = value;
                               }));
                       return Align(
                         alignment: Alignment.topCenter,
@@ -3175,7 +3210,7 @@ class _SearchMapAgentScreenState extends State<SearchMapAgentScreen> {
                                           context,
                                           p2 != null
                                               ? p2.description
-                                              : arriveTripLocationString?);
+                                              : arriveTripLocationString);
                                     },
                                     child: Image.asset(
                                       "assets/images/Back Arrow.png",
@@ -3237,7 +3272,7 @@ class _SearchMapAgentScreenState extends State<SearchMapAgentScreen> {
                             ),
                             Container(
                               height: 1,
-                              color: Colors.grey[400]??Colors.grey,
+                              color: Colors.grey[400] ?? Colors.grey,
                               width: 250,
                             ),
                             Container(
@@ -3311,7 +3346,7 @@ class _SearchMapAgentScreenState extends State<SearchMapAgentScreen> {
                                           userList: userList,
                                           time: _info == null
                                               ? "calculating ..."
-                                              : " ${_info.totalDuration}",
+                                              : " ${_info?.totalDuration}",
                                           order: order,
                                         )));
                           },
@@ -3333,7 +3368,7 @@ class _SearchMapAgentScreenState extends State<SearchMapAgentScreen> {
                         borderRadius: BorderRadius.circular(10.0),
                         boxShadow: [
                           BoxShadow(
-                            color: Colors.grey[500]??Colors.grey,
+                            color: Colors.grey[500] ?? Colors.grey,
                             offset: Offset(0.0, 1.5),
                             blurRadius: 1.5,
                           ),
@@ -3446,7 +3481,7 @@ class _SearchMapAgentScreenState extends State<SearchMapAgentScreen> {
                                                     Row(
                                                       children: [
                                                         Text(
-                                                            "${userList[index].firstName} ${userList[index].lastname.toUpperCase()}",
+                                                            "${userList[index].firstName} ${userList[index].lastname?.toUpperCase()}",
                                                             style: TextStyle(
                                                               fontSize: 12,
                                                               letterSpacing: 1,
@@ -3504,7 +3539,7 @@ class _SearchMapAgentScreenState extends State<SearchMapAgentScreen> {
                                                           .spaceBetween,
                                                   children: [
                                                     Text(
-                                                        "${userList[index].activities.toLowerCase()}",
+                                                        "${userList[index].activities?.toLowerCase()}",
                                                         style: TextStyle(
                                                           fontSize: 14,
                                                           letterSpacing: 1,
@@ -3513,7 +3548,7 @@ class _SearchMapAgentScreenState extends State<SearchMapAgentScreen> {
                                                           color: Colors.grey,
                                                         )),
                                                     Text(
-                                                        "${userList[index].price}/${userList[index].unity.toLowerCase()}",
+                                                        "${userList[index].price}/${userList[index].unity?.toLowerCase()}",
                                                         style: TextStyle(
                                                           fontSize: 12,
                                                           letterSpacing: 1,
@@ -3590,7 +3625,7 @@ class _SearchMapAgentScreenState extends State<SearchMapAgentScreen> {
                                                 Text(
                                                     _info == null
                                                         ? "calculating ..."
-                                                        : " ${_info.totalDuration}",
+                                                        : " ${_info?.totalDuration}",
                                                     style: TextStyle(
                                                       fontSize: 12,
                                                       fontWeight:
@@ -3614,7 +3649,7 @@ class _SearchMapAgentScreenState extends State<SearchMapAgentScreen> {
                                           id: userList[index].id,
                                           time: _info == null
                                               ? "calculating ..."
-                                              : " ${_info.totalDuration}",
+                                              : " ${_info?.totalDuration}",
                                         )),
                               );
                             },
@@ -3623,22 +3658,25 @@ class _SearchMapAgentScreenState extends State<SearchMapAgentScreen> {
                       },
                     ),
                   )),
-              StreamBuilder(
+              StreamBuilder<DocumentSnapshot>(
                 stream: orderRef.doc(widget.orders).snapshots(),
                 builder: (context, AsyncSnapshot<DocumentSnapshot> snapshot) {
                   if (snapshot.hasData) {
-                    Orders orders = Orders.fromJson(snapshot.data.data());
+                    DocumentSnapshot? documentSnapshot =
+                        snapshot.data as DocumentSnapshot;
+                    Map<String?, dynamic>? mapData = documentSnapshot.data();
+                    Orders orders = Orders.fromJson(mapData);
                     locationData
                         .getCurrentCoordinatesName(
                             orders.startAt?.latitude, orders.startAt?.longitude)
                         .then((value) => setState(() {
-                              startingTripLocationString? = value;
+                              startingTripLocationString = value;
                             }));
                     locationData
                         .getCurrentCoordinatesName(
                             orders.endAt?.latitude, orders.endAt?.longitude)
                         .then((value) => setState(() {
-                              arriveTripLocationString? = value;
+                              arriveTripLocationString = value;
                             }));
                     return Align(
                       alignment: Alignment.topCenter,
@@ -3655,7 +3693,7 @@ class _SearchMapAgentScreenState extends State<SearchMapAgentScreen> {
                                         context,
                                         p2 != null
                                             ? p2.description
-                                            : arriveTripLocationString?);
+                                            : arriveTripLocationString);
                                   },
                                   child: Image.asset(
                                     "assets/images/Back Arrow.png",
@@ -3717,7 +3755,7 @@ class _SearchMapAgentScreenState extends State<SearchMapAgentScreen> {
                           ),
                           Container(
                             height: 1,
-                            color: Colors.grey[400]??Colors.grey,
+                            color: Colors.grey[400] ?? Colors.grey,
                             width: 250,
                           ),
                           Container(
@@ -3790,7 +3828,7 @@ class _SearchMapAgentScreenState extends State<SearchMapAgentScreen> {
                                         userList: userList,
                                         time: _info == null
                                             ? "calculating ..."
-                                            : " ${_info.totalDuration}",
+                                            : " ${_info?.totalDuration}",
                                       )));
                         },
                       ))
@@ -3811,7 +3849,7 @@ class _SearchMapAgentScreenState extends State<SearchMapAgentScreen> {
                       borderRadius: BorderRadius.circular(10.0),
                       boxShadow: [
                         BoxShadow(
-                          color: Colors.grey[500]??Colors.grey,
+                          color: Colors.grey[500] ?? Colors.grey,
                           offset: Offset(0.0, 1.5),
                           blurRadius: 1.5,
                         ),
@@ -3873,12 +3911,13 @@ class _SearchMapAgentScreenState extends State<SearchMapAgentScreen> {
 
 class AllAgent extends StatefulWidget {
   static String routeName = '/AllAgent';
-  final List<UserModel> userList;
+  final List<UserModel>? userList;
   final String? time;
-  final Orders order;
+  final Orders? order;
 
   const AllAgent({Key? key, this.userList, this.time, this.order})
       : super(key: key);
+
   @override
   _AllAgentState createState() => _AllAgentState();
 }
@@ -3928,7 +3967,7 @@ class _AllAgentState extends State<AllAgent> {
                 ),
                 Expanded(
                   child: ListView.builder(
-                    itemCount: widget.userList.length,
+                    itemCount: widget.userList?.length,
                     scrollDirection: Axis.vertical,
                     shrinkWrap: true,
                     padding: EdgeInsets.only(
@@ -3970,11 +4009,11 @@ class _AllAgentState extends State<AllAgent> {
                                             ),
                                             image: DecorationImage(
                                               image: NetworkImage(widget
-                                                          .userList[index]
+                                                          .userList![index]
                                                           .photoUrl !=
                                                       null
                                                   ? widget
-                                                      .userList[index].photoUrl
+                                                      .userList![index].photoUrl
                                                   : FirebaseService
                                                       .getProfileImage()),
                                               fit: BoxFit.cover,
@@ -4007,7 +4046,7 @@ class _AllAgentState extends State<AllAgent> {
                                                   Row(
                                                     children: [
                                                       Text(
-                                                          "${widget.userList[index].firstName} ${widget.userList[index].lastname.toUpperCase()}",
+                                                          "${widget.userList![index].firstName} ${widget.userList![index].lastname?.toUpperCase()}",
                                                           style: TextStyle(
                                                             fontSize: 12,
                                                             letterSpacing: 1,
@@ -4015,7 +4054,7 @@ class _AllAgentState extends State<AllAgent> {
                                                                 FontWeight.w500,
                                                             color: Colors.black,
                                                           )),
-                                                      widget.userList[index]
+                                                      widget.userList![index]
                                                                   .verified ==
                                                               "true"
                                                           ? Image.asset(
@@ -4043,7 +4082,7 @@ class _AllAgentState extends State<AllAgent> {
                                                 height: 3,
                                               ),
                                               Text(
-                                                  "${widget.userList[index].city}",
+                                                  "${widget.userList![index].city}",
                                                   style: TextStyle(
                                                     fontSize: 12,
                                                     letterSpacing: 1,
@@ -4060,7 +4099,7 @@ class _AllAgentState extends State<AllAgent> {
                                                         .spaceBetween,
                                                 children: [
                                                   Text(
-                                                      "${widget.userList[index].activities.toLowerCase()}",
+                                                      "${widget.userList![index].activities?.toLowerCase()}",
                                                       style: TextStyle(
                                                         fontSize: 14,
                                                         letterSpacing: 1,
@@ -4069,7 +4108,7 @@ class _AllAgentState extends State<AllAgent> {
                                                         color: Colors.grey,
                                                       )),
                                                   Text(
-                                                      "${widget.userList[index].price}/${widget.userList[index].unity.toLowerCase()}",
+                                                      "${widget.userList![index].price}/${widget.userList![index].unity?.toLowerCase()}",
                                                       style: TextStyle(
                                                         fontSize: 12,
                                                         letterSpacing: 1,
@@ -4164,7 +4203,7 @@ class _AllAgentState extends State<AllAgent> {
                               context,
                               MaterialPageRoute(
                                   builder: (context) => AgentsDetails(
-                                        id: widget.userList[index].id,
+                                        id: widget.userList![index].id,
                                         time: widget.time,
                                         order: widget.order,
                                       )),
@@ -4188,7 +4227,7 @@ class _AllAgentState extends State<AllAgent> {
                         borderRadius: BorderRadius.circular(10.0),
                         boxShadow: [
                           BoxShadow(
-                            color: Colors.grey[500]??Colors.grey,
+                            color: Colors.grey[500] ?? Colors.grey,
                             offset: Offset(0.0, 1.5),
                             blurRadius: 1.5,
                           ),

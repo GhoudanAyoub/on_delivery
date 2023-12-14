@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
@@ -39,7 +41,7 @@ class FirebaseService {
       .collection('users')
       .orderBy(MessageListField.lastMessageTime, descending: true)
       .snapshots()
-      .transform(Utils.transformer(MessageList.fromJson));
+      .transform(Utils.transformer(MessageList.fromJson) as StreamTransformer<QuerySnapshot, List<MessageList>>);
 
   static Future uploadMessage(
       String? sender, final String? receiver, String? message) async {
@@ -60,7 +62,7 @@ class FirebaseService {
       .collection('chats')
       .orderBy(MessageField.createdAt, descending: true)
       .snapshots()
-      .transform(Utils.transformer(messages.fromJson));
+      .transform(Utils.transformer(messages.fromJson) as StreamTransformer<QuerySnapshot, List<messages>>);
 
   // GET UID
   String? getCurrentUID() {
@@ -93,7 +95,7 @@ class FirebaseService {
 
   Future<UserModel> getCurrentUserData() async {
     User user = firebaseAuth.currentUser;
-    UserModel userModel;
+    late UserModel userModel;
     if (user != null) {
       final snapShot = await usersRef.doc(user.uid).get();
       userModel = UserModel.fromJson(snapShot.data());
@@ -111,7 +113,7 @@ class FirebaseService {
   }
 
   Future<PlansModel> getCurrentUserPlant() async {
-    PlansModel plansModel;
+    late PlansModel plansModel;
     final snapShot = await plansRef.doc(_firebaseAuth.currentUser.uid).get();
     if (snapShot.exists) {
       plansModel = PlansModel.fromJson(snapShot.data());

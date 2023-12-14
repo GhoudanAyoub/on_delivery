@@ -14,8 +14,8 @@ class AgentTripsLocation {
 
   static AgentTripsLocation fromJson(Map<String?, dynamic> json) =>
       AgentTripsLocation(
-        startingPointString: json['startingPointString?'],
-        arrivalPointString: json['arrivalPointString?'],
+        startingPointString: json['startingPointString'],
+        arrivalPointString: json['arrivalPointString'],
         startingPoint: json['startingPoint'],
         arrivalPoint: json['arrivalPoint'],
       );

@@ -29,7 +29,7 @@ class _RateLayoutState extends State<RateLayout> {
       ),
       child: Column(
         children: [
-          StreamBuilder(
+          StreamBuilder<DocumentSnapshot>(
             stream: usersRef.doc(widget.rateModel.userID).snapshots(),
             builder: (context, AsyncSnapshot<DocumentSnapshot> snapshot) {
               Map<String?, dynamic>? mapData = snapshot.data?.data();

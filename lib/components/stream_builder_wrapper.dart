@@ -9,7 +9,7 @@ typedef ItemBuilder<T> = Widget Function(
 );
 
 class StreamBuilderWrapper extends StatelessWidget {
-  final Stream<dynamic> stream;
+  final Stream<QuerySnapshot> stream;
   final ItemBuilder<DocumentSnapshot> itemBuilder;
   final Axis scrollDirection;
   final bool shrinkWrap;
@@ -30,11 +30,11 @@ class StreamBuilderWrapper extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return StreamBuilder(
+    return StreamBuilder<QuerySnapshot>(
       stream: stream,
       builder: (context, snapshot) {
         if (snapshot.hasData) {
-          var list = snapshot.data.docs.toList();
+          var list = snapshot.data!.docs.toList();
           return list.length == 0
               ? Padding(
                   padding: const EdgeInsets.only(top: 100.0),

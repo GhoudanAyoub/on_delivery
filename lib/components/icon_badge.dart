@@ -50,7 +50,7 @@ class _IconBadgeState extends State<IconBadge> {
   }
 
   buildCount() {
-    StreamBuilder(
+    StreamBuilder<QuerySnapshot>(
       stream: notificationRef
           .doc(firebaseAuth.currentUser.uid)
           .collection('notifications')

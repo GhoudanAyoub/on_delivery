@@ -32,12 +32,12 @@ class ChatItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return StreamBuilder(
+    return StreamBuilder<DocumentSnapshot>(
       stream: usersRef.doc('$userId').snapshots(),
       builder: (context, snapshot) {
         Object? mapData = snapshot.data;
         if (snapshot.hasData && mapData!=null) {
-          DocumentSnapshot? documentSnapshot = snapshot.data as DocumentSnapshot?;
+          DocumentSnapshot? documentSnapshot = snapshot.data;
           UserModel user = UserModel.fromJson(documentSnapshot!.data());
 
           return Container(
@@ -142,7 +142,7 @@ class ChatItem extends StatelessWidget {
   }
 
   buildCounter(BuildContext context) {
-    return StreamBuilder(
+    return StreamBuilder<DocumentSnapshot>(
       stream: messageBodyStream(),
       builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
         if (snapshot.hasData) {

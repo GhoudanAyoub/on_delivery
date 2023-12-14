@@ -120,7 +120,7 @@ class _SideBarState extends State<SideBar>
                       Expanded(
                           child: ListView(
                         children: [
-                          MenuItem(
+                          MenuItem2(
                             title: "Home",
                             onTap: () {
                               onIconPressed();
@@ -131,7 +131,7 @@ class _SideBarState extends State<SideBar>
                           SizedBox(
                             height: 10,
                           ),
-                          MenuItem(
+                          MenuItem2(
                             title: "Orders",
                             onTap: () {
                               onIconPressed();
@@ -142,7 +142,7 @@ class _SideBarState extends State<SideBar>
                           SizedBox(
                             height: 10,
                           ),
-                          StreamBuilder(
+                          StreamBuilder<DocumentSnapshot>(
                             stream: usersRef
                                 .doc(firebaseAuth.currentUser.uid)
                                 .snapshots(),
@@ -155,7 +155,7 @@ class _SideBarState extends State<SideBar>
                                 if (user1.type == "Agent") {
                                   return Column(
                                     children: [
-                                      MenuItem(
+                                      MenuItem2(
                                         title: "Plans",
                                         onTap: () {
                                           onIconPressed();
@@ -168,7 +168,7 @@ class _SideBarState extends State<SideBar>
                                       SizedBox(
                                         height: 10,
                                       ),
-                                      MenuItem(
+                                      MenuItem2(
                                         title: "Bank account ID",
                                         onTap: () {
                                           bankAccountID(context);
@@ -190,7 +190,7 @@ class _SideBarState extends State<SideBar>
                           SizedBox(
                             height: 10,
                           ),
-                          MenuItem(
+                          MenuItem2(
                             title: "Conditions & rules",
                             onTap: () {
                               onIconPressed();
@@ -202,7 +202,7 @@ class _SideBarState extends State<SideBar>
                           SizedBox(
                             height: 10,
                           ),
-                          MenuItem(
+                          MenuItem2(
                             title: "Contact us",
                             onTap: () {
                               onIconPressed();
@@ -211,7 +211,7 @@ class _SideBarState extends State<SideBar>
                           SizedBox(
                             height: 10,
                           ),
-                          MenuItem(
+                          MenuItem2(
                             title: "Settings",
                             onTap: () {
                               onIconPressed();
@@ -224,7 +224,7 @@ class _SideBarState extends State<SideBar>
                       SizedBox(
                         height: 20,
                       ),
-                      StreamBuilder(
+                      StreamBuilder<DocumentSnapshot>(
                         stream: usersRef
                             .doc(firebaseAuth.currentUser.uid)
                             .snapshots(),
@@ -268,7 +268,7 @@ class _SideBarState extends State<SideBar>
                           );
                         },
                       ),
-                      StreamBuilder(
+                      StreamBuilder<DocumentSnapshot>(
                         stream: usersRef
                             .doc(firebaseAuth.currentUser.uid)
                             .snapshots(),
@@ -477,7 +477,7 @@ class _SideBarState extends State<SideBar>
                   ),
                 ),
               ),
-              StreamBuilder(
+              StreamBuilder<DocumentSnapshot>(
                 stream: usersRef.doc(firebaseAuth.currentUser.uid).snapshots(),
                 builder: (context, AsyncSnapshot<DocumentSnapshot> snapshot) {
                   Map<String?, dynamic>? mapData = snapshot.data?.data();

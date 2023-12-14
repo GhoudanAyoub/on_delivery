@@ -149,7 +149,7 @@ class _HomeState extends State<Home> {
                 SizedBox(height: getProportionateScreenHeight(20)),
                 Align(
                   alignment: Alignment.topCenter,
-                  child: StreamBuilder(
+                  child: StreamBuilder<DocumentSnapshot>(
                     stream:
                         usersRef.doc(firebaseAuth.currentUser.uid).snapshots(),
                     builder:
@@ -287,7 +287,7 @@ class _HomeState extends State<Home> {
                 SizedBox(
                   height: 15,
                 ),
-                StreamBuilder(
+                StreamBuilder<DocumentSnapshot>(
                   stream:
                       usersRef.doc(firebaseAuth.currentUser.uid).snapshots(),
                   builder: (context, AsyncSnapshot<DocumentSnapshot> snapshot) {
@@ -596,7 +596,7 @@ class _HomeState extends State<Home> {
   }
 
   buildFavoriteAgents() {
-    return StreamBuilder(
+    return StreamBuilder<QuerySnapshot>(
       stream: favoriteListStream(firebaseAuth.currentUser.uid),
       builder: (context, snapshot) {
         if (snapshot.hasData) {

@@ -42,7 +42,7 @@ class _AgentsDetailsState extends State<AgentsDetails> {
           setState(() {
             myDocs++;
           });
-          if (order.status.toLowerCase().contains("delivered"))
+          if (order.status?.toLowerCase().contains("delivered")==true)
             setState(() {
               doneDocs++;
             });
@@ -112,7 +112,7 @@ class _AgentsDetailsState extends State<AgentsDetails> {
                     left: getProportionateScreenWidth(20),
                     right: getProportionateScreenWidth(20)),
                 children: [
-                  StreamBuilder(
+                  StreamBuilder<DocumentSnapshot>(
                     stream: usersRef.doc(widget.id).snapshots(),
                     builder:
                         (context, AsyncSnapshot<DocumentSnapshot> snapshot) {
@@ -438,7 +438,7 @@ class _AgentsDetailsState extends State<AgentsDetails> {
                                       ],
                                     ),
                                   ),
-                                  StreamBuilder(
+                                  StreamBuilder<QuerySnapshot>(
                                     stream: favoritzListStream(
                                         firebaseAuth.currentUser.uid),
                                     builder: (context,

@@ -31,7 +31,7 @@ class _UserCardState extends State<UserCard> {
           setState(() {
             myDocs++;
           });
-          if (order.status.toLowerCase().contains("delivered"))
+          if (order.status?.toLowerCase().contains("delivered")==true)
             setState(() {
               doneDocs++;
             });

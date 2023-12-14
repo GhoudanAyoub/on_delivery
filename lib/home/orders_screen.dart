@@ -58,12 +58,12 @@ class _OrderScreenState extends State<OrderScreen> {
           setState(() {
             myDocs++;
           });
-          if (order.status.toLowerCase().contains("delivered") ||
-              order.status.toLowerCase().contains("canceled"))
+          if (order.status?.toLowerCase().contains("delivered")==true ||
+              order.status?.toLowerCase().contains("canceled")==true)
             setState(() {
               histoDocs++;
             });
-          if (order.status.toLowerCase().contains("pending"))
+          if (order.status?.toLowerCase().contains("pending")==true)
             setState(() {
               currentDocs++;
             });
@@ -79,7 +79,7 @@ class _OrderScreenState extends State<OrderScreen> {
         .snapshots()
         .listen((event) {
       event.docChanges.forEach((element) {
-        readCount += (element.doc.data()['reads'][firebaseAuth.currentUser.uid] ?? 0);
+        readCount += ( 0);
         chatRef
             .doc(element.doc.id)
             .collection('messages')
@@ -137,12 +137,14 @@ class _OrderScreenState extends State<OrderScreen> {
               SizedBox(height: getProportionateScreenHeight(20)),
               Align(
                 alignment: Alignment.topCenter,
-                child: StreamBuilder(
+                child: StreamBuilder<DocumentSnapshot>(
                   stream:
                       usersRef.doc(firebaseAuth.currentUser.uid).snapshots(),
                   builder: (context, AsyncSnapshot<DocumentSnapshot> snapshot) {
                     if (snapshot.hasData) {
-                      user1 = UserModel.fromJson(snapshot.data.data());
+                      DocumentSnapshot? documentSnapshot = snapshot.data as DocumentSnapshot;
+                      Map<String?, dynamic>? mapData = documentSnapshot.data();
+                      user1 = UserModel.fromJson(mapData);
                       return Align(
                         alignment: Alignment.center,
                         child: Row(
@@ -185,7 +187,7 @@ class _OrderScreenState extends State<OrderScreen> {
                                 Row(
                                   children: [
                                     Text(
-                                        "${user1.firstName} ${user1.lastname.toUpperCase()}",
+                                        "${user1.firstName} ${user1.lastname?.toUpperCase()}",
                                         style: TextStyle(
                                           fontSize: 12,
                                           letterSpacing: 1,
@@ -271,12 +273,14 @@ class _OrderScreenState extends State<OrderScreen> {
               SizedBox(
                 height: 10,
               ),
-              StreamBuilder(
+              StreamBuilder<DocumentSnapshot>(
                 stream: usersRef.doc(firebaseAuth.currentUser.uid).snapshots(),
                 builder: (context, AsyncSnapshot<DocumentSnapshot> snapshot) {
                   if (snapshot.hasData) {
-                    user1 = UserModel.fromJson(snapshot.data.data());
-                    if (user1.type.toLowerCase().contains("client"))
+                    DocumentSnapshot? documentSnapshot = snapshot.data as DocumentSnapshot;
+                    Map<String?, dynamic>? mapData = documentSnapshot.data();
+                    user1 = UserModel.fromJson(mapData);
+                    if (user1.type?.toLowerCase().contains("client")==true)
                       return Container(
                         height: 60.0,
                         decoration: BoxDecoration(
@@ -354,7 +358,7 @@ class _OrderScreenState extends State<OrderScreen> {
                             onTap: () {
                               setState(() {
                                 _activeTabHome = index;
-                                CatName = categories[index].name.toLowerCase();
+                                CatName = categories[index].name?.toLowerCase();
                                 //search(CatName);
                               });
                             },
@@ -369,7 +373,7 @@ class _OrderScreenState extends State<OrderScreen> {
                                   clipBehavior: Clip.none,
                                   children: [
                                     Text(
-                                      categories[index].name,
+                                      categories[index].name??"",
                                       style: TextStyle(
                                         letterSpacing: 1,
                                         fontSize: 14,
@@ -384,7 +388,7 @@ class _OrderScreenState extends State<OrderScreen> {
                                             right: -25,
                                             top: -10,
                                             child: Text(
-                                              "(${_activeTabHome == 0 ? myDocs.toString?() : _activeTabHome == 1 ? currentDocs.toString?() : histoDocs.toString?()})",
+                                              "(${_activeTabHome == 0 ? myDocs.toString() : _activeTabHome == 1 ? currentDocs.toString() : histoDocs.toString()})",
                                               style: TextStyle(
                                                 letterSpacing: 1,
                                                 fontSize: 16,
@@ -430,7 +434,7 @@ class _OrderScreenState extends State<OrderScreen> {
                   height: 5,
                   decoration: BoxDecoration(
                       gradient: LinearGradient(
-                        colors: <Color>[Colors.grey[300], Colors.grey[300]],
+                        colors: <Color>[Colors.grey[300]??Colors.grey, Colors.grey[300]??Colors.grey],
                       ),
                       borderRadius: BorderRadius.circular(10.0),
                       boxShadow: [
@@ -504,14 +508,16 @@ class _OrderScreenState extends State<OrderScreen> {
               DocumentSnapshot doc = filteredOrders[index];
               Orders orders = Orders.fromJson(doc.data());
 
-              if (user1.type.toLowerCase().contains('agent'))
-                return StreamBuilder(
+              if (user1.type?.toLowerCase().contains('agent')==true)
+                return StreamBuilder<DocumentSnapshot>(
                     stream: usersRef.doc(orders.userId).snapshots(),
                     builder:
                         (context, AsyncSnapshot<DocumentSnapshot> snapshot) {
-                      if (snapshot.hasData && snapshot.data.exists) {
+                      if (snapshot.hasData && snapshot.data?.exists==true) {
+                        DocumentSnapshot? documentSnapshot = snapshot.data as DocumentSnapshot;
+                        Map<String?, dynamic>? mapData = documentSnapshot.data();
                         UserModel _user =
-                            UserModel.fromJson(snapshot.data.data());
+                            UserModel.fromJson(mapData);
 
                         return OrderLayout(
                           me: user1,
@@ -525,12 +531,14 @@ class _OrderScreenState extends State<OrderScreen> {
                         height: 0,
                       );
                     });
-              return StreamBuilder(
+              return StreamBuilder<DocumentSnapshot>(
                   stream: usersRef.doc(orders.agentId).snapshots(),
                   builder: (context, AsyncSnapshot<DocumentSnapshot> snapshot) {
-                    if (snapshot.hasData && snapshot.data.exists) {
+                    if (snapshot.hasData && snapshot.data?.exists==true) {
+                      DocumentSnapshot? documentSnapshot = snapshot.data as DocumentSnapshot;
+                      Map<String?, dynamic>? mapData = documentSnapshot.data();
                       UserModel _user =
-                          UserModel.fromJson(snapshot.data.data());
+                          UserModel.fromJson(mapData);
 
                       return OrderLayout(
                         me: user1,
@@ -671,24 +679,26 @@ class _OrderScreenState extends State<OrderScreen> {
             Orders orders = Orders.fromJson(doc.data());
 
             if (orders.status != null &&
-                orders.status.toLowerCase().contains("pending")) {
-              if (user1.type.toLowerCase().contains('agent'))
-                return StreamBuilder(
+                orders.status?.toLowerCase().contains("pending")==true) {
+              if (user1.type?.toLowerCase().contains('agent')==true)
+                return StreamBuilder<DocumentSnapshot>(
                     stream: usersRef.doc(orders.userId).snapshots(),
                     builder:
                         (context, AsyncSnapshot<DocumentSnapshot> snapshot) {
-                      if (snapshot.hasData && snapshot.data.exists) {
+                      if (snapshot.hasData && snapshot.data?.exists==true) {
+                        DocumentSnapshot? documentSnapshot = snapshot.data as DocumentSnapshot;
+                        Map<String?, dynamic>? mapData = documentSnapshot.data();
                         UserModel _user =
-                            UserModel.fromJson(snapshot.data.data());
+                            UserModel.fromJson(mapData);
 
                         return OrderLayout(
                           me: user1,
                           order: orders,
                           user: _user,
-                          track: user1.type.toLowerCase().contains("client")
+                          track: user1.type?.toLowerCase().contains("client")==true
                               ? true
                               : false,
-                          count: user1.type.toLowerCase().contains("client")
+                          count: user1.type?.toLowerCase().contains("client")==true
                               ? true
                               : false,
                           show: true,
@@ -698,21 +708,23 @@ class _OrderScreenState extends State<OrderScreen> {
                         height: 0,
                       );
                     });
-              return StreamBuilder(
+              return StreamBuilder<DocumentSnapshot>(
                   stream: usersRef.doc(orders.agentId).snapshots(),
                   builder: (context, AsyncSnapshot<DocumentSnapshot> snapshot) {
-                    if (snapshot.hasData && snapshot.data.exists) {
+                    if (snapshot.hasData && snapshot.data?.exists==true) {
+                      DocumentSnapshot? documentSnapshot = snapshot.data as DocumentSnapshot;
+                      Map<String?, dynamic>? mapData = documentSnapshot.data();
                       UserModel _user =
-                          UserModel.fromJson(snapshot.data.data());
+                          UserModel.fromJson(mapData);
 
                       return OrderLayout(
                         me: user1,
                         order: orders,
                         user: _user,
-                        track: user1.type.toLowerCase().contains("client")
+                        track: user1.type?.toLowerCase().contains("client") == true
                             ? true
                             : false,
-                        count: user1.type.toLowerCase().contains("client")
+                        count: user1.type?.toLowerCase().contains("client") == true
                             ? true
                             : false,
                       );
@@ -751,17 +763,19 @@ class _OrderScreenState extends State<OrderScreen> {
             Orders orders = Orders.fromJson(doc.data());
 
             if (orders.status != null &&
-                    orders.status.toLowerCase().contains("canceled") ||
+                    orders.status?.toLowerCase().contains("canceled")==true ||
                 orders.status != null &&
-                    orders.status.toLowerCase().contains("delivered")) {
-              if (user1.type.toLowerCase().contains('agent'))
-                return StreamBuilder(
+                    orders.status?.toLowerCase().contains("delivered")==true) {
+              if (user1.type?.toLowerCase().contains('agent')==true)
+                return StreamBuilder<DocumentSnapshot>(
                     stream: usersRef.doc(orders.userId).snapshots(),
                     builder:
                         (context, AsyncSnapshot<DocumentSnapshot> snapshot) {
-                      if (snapshot.hasData && snapshot.data.exists) {
+                      if (snapshot.hasData && snapshot.data?.exists==true) {
+                        DocumentSnapshot? documentSnapshot = snapshot.data as DocumentSnapshot;
+                        Map<String?, dynamic>? mapData = documentSnapshot.data();
                         UserModel _user =
-                            UserModel.fromJson(snapshot.data.data());
+                            UserModel.fromJson(mapData);
 
                         return OrderLayout(
                           me: user1,
@@ -775,12 +789,14 @@ class _OrderScreenState extends State<OrderScreen> {
                         height: 0,
                       );
                     });
-              return StreamBuilder(
+              return StreamBuilder<DocumentSnapshot>(
                   stream: usersRef.doc(orders.agentId).snapshots(),
                   builder: (context, AsyncSnapshot<DocumentSnapshot> snapshot) {
-                    if (snapshot.hasData && snapshot.data.exists) {
+                    if (snapshot.hasData && snapshot.data?.exists==true) {
+                      DocumentSnapshot? documentSnapshot = snapshot.data as DocumentSnapshot;
+                      Map<String?, dynamic>? mapData = documentSnapshot.data();
                       UserModel _user =
-                          UserModel.fromJson(snapshot.data.data());
+                          UserModel.fromJson(mapData);
 
                       return OrderLayout(
                         me: user1,

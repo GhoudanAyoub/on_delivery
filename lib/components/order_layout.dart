@@ -222,22 +222,22 @@ class _OrderLayoutState extends State<OrderLayout> {
                   Container(
                     decoration: BoxDecoration(
                       color: widget.order?.status
-                              .toLowerCase()
-                              .contains("canceled")=true
+                              ?.toLowerCase()
+                              .contains("canceled")==true
                           ? Color.fromRGBO(254, 29, 29, 1).withOpacity(0.2)
                           : widget.order?.status
-                                  .toLowerCase()
+                                  ?.toLowerCase()
                                   .contains("pending")==true
                               ? Color.fromRGBO(195, 199, 24, 1).withOpacity(0.2)
                               : Color.fromRGBO(10, 201, 71, 1).withOpacity(0.2),
                       border: Border.all(
                         width: 1,
                         color: widget.order?.status
-                                .toLowerCase()
+                                ?.toLowerCase()
                                 .contains("canceled")==true
                             ? Color.fromRGBO(254, 29, 29, 1).withOpacity(0.2)
                             : widget.order?.status
-                                    .toLowerCase()
+                                    ?.toLowerCase()
                                     .contains("pending")==true
                                 ? Color.fromRGBO(195, 199, 24, 1)
                                     .withOpacity(0.2)
@@ -257,11 +257,11 @@ class _OrderLayoutState extends State<OrderLayout> {
                             fontSize: 12,
                             fontWeight: FontWeight.w600,
                             color: widget.order?.status
-                                    .toLowerCase()
+                                    ?.toLowerCase()
                                     .contains("canceled") == true
                                 ? Color.fromRGBO(254, 29, 29, 1)
                                 : widget.order?.status
-                                        .toLowerCase()
+                                        ?.toLowerCase()
                                         .contains("pending") == true
                                     ? Color.fromRGBO(195, 199, 24, 1)
                                     : Color.fromRGBO(10, 201, 71, 1),

@@ -46,14 +46,14 @@ class _ChatsState extends State<Chats> {
                       left: 20, right: 20, top: 80, bottom: 5),
                   child: Column(
                     children: [
-                      StreamBuilder(
+                      StreamBuilder<QuerySnapshot>(
                           stream: userChatsStream(
                               '${firebaseAuth.currentUser.uid}'),
                           builder: (context, snapshot) {
                             if (snapshot.hasData) {
                               chatList.clear();
                               for (DocumentSnapshot doc
-                                  in snapshot.data?.documents) {
+                                  in snapshot.data!.documents) {
                                 if (doc.data()['users'][0].toString().contains(
                                         firebaseAuth.currentUser.uid) ||
                                     doc.data()['users'][1].toString().contains(
@@ -89,13 +89,13 @@ class _ChatsState extends State<Chats> {
                                               int index) {
                                             DocumentSnapshot chatListSnapshot =
                                                 chatList[index];
-                                            return StreamBuilder(
+                                            return StreamBuilder<QuerySnapshot>(
                                               stream: messageListStream(
                                                   chatListSnapshot.id),
                                               builder: (context, snapshot) {
                                                 if (snapshot.hasData) {
                                                   List messages =
-                                                      snapshot.data.documents;
+                                                      snapshot.data!.docs;
                                                   Message message =
                                                       Message.fromJson(messages
                                                           .first
@@ -185,13 +185,13 @@ class _ChatsState extends State<Chats> {
                                           (BuildContext context, int index) {
                                         DocumentSnapshot chatListSnapshot =
                                             chatList[index];
-                                        return StreamBuilder(
+                                        return StreamBuilder<QuerySnapshot>(
                                           stream: messageListStream(
                                               chatListSnapshot.id),
                                           builder: (context, snapshot) {
                                             if (snapshot.hasData) {
                                               List messages =
-                                                  snapshot.data.documents;
+                                                  snapshot.data!.documents;
                                               Message message =
                                                   Message.fromJson(
                                                       messages.first.data());

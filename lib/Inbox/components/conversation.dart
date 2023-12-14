@@ -642,11 +642,11 @@ class _ConversationState extends State<Conversation> {
                             child: buildUserName(),
                           ),
                           Flexible(
-                            child: StreamBuilder(
+                            child: StreamBuilder<QuerySnapshot>(
                               stream: messageListStream(chatId),
                               builder: (context, snapshot) {
                                 if (snapshot.hasData) {
-                                  List messages = snapshot.data.documents;
+                                  List messages = snapshot.data!.documents;
                                   if (widget.chatId != 'newChat') {
                                     viewModel.setReadCount(
                                         widget.chatId, user, messages.length);
@@ -751,11 +751,11 @@ class _ConversationState extends State<Conversation> {
                               },
                             ),
                           ),
-                          StreamBuilder(
+                          StreamBuilder<QuerySnapshot>(
                             stream: messageListStream(chatId),
                             builder: (context, snapshot) {
                               if (snapshot.hasData) {
-                                List messages = snapshot.data.documents;
+                                List messages = snapshot.data!.documents;
                                 return Container(
                                   height: 70,
                                   child: ListView.builder(
@@ -971,11 +971,11 @@ class _ConversationState extends State<Conversation> {
                         ],
                       ),
                     )),
-                    StreamBuilder(
+                    StreamBuilder<QuerySnapshot>(
                       stream: messageListStream(chatId),
                       builder: (context, snapshot) {
                         if (snapshot.hasData) {
-                          List messages = snapshot.data.documents;
+                          List messages = snapshot.data!.documents;
                           if (messages != null &&
                               messages.isNotEmpty &&
                               messages.reversed.isNotEmpty)
@@ -1193,7 +1193,7 @@ class _ConversationState extends State<Conversation> {
                   ),
                 ),
               ),
-              StreamBuilder(
+              StreamBuilder<DocumentSnapshot>(
                 stream: usersRef.doc(agentFullData.id).snapshots(),
                 builder: (context, AsyncSnapshot<DocumentSnapshot> snapshot) {
                   DocumentSnapshot? documentSnapshot = snapshot.data;
@@ -1273,7 +1273,7 @@ class _ConversationState extends State<Conversation> {
   }
 
   buildUserName() {
-    return StreamBuilder(
+    return StreamBuilder<DocumentSnapshot>(
       stream: usersRef.doc('${widget.userId}').snapshots(),
       builder: (context, snapshot) {
         if (snapshot.hasData) {
