@@ -48,7 +48,7 @@ class ConversationViewModel extends ChangeNotifier {
           );
 
     if (image != null) {
-      File? croppedFile = await ImageCropper.cropImage(
+      File? croppedFile = await ImageCropper().cropImage(
         sourcePath: image.path,
         aspectRatioPresets: [
           CropAspectRatioPreset.square,

@@ -142,7 +142,7 @@ class _UpdateProfilesState extends State<UpdateProfiles> {
       PickedFile pickedFile = await picker.getImage(
         source: camera ? ImageSource.camera : ImageSource.gallery,
       );
-      File? croppedFile = await ImageCropper.cropImage(
+      File? croppedFile = await ImageCropper().cropImage(
         sourcePath: pickedFile.path,
         aspectRatioPresets: [
           CropAspectRatioPreset.square,
@@ -179,7 +179,7 @@ class _UpdateProfilesState extends State<UpdateProfiles> {
       PickedFile pickedFile = await picker.getImage(
         source: camera ? ImageSource.camera : ImageSource.gallery,
       );
-      File? croppedFile = await ImageCropper.cropImage(
+      File? croppedFile = await ImageCropper().cropImage(
         sourcePath: pickedFile.path,
         aspectRatioPresets: [
           CropAspectRatioPreset.square,
@@ -216,7 +216,7 @@ class _UpdateProfilesState extends State<UpdateProfiles> {
       PickedFile pickedFile = await picker.getImage(
         source: camera ? ImageSource.camera : ImageSource.gallery,
       );
-      File? croppedFile = await ImageCropper.cropImage(
+      File? croppedFile = await ImageCropper().cropImage(
         sourcePath: pickedFile.path,
         aspectRatioPresets: [
           CropAspectRatioPreset.square,
@@ -253,7 +253,7 @@ class _UpdateProfilesState extends State<UpdateProfiles> {
       PickedFile pickedFile = await picker.getImage(
         source: camera ? ImageSource.camera : ImageSource.gallery,
       );
-      File? croppedFile = await ImageCropper.cropImage(
+      File? croppedFile = await ImageCropper().cropImage(
         sourcePath: pickedFile.path,
         aspectRatioPresets: [
           CropAspectRatioPreset.square,

@@ -1630,7 +1630,7 @@ class _ProfileState extends State<Profile> {
       PickedFile pickedFile = await picker.getImage(
         source: camera ? ImageSource.camera : ImageSource.gallery,
       );
-      File? croppedFile = await ImageCropper.cropImage(
+      File? croppedFile = await ImageCropper().cropImage(
         sourcePath: pickedFile.path,
         aspectRatioPresets: [
           CropAspectRatioPreset.square,
